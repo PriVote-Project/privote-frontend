@@ -16,6 +16,8 @@ import VotingSection from "../VotingSection";
 import Button from "~~/components/ui/Button";
 import { useSigContext } from "~~/contexts/SigContext";
 import { useSearchParams } from "next/navigation";
+import { EMode } from "~~/types/poll";
+import FaucetModal from "~~/components/ui/FaucetModal";
 
 interface IPollDetails {
   id: bigint;
@@ -43,10 +45,12 @@ const PollDetails = ({ id, isUserRegistered }: IPollDetails) => {
     isError: pollError,
   } = usePollContext();
   const { keypair } = useSigContext();
-  const { registerUser, isLoading: isRegistering } = useUserRegister(
-    authType,
-    pollType
-  );
+  const {
+    registerUser,
+    isLoading: isRegistering,
+    showFaucetModal,
+    onCloseFaucetModal,
+  } = useUserRegister(authType, pollType);
   const [status, setStatus] = useState<PollStatus>();
   const [coordinatorPubKey, setCoordinatorPubKey] = useState<PubKey>();
   const {
@@ -72,8 +76,11 @@ const PollDetails = ({ id, isUserRegistered }: IPollDetails) => {
     setSelectedCandidate,
     voteUpdated,
     castVote,
+    showFaucetModal: showVotingFaucetModal,
+    onCloseFaucetModal: onCloseVotingFaucetModal,
   } = useVoting({
     pollAddress: poll?.pollContracts.poll,
+    mode: poll?.isQv as EMode,
     pollType: pollMetadata.pollType,
     status,
     coordinatorPubKey,
@@ -137,8 +144,16 @@ const PollDetails = ({ id, isUserRegistered }: IPollDetails) => {
   if (!poll) return null;
   return (
     <div className={styles["poll-details"]}>
+      <FaucetModal
+        isOpen={showFaucetModal || showVotingFaucetModal}
+        onClose={() => {
+          onCloseFaucetModal();
+          onCloseVotingFaucetModal();
+        }}
+      />
       <PollHeader
         pollName={poll.name}
+        pollType={pollMetadata.pollType}
         pollDescription={pollMetadata.description}
         pollEndTime={poll.endTime}
         pollStartTime={poll.startTime}
@@ -153,6 +168,7 @@ const PollDetails = ({ id, isUserRegistered }: IPollDetails) => {
 
       <VotingSection
         votes={votes}
+        isQv={poll.isQv as EMode}
         pollTitle={poll.name}
         pollDescription={pollMetadata.description}
         pollId={id}

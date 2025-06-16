@@ -9,6 +9,8 @@ import { encodeOptionInfo } from "~~/utils/optionInfo";
 import { uploadFileToLighthouse } from "~~/utils/lighthouse";
 import CID from "cids";
 import { AuthType, PollType } from "~~/types/poll";
+import { useRouter } from "next/navigation";
+import { useBalanceCheck } from "~~/hooks/useBalanceCheck";
 
 const initialPollData: IPollData = {
   title: "",
@@ -18,6 +20,13 @@ const initialPollData: IPollData = {
   pollType: PollType.NOT_SELECTED,
   mode: null,
   options: [
+    {
+      title: "",
+      description: "",
+      cid: "0x" as `0x${string}`,
+      link: "",
+      isUploadedToIPFS: false,
+    },
     {
       title: "",
       description: "",
@@ -59,6 +68,8 @@ interface PollFormContextType {
   handleRemoveOption: (index: number) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleVeriMethodChange: (e: React.ChangeEvent<any>) => void;
+  showFaucetModal: boolean;
+  onCloseFaucetModal: () => void;
 }
 
 const PollFormContext = createContext<PollFormContextType | undefined>(
@@ -66,6 +77,7 @@ const PollFormContext = createContext<PollFormContextType | undefined>(
 );
 
 export const PollFormProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
   const [pollData, setPollData] = useState<IPollData>(initialPollData);
   const [files, setFiles] = useState<(File | null)[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -74,6 +86,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   >("none");
   const [showKeys, setShowKeys] = useState({ show: false, privKey: "" });
   const [pollConfig, setPollConfig] = useState(0);
+  const { showFaucetModal, onCloseFaucetModal, checkBalance } =
+    useBalanceCheck();
 
   const duration = Math.round((pollData.expiry.getTime() - Date.now()) / 1000);
 
@@ -114,10 +128,11 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
 
-    if (!pollData.description.trim()) {
-      notification.error("Please enter a description");
-      return false;
-    }
+    // Removed description validation
+    // if (!pollData.description.trim()) {
+    //   notification.error("Please enter a description");
+    //   return false;
+    // }
 
     if (pollData.pollType === null) {
       notification.error("Please select a poll type");
@@ -210,6 +225,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    if (checkBalance()) return;
+
     setIsLoading(true);
     try {
       const cids: `0x${string}`[] = [];
@@ -273,6 +290,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
       setIsLoading(false);
       notification.success("Poll created successfully!");
+      router.push("/polls");
     } catch (error) {
       console.error("Error creating poll:", error);
       notification.error("Failed to create poll");
@@ -300,6 +318,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     handleRemoveOption,
     handleSubmit,
     handleVeriMethodChange,
+    showFaucetModal,
+    onCloseFaucetModal,
   };
 
   return (

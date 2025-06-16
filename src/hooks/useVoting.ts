@@ -3,8 +3,9 @@ import { useContractWrite } from "wagmi";
 import { PCommand, Keypair, PubKey } from "maci-domainobjs";
 import { genRandomSalt } from "maci-crypto";
 import { notification } from "~~/utils/scaffold-eth";
-import { PollType, PollStatus } from "~~/types/poll";
+import { PollType, PollStatus, EMode } from "~~/types/poll";
 import PollAbi from "~~/abi/Poll";
+import { useBalanceCheck } from "./useBalanceCheck";
 
 interface UseVotingProps {
   pollAddress?: string;
@@ -15,6 +16,7 @@ interface UseVotingProps {
   keypair?: Keypair | null;
   pollId?: bigint;
   maxVotePerPerson?: number;
+  mode?: EMode;
 }
 
 export const useVoting = ({
@@ -26,14 +28,17 @@ export const useVoting = ({
   keypair,
   pollId,
   maxVotePerPerson,
+  mode,
 }: UseVotingProps) => {
-  const [votes, setVotes] = useState<{ index: number; votes: number }[]>([]);
+  const [votes, setVotes] = useState<{ index: number; votes: string }[]>([]);
   const [isVotesInvalid, setIsVotesInvalid] = useState<Record<number, boolean>>(
     {}
   );
   const [selectedCandidate, setSelectedCandidate] = useState<number | null>(
     null
   );
+  const { showFaucetModal, onCloseFaucetModal, checkBalance } =
+    useBalanceCheck();
 
   const { writeAsync: publishMessage, isLoading: isLoadingSingle } =
     useContractWrite({
@@ -78,7 +83,7 @@ export const useVoting = ({
     return { message, encKeyPair };
   };
 
-  const voteUpdated = (index: number, checked: boolean, voteCounts: number) => {
+  const voteUpdated = (index: number, checked: boolean, voteCounts: string) => {
     if (Number(pollType) === PollType.SINGLE_VOTE) {
       if (checked) {
         setVotes([{ index, votes: voteCounts }]);
@@ -125,10 +130,20 @@ export const useVoting = ({
       return;
     }
 
+    if (checkBalance()) return;
+
+    // remove any votes from the array that are invalid
+    let updatedVotes = votes
+      .map((v) => ({
+        index: v.index,
+        votes: parseInt(v.votes),
+      }))
+      .filter((v) => !isNaN(v.votes));
+
     if (
       pollType === PollType.WEIGHTED_MULTIPLE_VOTE &&
       maxVotePerPerson &&
-      votes.reduce((a, b) => a + b.votes, 0) > maxVotePerPerson
+      updatedVotes.reduce((a, b) => a + b.votes, 0) > maxVotePerPerson
     ) {
       notification.error(
         `You can't vote more than ${maxVotePerPerson} per poll`
@@ -136,17 +151,28 @@ export const useVoting = ({
       return;
     }
 
-    const votesToMessage = votes.map((v, i) =>
-      getMessageAndEncKeyPair(
-        BigInt(stateIndex),
-        pollId,
-        BigInt(v.index),
-        BigInt(v.votes),
-        BigInt(votes.length - i),
-        coordinatorPubKey,
-        keypair
-      )
-    );
+    if (pollType === PollType.WEIGHTED_MULTIPLE_VOTE && mode === EMode.QV) {
+      updatedVotes = votes.map((v) => ({
+        index: v.index,
+        votes: Math.floor(Math.sqrt(parseInt(v.votes))),
+      }));
+    }
+
+    console.log(updatedVotes);
+
+    const votesToMessage = updatedVotes
+      .sort((a, b) => a.index - b.index)
+      .map((v, i) =>
+        getMessageAndEncKeyPair(
+          BigInt(stateIndex),
+          pollId,
+          BigInt(v.index),
+          BigInt(v.votes),
+          BigInt(updatedVotes.length - i),
+          coordinatorPubKey,
+          keypair
+        )
+      );
 
     try {
       if (votesToMessage.length === 1) {
@@ -205,7 +231,8 @@ export const useVoting = ({
         setSelectedCandidate(null);
       }
 
-      notification.success("Vote casted successfully");
+      setVotes([]);
+      notification.success("Voted successfully!");
     } catch (err) {
       console.error("err", err);
       notification.error("Casting vote failed, please try again");
@@ -222,6 +249,8 @@ export const useVoting = ({
     setSelectedCandidate,
     voteUpdated,
     castVote,
+    showFaucetModal,
+    onCloseFaucetModal,
   };
 };
 

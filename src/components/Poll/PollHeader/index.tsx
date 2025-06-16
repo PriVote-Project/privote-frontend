@@ -1,18 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { LogInWithAnonAadhaar } from "@anon-aadhaar/react";
 import styles from "~~/styles/userPoll.module.css";
 import Button from "~~/components/ui/Button";
-import { PollStatus } from "~~/types/poll";
+import { AuthType, PollStatus, PollType } from "~~/types/poll";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
-import { FaShare, FaWhatsapp, FaTwitter, FaFacebook } from "react-icons/fa";
+import { FaShare, FaQuestionCircle } from "react-icons/fa";
 import ShareModal from "~~/components/ui/ShareModal";
+import InstructionsModal from "~~/components/ui/InstructionsModal";
 
 interface PollHeaderProps {
   authType: string;
   pollName: string;
+  pollType: PollType;
   pollDescription?: string;
   pollEndTime: bigint;
   pollStartTime: bigint;
@@ -42,6 +43,7 @@ function formatTimeRemaining(time: number) {
 export const PollHeader = ({
   authType,
   pollName,
+  pollType,
   status,
   isConnected,
   isUserRegistered,
@@ -62,6 +64,7 @@ export const PollHeader = ({
   );
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
 
   const handleOpenShareModal = () => {
     setIsShareModalOpen(true);
@@ -69,6 +72,14 @@ export const PollHeader = ({
 
   const handleCloseShareModal = () => {
     setIsShareModalOpen(false);
+  };
+
+  const handleOpenInstructionsModal = () => {
+    setIsInstructionsModalOpen(true);
+  };
+
+  const handleCloseInstructionsModal = () => {
+    setIsInstructionsModalOpen(false);
   };
 
   useEffect(() => {
@@ -101,9 +112,23 @@ export const PollHeader = ({
           />
         </Link>
         <div className={styles.end}>
-          <button className={styles.shareButton} onClick={handleOpenShareModal}>
-            <FaShare /> Share
-          </button>
+          <div className={styles.headerButtons}>
+            {pollType === PollType.WEIGHTED_MULTIPLE_VOTE &&
+              authType === AuthType.ANON && (
+                <button
+                  className={styles.instructionsButton}
+                  onClick={handleOpenInstructionsModal}
+                >
+                  <FaQuestionCircle /> How to Vote
+                </button>
+              )}
+            <button
+              className={styles.shareButton}
+              onClick={handleOpenShareModal}
+            >
+              <FaShare /> Share
+            </button>
+          </div>
           <ShareModal
             isOpen={isShareModalOpen}
             onClose={handleCloseShareModal}
@@ -111,10 +136,17 @@ export const PollHeader = ({
             title={pollName}
             description={pollDescription}
           />
+          <InstructionsModal
+            isOpen={isInstructionsModalOpen}
+            onClose={handleCloseInstructionsModal}
+          />
           {/* {!isConnected && <ConnectButton />} */}
-          {isConnected && authType === "anon" && status === PollStatus.OPEN && (
-            <LogInWithAnonAadhaar nullifierSeed={4534} signal={address} />
-          )}
+          {isConnected &&
+            !isUserRegistered &&
+            authType === "anon" &&
+            status === PollStatus.OPEN && (
+              <LogInWithAnonAadhaar nullifierSeed={4534} signal={address} />
+            )}
 
           {authType === "anon" &&
             status === PollStatus.OPEN &&
