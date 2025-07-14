@@ -3,23 +3,42 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@anon-aadhaar/core": "2.4.0",
+    "@anon-aadhaar/react": "^2.4.3",
+    "@lighthouse-web3/sdk": "^0.4.0",
+    "@maci-protocol/crypto": "link:@maci-protocol/crypto",
+    "@maci-protocol/domainobjs": "link:@maci-protocol/domainobjs",
+    "@maci-protocol/sdk": "link:@maci-protocol/sdk",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.81.5",
+    "blo": "^2.0.0",
+    "graphql-request": "^7.2.0",
+    "lodash.merge": "^4.6.2",
+    "multiformats": "^13.3.7",
+    "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.3.4"
+    "react-hot-toast": "^2.5.2",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "viem": "^2.31.6",
+    "wagmi": "^2.15.6"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@types/lodash.merge": "^4.6.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
-    "@eslint/eslintrc": "^3"
+    "typescript": "^5"
   }
 }

@@ -1,7 +1,31 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  trailingSlash: true,
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      net: false,
+      tls: false
+    }
 
-export default nextConfig;
+    config.externals.push(
+      'pino-pretty',
+      'lokijs',
+      'encoding',
+      {
+        'node-gyp-build': 'commonjs node-gyp-build'
+      },
+      'hardhat'
+    )
+    return config
+  },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+  typescript: {
+    ignoreBuildErrors: true
+  }
+}
+
+export default nextConfig

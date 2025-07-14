@@ -1,0 +1,173 @@
+.tokenPolicyContainer {
+  width: 100%;
+}
+
+.tokenInfoCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tokenIconContainer {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(215, 232, 132, 0.2);
+  flex-shrink: 0;
+}
+
+.tokenIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.tokenDetails {
+  flex: 1;
+}
+
+.tokenName {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tokenSymbol {
+  font-size: 14px;
+  opacity: 0.7;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.tokenAddress {
+  font-family: monospace;
+  font-size: 13px;
+  opacity: 0.6;
+  margin-bottom: 8px;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balanceContainer {
+  margin-top: 10px;
+}
+
+.balanceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.balanceLabel {
+  opacity: 0.8;
+}
+
+.balanceValue {
+  font-weight: 600;
+  font-family: monospace;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.progressContainer {
+  margin-top: 12px;
+  padding: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progressBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 50px;
+  transition: width 0.5s ease-out;
+}
+
+.sufficientBalance {
+  background: linear-gradient(90deg, rgba(215, 232, 132, 0.4), rgba(215, 232, 132, 0.7));
+}
+
+.insufficientBalance {
+  background: linear-gradient(90deg, rgba(235, 87, 87, 0.4), rgba(235, 87, 87, 0.7));
+}
+
+.statusMessage {
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sufficientMessage {
+  background-color: rgba(215, 232, 132, 0.15);
+  color: #d7e884;
+}
+
+.insufficientMessage {
+  background-color: rgba(235, 87, 87, 0.15);
+  color: #eb5757;
+}
+
+.tokenSelectContainer {
+  margin-top: 16px;
+}
+
+.tokenSelectLabel {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+  opacity: 0.8;
+}
+
+.tokenSelect {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tokenSelect:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tokenSelect:focus {
+  outline: none;
+  border-color: rgba(215, 232, 132, 0.5);
+}
