@@ -1,13 +1,13 @@
-import Link from 'next/link';
-import { Hex, formatEther } from 'viem';
-import styles from './index.module.css';
-import { ShareModal, Modal } from '@/components/shared';
-import { PollPolicyType, PollStatus, PollType } from '@/types';
-import { usePublicClient } from 'wagmi';
-import { useState, useEffect, useCallback } from 'react';
-import { FaShare } from 'react-icons/fa';
+import { Modal, ShareModal } from '@/components/shared';
 import { DecodeService } from '@/services/decode';
+import { PollPolicyType, PollStatus, PollType } from '@/types';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
+import { FaShare } from 'react-icons/fa';
+import { Hex, formatEther } from 'viem';
+import { usePublicClient } from 'wagmi';
 import { JoinPollButton } from '../JoinPollButton';
+import styles from './index.module.css';
 
 interface PollHeaderProps {
   pollName: string;

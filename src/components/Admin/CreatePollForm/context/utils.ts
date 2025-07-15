@@ -1,8 +1,8 @@
 // Poll Deployment Helpers
-import type { IPollData } from '../types';
+import { EMode, PollPolicyType, PollType } from '@/types';
+import { ZERO_ADDRESS } from '@/utils/constants';
 import { PublicKey } from '@maci-protocol/domainobjs';
-import { PollPolicyType, PollType, EMode } from '@/types';
-import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
+import type { IPollData } from '../types';
 
 /**
  * Maps PollType string values to their corresponding numeric indices for contract use

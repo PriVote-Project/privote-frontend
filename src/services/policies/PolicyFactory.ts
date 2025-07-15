@@ -1,10 +1,10 @@
 import { PollPolicyType } from '@/types';
-import { useFreeForAllPolicy } from './FreeForAllPolicy';
+import { useMemo } from 'react';
 import { useAnonAadhaarPolicy } from './AnonAadhaarPolicy';
 import { useERC20Policy } from './ERC20Policy';
+import { useFreeForAllPolicy } from './FreeForAllPolicy';
 import { useTokenPolicy } from './TokenPolicy';
 import { PolicyHookProps, PolicyHookResult } from './types';
-import { useMemo } from 'react';
 
 /**
  * PolicyFactory hook to get the appropriate policy hook based on policy type

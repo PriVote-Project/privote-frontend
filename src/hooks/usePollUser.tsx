@@ -1,8 +1,8 @@
+import { client } from '@/lib/graphql';
+import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import type { PollUser } from '@/types';
 import type { Keypair } from '@maci-protocol/domainobjs';
 import { useQuery } from '@tanstack/react-query';
-import { client } from '@/lib/graphql';
-import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 
 interface UsePollUserParams {
   maciKeypair: Keypair | null;

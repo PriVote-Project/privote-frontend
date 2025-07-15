@@ -1,7 +1,7 @@
-import styles from './index.module.css';
-import Link from 'next/link';
 import Image from 'next/image';
-import { Logo, Github, Telegram, X, Mail } from '../../../../public';
+import Link from 'next/link';
+import { Github, Logo, Mail, Telegram, X } from '../../../../public';
+import styles from './index.module.css';
 
 const socialMedia = [
   {

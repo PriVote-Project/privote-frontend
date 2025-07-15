@@ -1,14 +1,14 @@
 'use client';
+import { useEthersSigner } from '@/hooks/useEthersSigner';
+import usePrivoteContract from '@/hooks/usePrivoteContract';
+import { DEFAULT_SG_DATA } from '@/utils/constants';
+import { handleNotice, notification } from '@/utils/notification';
+import { getSignedupUserData } from '@/utils/subgraph';
+import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
+import { signup } from '@maci-protocol/sdk/browser';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { keccak256 } from 'viem';
 import { useAccount, useSignMessage } from 'wagmi';
-import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
-import { signup } from '@maci-protocol/sdk/browser';
-import { useEthersSigner } from '@/hooks/useEthersSigner';
-import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { getSignedupUserData } from '@/utils/subgraph';
-import { DEFAULT_SG_DATA } from '@/utils/constants';
-import { notification, handleNotice } from '@/utils/notification';
 
 interface ISigContext {
   maciKeypair: Keypair | null;

@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import styles from './index.module.css';
 import { Button } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
+import Link from 'next/link';
+import styles from './index.module.css';
 
 interface HeroProps {
   title?: string;

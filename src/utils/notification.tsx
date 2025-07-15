@@ -1,6 +1,6 @@
+import { Notification } from '@/components/shared';
 import React from 'react';
 import { ToastPosition, toast } from 'react-hot-toast';
-import { Notification } from '@/components/shared';
 
 type NotificationOptions = {
   duration?: number;

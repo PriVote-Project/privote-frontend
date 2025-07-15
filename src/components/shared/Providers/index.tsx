@@ -1,11 +1,11 @@
 'use client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider } from 'wagmi';
-import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainbowkit';
-import { AnonAadhaarProvider } from '@anon-aadhaar/react';
-import { Toaster } from 'react-hot-toast';
-import merge from 'lodash.merge';
 import SigContextProvider from '@/contexts/SigContext';
+import { AnonAadhaarProvider } from '@anon-aadhaar/react';
+import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainbowkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import merge from 'lodash.merge';
+import { Toaster } from 'react-hot-toast';
+import { WagmiProvider } from 'wagmi';
 import BlockieAvatar from '../BlockieAvatar';
 import { config } from './wagmi';
 

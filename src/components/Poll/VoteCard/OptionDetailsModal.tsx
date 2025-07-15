@@ -1,9 +1,9 @@
-import React from 'react';
+import { Button, MarkdownRenderer, Modal } from '@/components/shared';
+import { PollType } from '@/types';
 import Link from 'next/link';
+import React from 'react';
 import { GoLink } from 'react-icons/go';
 import { IoMdClose } from 'react-icons/io';
-import { Button, Modal, MarkdownRenderer } from '@/components/shared';
-import { PollType } from '@/types';
 import styles from './OptionDetailsModal.module.css';
 
 interface OptionDetailsModalProps {

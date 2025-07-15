@@ -1,8 +1,8 @@
+import CandidateSelection from './CandidateSelection';
+import Divider from './Divider';
+import PollConfiguration from './PollConfiguration';
+import Verification from './Verification';
 import WithImageInput from './WithImageInput';
 import WithoutImageInput from './WithoutImageInput';
-import Divider from './Divider';
-import CandidateSelection from './CandidateSelection';
-import Verification from './Verification';
-import PollConfiguration from './PollConfiguration';
 
-export { WithImageInput, WithoutImageInput, Divider, CandidateSelection, Verification, PollConfiguration };
+export { CandidateSelection, Divider, PollConfiguration, Verification, WithImageInput, WithoutImageInput };

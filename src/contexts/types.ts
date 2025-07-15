@@ -1,7 +1,7 @@
 import { TransformedPoll } from '@/types';
 import { type Keypair } from '@maci-protocol/domainobjs';
 import { type IProof, type ITallyData } from '@maci-protocol/sdk/browser';
-import { type RefetchOptions, type QueryObserverResult } from '@tanstack/react-query';
+import { type QueryObserverResult, type RefetchOptions } from '@tanstack/react-query';
 
 export interface IVoteArgs {
   voteOptionIndex: bigint;

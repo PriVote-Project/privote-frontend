@@ -1,11 +1,11 @@
+import { Button } from '@/components/shared';
+import type { EMode, PollType } from '@/types';
 import { useAccount } from 'wagmi';
+import { CandidateSelection, Divider, PollConfiguration, Verification } from './components';
+import { PollSettings } from './components/PollSettings';
+import { usePollForm } from './context';
 import styles from './index.module.css';
 import { type CreatePollFormProps } from './types';
-import { PollSettings } from './components/PollSettings';
-import { Divider, CandidateSelection, Verification, PollConfiguration } from './components';
-import { Button } from '@/components/shared';
-import { usePollForm } from './context';
-import type { EMode, PollType } from '@/types';
 
 const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
   const { isConnected } = useAccount();

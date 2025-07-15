@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useReadContract } from 'wagmi';
-import type { PollOption, TransformedPoll } from '@/types';
-import { useAccount } from 'wagmi';
-import deployedContracts from '@/contracts/deployedContracts';
+import type { TransformedPoll } from '@/types';
+import { useState } from 'react';
 
 interface IResult {
   candidate: string;

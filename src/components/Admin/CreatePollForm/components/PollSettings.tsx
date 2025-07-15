@@ -1,6 +1,6 @@
-import type { PollSettingsProps } from '../types';
-import { PollType, EMode } from '@/types';
+import { EMode, PollType } from '@/types';
 import styles from '../index.module.css';
+import type { PollSettingsProps } from '../types';
 
 export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVoteChange }: PollSettingsProps) => {
   return (

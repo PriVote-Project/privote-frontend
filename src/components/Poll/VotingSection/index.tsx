@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import styles from './index.module.css';
-import VoteCard from '../VoteCard';
 import { MarkdownRenderer } from '@/components/shared';
 import { useVotingState } from '@/hooks/useVotingState';
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { EMode, type PollOption, PollStatus, PollType } from '@/types';
+import Link from 'next/link';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import VoteCard from '../VoteCard';
 import VoteSummarySection from '../VoteSummarySection';
-import { type PollOption, PollType, PollStatus, EMode } from '@/types';
+import styles from './index.module.css';
 
 interface VotingSectionProps {
   votes: { index: number; votes: string }[];

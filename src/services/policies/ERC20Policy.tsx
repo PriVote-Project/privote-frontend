@@ -1,10 +1,8 @@
+import { DEFAULT_SG_DATA } from '@/utils/constants';
 import { useCallback, useState } from 'react';
-import { formatEther, parseEther } from 'viem';
+import { formatEther } from 'viem';
 import { useBalance } from 'wagmi';
 import { PolicyHookProps, PolicyHookResult } from './types';
-import { DEFAULT_SG_DATA } from '@/utils/constants';
-import { ERC20PolicyData } from '../decode/types';
-import styles from './styles.module.css';
 
 /**
  * Hook for handling ERC20 policy

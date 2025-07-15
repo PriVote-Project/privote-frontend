@@ -1,7 +1,3 @@
-import { ReactNode } from 'react';
-import { Hex } from 'viem';
-import { PollPolicyType } from '@/types';
-
 /**
  * Common interface for policy hook results
  */

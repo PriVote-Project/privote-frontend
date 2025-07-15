@@ -1,10 +1,10 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './index.module.css';
-import { PollStatus, type Poll } from '@/types';
 import Circle from '@/assets/circle.svg';
+import { PollStatus, type Poll } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+import styles from './index.module.css';
 
 interface PollItemProps {
   poll: Poll;

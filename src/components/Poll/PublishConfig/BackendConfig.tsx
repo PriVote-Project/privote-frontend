@@ -1,6 +1,6 @@
-import styles from '~~/styles/publish.module.css';
 import WithoutImageInput from '~~/components/admin/CreatePollForm/components/WithoutImageInput';
 import { ProofGenerationStatus } from '~~/services/socket/types/response';
+import styles from '~~/styles/publish.module.css';
 
 interface BackendConfigProps {
   isSelected: boolean;

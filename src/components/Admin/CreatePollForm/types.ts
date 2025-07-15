@@ -1,6 +1,5 @@
+import type { EMode, PollPolicyType, PollType } from '@/types';
 import { type Keypair } from '@maci-protocol/domainobjs';
-import type { PollPolicyType, PollType } from '@/types';
-import type { EMode } from '@/types';
 
 export interface CreatePollFormProps {
   onClose: () => void;

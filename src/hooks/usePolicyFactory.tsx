@@ -1,8 +1,7 @@
-import { PolicyHookProps, PolicyHookResult } from '@/services/policies/types';
-import { useFreeForAllPolicy } from '@/services/policies/FreeForAllPolicy';
 import { useAnonAadhaarPolicy } from '@/services/policies/AnonAadhaarPolicy';
+import { useFreeForAllPolicy } from '@/services/policies/FreeForAllPolicy';
+import { PolicyHookProps, PolicyHookResult } from '@/services/policies/types';
 import { PollPolicyType } from '@/types';
-import { useState, useEffect } from 'react';
 
 /**
  * Factory hook that returns the appropriate policy hook based on policy type

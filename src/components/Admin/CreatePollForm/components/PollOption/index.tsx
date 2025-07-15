@@ -1,7 +1,7 @@
+import { IoMdClose } from 'react-icons/io';
 import { type PollOptionProps } from '../../types';
 import WithImageInput from '../WithImageInput';
 import styles from './index.module.css';
-import { IoMdClose } from 'react-icons/io';
 
 const PollOption = ({
   option,

@@ -1,12 +1,10 @@
-import styles from '~~/styles/publish.module.css';
-import WithoutImageInput from '~~/components/admin/CreatePollForm/components/WithoutImageInput';
-import { AuthType, PollType, RawPoll } from '~~/types/poll';
-import deployedContracts from '~~/contracts/deployedContracts';
-import { useAccount, useChainId } from 'wagmi';
-import { useNetwork } from 'wagmi';
 import { useState } from 'react';
-import { FiCopy, FiCheck } from 'react-icons/fi';
+import { FiCheck, FiCopy } from 'react-icons/fi';
+import { useAccount, useChainId, useNetwork } from 'wagmi';
+import deployedContracts from '~~/contracts/deployedContracts';
 import { ProofGenerationStatus } from '~~/services/socket/types/response';
+import styles from '~~/styles/publish.module.css';
+import { AuthType, PollType, RawPoll } from '~~/types/poll';
 import { getMaciContractName } from '~~/utils/maciName';
 
 const btnTextMap = {

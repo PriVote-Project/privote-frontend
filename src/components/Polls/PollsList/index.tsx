@@ -1,9 +1,9 @@
-import React from 'react';
+import { Button, EmptyState, ErrorState } from '@/components/shared';
 import { usePolls } from '@/hooks/usePolls';
+import type { Poll } from '@/types';
+import React from 'react';
 import PollItem from '../PollItem';
 import styles from './index.module.css';
-import type { Poll } from '@/types';
-import { Button, EmptyState, ErrorState } from '@/components/shared';
 
 interface PollsListProps {
   searchTerm: string;

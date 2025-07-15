@@ -1,10 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
 import { client } from '@/lib/graphql';
 import { GET_POLL_QUERY } from '@/services/queries/polls';
-import type { TransformedPoll } from '@/types';
-import type { RawPoll } from '@/types';
+import type { RawPoll, TransformedPoll } from '@/types';
+import { EMode, PollType } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 import { getPollStatus } from './usePolls';
-import { PollType, EMode } from '@/types';
 
 // Map numeric indices back to string types
 const pollTypeIndexToString: Record<number, keyof typeof PollType> = {

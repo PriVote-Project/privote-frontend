@@ -1,7 +1,7 @@
 'use client';
+import { EMode } from '@/types';
 import { useEffect, useState } from 'react';
 import styles from './index.module.css';
-import { EMode } from '@/types';
 
 interface WeightInputProps {
   index: number;

@@ -1,14 +1,14 @@
-import { useState, useCallback } from 'react';
-import Link from 'next/link';
+import { MarkdownRenderer } from '@/components/shared';
+import { EMode, PollType, type PollOption } from '@/types';
 import { CID } from 'multiformats';
 import { fromHex } from 'multiformats/bytes';
-import { EMode, PollType, type PollOption } from '@/types';
+import Link from 'next/link';
+import { useCallback, useState } from 'react';
 import { GoLink } from 'react-icons/go';
-import styles from './index.module.css';
 import { useAccount } from 'wagmi';
 import { WeightInput } from './components';
+import styles from './index.module.css';
 import OptionDetailsModal from './OptionDetailsModal';
-import { MarkdownRenderer } from '@/components/shared';
 
 interface VoteCardProps {
   option: PollOption;

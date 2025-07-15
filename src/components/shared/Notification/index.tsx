@@ -1,11 +1,11 @@
 import React from 'react';
 import { Toast, ToastPosition, toast } from 'react-hot-toast';
 import {
-  HiXMark,
-  HiMiniExclamationCircle,
+  HiCheckCircle,
   HiExclamationTriangle,
   HiInformationCircle,
-  HiCheckCircle
+  HiMiniExclamationCircle,
+  HiXMark
 } from 'react-icons/hi2';
 import styles from './index.module.css';
 

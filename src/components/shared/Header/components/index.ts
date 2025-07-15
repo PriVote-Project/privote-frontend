@@ -1,5 +1,5 @@
-import UserIcon from './UserIcon';
 import HomeIcon from './HomeIcon';
 import PollIcon from './PollIcon';
+import UserIcon from './UserIcon';
 
-export { UserIcon, HomeIcon, PollIcon };
+export { HomeIcon, PollIcon, UserIcon };

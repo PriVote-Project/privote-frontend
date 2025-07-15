@@ -1,9 +1,9 @@
+import PollAbi from '@/abi/Poll';
+import { EMode, PollStatus, PollType } from '@/types';
+import { handleNotice, notification } from '@/utils/notification';
+import { Keypair, PublicKey, VoteCommand } from '@maci-protocol/domainobjs';
 import { useState } from 'react';
 import { useWriteContract } from 'wagmi';
-import { VoteCommand, Keypair, PublicKey } from '@maci-protocol/domainobjs';
-import { PollType, EMode, PollStatus } from '@/types';
-import PollAbi from '@/abi/Poll';
-import { notification, handleNotice } from '@/utils/notification';
 
 interface UseVotingProps {
   pollAddress?: string;

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import styles from './index.module.css';
-import type { VerificationProps, PolicyConfigType } from '../../types';
-import { MdPolicy } from 'react-icons/md';
 import { PollPolicyType } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
+import { useEffect, useState } from 'react';
+import { MdPolicy } from 'react-icons/md';
+import type { PolicyConfigType, VerificationProps } from '../../types';
+import styles from './index.module.css';
 
 // Display names for each policy
 const POLICY_NAMES = {

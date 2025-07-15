@@ -1,7 +1,7 @@
 'use client';
 import { useContext } from 'react';
-import { type IPollContextType } from '../contexts/types';
 import { PollContext } from '../contexts/PollContext';
+import { type IPollContextType } from '../contexts/types';
 
 export const usePoll = (): IPollContextType => {
   const pollContext = useContext(PollContext);

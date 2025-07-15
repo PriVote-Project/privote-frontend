@@ -1,9 +1,9 @@
+import PollItem from '@/components/Polls/PollItem';
+import { Button, EmptyState, ErrorState } from '@/components/shared';
+import { usePolls } from '@/hooks/usePolls';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React from 'react';
 import { useAccount } from 'wagmi';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { usePolls } from '@/hooks/usePolls';
-import PollItem from '@/components/Polls/PollItem';
-import { Button, ErrorState, EmptyState } from '@/components/shared';
 import styles from './index.module.css';
 
 const MyPolls: React.FC = () => {

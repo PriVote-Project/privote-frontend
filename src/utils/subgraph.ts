@@ -1,8 +1,8 @@
 import { client } from '@/lib/graphql';
 import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import { GET_PRIVOTE_USER_QUERY } from '@/services/queries/privoteUser';
+import type { PollUser, User } from '@/types';
 import { type Keypair } from '@maci-protocol/domainobjs';
-import type { User, PollUser } from '@/types';
 
 export interface ISignedupUserData {
   isRegistered: boolean;

@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useReadContract } from 'wagmi';
-import { useAccount } from 'wagmi';
-import { PublicKey } from '@maci-protocol/domainobjs';
-import styles from './index.module.css';
 import PollAbi from '@/abi/Poll';
-import { PollType } from '@/types';
+import { useSigContext } from '@/contexts/SigContext';
 import { usePoll } from '@/hooks/usePollContext';
-import { useVoting } from '@/hooks/useVoting';
 import usePollResults from '@/hooks/usePollResults';
+import { useVoting } from '@/hooks/useVoting';
+import { PollType } from '@/types';
+import { PublicKey } from '@maci-protocol/domainobjs';
+import { useEffect, useState } from 'react';
+import { useAccount, useReadContract } from 'wagmi';
 import PollHeader from '../PollHeader';
 import VotingSection from '../VotingSection';
-import { useSigContext } from '@/contexts/SigContext';
+import styles from './index.module.css';
 
 interface IPollDetails {
   pollAddress: string;

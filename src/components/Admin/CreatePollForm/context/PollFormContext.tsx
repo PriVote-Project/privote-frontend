@@ -1,18 +1,16 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { CID } from 'multiformats';
-import { useAccount, useWriteContract } from 'wagmi';
-import { parseEther } from 'viem';
-import type { IPollData, PolicyConfigType } from '../types';
-import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { encodeOptionInfo } from '@/utils/optionInfo';
-import { uploadFileToLighthouse } from '@/utils/lighthouse';
-import { PollType, PollPolicyType } from '@/types';
-import deployedContracts from '@/contracts/deployedContracts';
-import { getPollArgs } from './utils';
+import { PollPolicyType, PollType } from '@/types';
 import { getWrapperFunctionName } from '@/utils/getWrapperFunctionName';
-import { notification, handleNotice } from '@/utils/notification';
+import { uploadFileToLighthouse } from '@/utils/lighthouse';
+import { handleNotice, notification } from '@/utils/notification';
+import { encodeOptionInfo } from '@/utils/optionInfo';
+import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
+import { CID } from 'multiformats';
+import { useRouter } from 'next/navigation';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useWriteContract } from 'wagmi';
+import type { IPollData, PolicyConfigType } from '../types';
+import { getPollArgs } from './utils';
 
 const initialPollData: IPollData = {
   title: '',

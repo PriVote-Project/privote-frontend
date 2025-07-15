@@ -1,4 +1,4 @@
-import MyPolls from './MyPolls';
 import CreatePollForm from './CreatePollForm';
+import MyPolls from './MyPolls';
 
-export { MyPolls, CreatePollForm };
+export { CreatePollForm, MyPolls };

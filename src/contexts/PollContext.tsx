@@ -1,18 +1,18 @@
-import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { type IPollContextType } from './types';
+import { useEthersSigner } from '@/hooks/useEthersSigner';
+import { usePoll } from '@/hooks/usePoll';
+import usePrivoteContract from '@/hooks/usePrivoteContract';
+import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, MACI_SUBGRAPH_ENDPOINT } from '@/utils/constants';
+import { handleNotice, notification } from '@/utils/notification';
+import { getJoinedUserData } from '@/utils/subgraph';
 import {
   downloadPollJoiningArtifactsBrowser,
+  generateSignUpTreeFromKeys,
   joinPoll,
-  MaciSubgraph,
-  generateSignUpTreeFromKeys
+  MaciSubgraph
 } from '@maci-protocol/sdk/browser';
-import { useEthersSigner } from '@/hooks/useEthersSigner';
-import usePrivoteContract from '@/hooks/usePrivoteContract';
+import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSigContext } from './SigContext';
-import { MACI_SUBGRAPH_ENDPOINT, DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
-import { getJoinedUserData } from '@/utils/subgraph';
-import { usePoll } from '@/hooks/usePoll';
-import { notification, handleNotice } from '@/utils/notification';
+import { type IPollContextType } from './types';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 

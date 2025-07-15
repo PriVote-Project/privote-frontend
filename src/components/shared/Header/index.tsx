@@ -1,14 +1,14 @@
 'use client';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import styles from './index.module.css';
-import { UserIcon, HomeIcon, PollIcon } from './components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { MdClose } from 'react-icons/md';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { CiMenuFries } from 'react-icons/ci';
+import { MdClose } from 'react-icons/md';
 import { Logo } from '../../../../public';
+import { HomeIcon, PollIcon, UserIcon } from './components';
+import styles from './index.module.css';
 
 export default function Header() {
   const [isChecked, setIsChecked] = useState(false);

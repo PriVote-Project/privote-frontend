@@ -1,6 +1,6 @@
 'use client';
-import { useAccount } from 'wagmi';
 import deployedContracts from '@/contracts/deployedContracts';
+import { useAccount } from 'wagmi';
 
 const usePrivoteContract = () => {
   const { isConnected, chainId } = useAccount();

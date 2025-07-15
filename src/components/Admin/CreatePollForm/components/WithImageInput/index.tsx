@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styles from '../index.module.css';
+import React, { useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import type { PollOption } from '../../types';
+import styles from '../index.module.css';
 
 interface WithImageInputProps {
   onChange: (

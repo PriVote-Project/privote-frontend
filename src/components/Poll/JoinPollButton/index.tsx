@@ -1,9 +1,9 @@
-import React from 'react';
-import { usePolicyFactory } from '@/services/policies/PolicyFactory';
-import { PollPolicyType } from '@/types';
-import { useAccount } from 'wagmi';
 import { useSigContext } from '@/contexts/SigContext';
 import { usePoll } from '@/hooks/usePollContext';
+import { usePolicyFactory } from '@/services/policies/PolicyFactory';
+import { PollPolicyType } from '@/types';
+import React from 'react';
+import { useAccount } from 'wagmi';
 import styles from './index.module.css';
 
 interface JoinPollButtonProps {

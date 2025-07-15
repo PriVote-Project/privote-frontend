@@ -1,8 +1,8 @@
-import React from 'react';
-import { usePolls } from '@/hooks/usePolls';
 import PollItem from '@/components/Polls/PollItem';
-import styles from './index.module.css';
 import { EmptyState, ErrorState } from '@/components/shared';
+import { usePolls } from '@/hooks/usePolls';
+import React from 'react';
+import styles from './index.module.css';
 
 const Trending: React.FC = () => {
   const { data, isLoading, isError, error, refetch } = usePolls({

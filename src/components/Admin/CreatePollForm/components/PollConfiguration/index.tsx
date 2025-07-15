@@ -1,7 +1,7 @@
-import styles from './index.module.css';
-import WithoutImageInput from '../WithoutImageInput';
 import Link from 'next/link';
 import { type PollConfigurationProps } from '../../types';
+import WithoutImageInput from '../WithoutImageInput';
+import styles from './index.module.css';
 
 const PollConfiguration = ({
   setPollConfig,

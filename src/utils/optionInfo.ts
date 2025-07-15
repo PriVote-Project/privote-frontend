@@ -1,4 +1,4 @@
-import { toBytes, toHex, hexToString, type Hex } from 'viem';
+import { hexToString, toBytes, toHex, type Hex } from 'viem';
 
 interface OptionInfo {
   cid: `0x${string}`;

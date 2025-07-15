@@ -1,6 +1,6 @@
 'use client';
-import styles from './index.module.css';
 import Button from '../Button';
+import styles from './index.module.css';
 
 interface IErrorState {
   title: string;

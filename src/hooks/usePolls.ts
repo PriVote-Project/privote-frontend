@@ -1,8 +1,8 @@
-import { useInfiniteQuery, type QueryFunctionContext } from '@tanstack/react-query';
 import { client } from '@/lib/graphql';
 import { GET_POLLS_QUERY } from '@/services/queries/polls';
-import { PollStatus } from '@/types';
 import type { Poll, RawPoll } from '@/types';
+import { PollStatus } from '@/types';
+import { useInfiniteQuery, type QueryFunctionContext } from '@tanstack/react-query';
 
 interface PollsData {
   polls: RawPoll[];

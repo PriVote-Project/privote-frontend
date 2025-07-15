@@ -1,7 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
-import styles from './index.module.css';
-import { WeightInput } from '../VoteCard/components';
 import { EMode, PollType, type PollOption } from '@/types';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { WeightInput } from '../VoteCard/components';
+import styles from './index.module.css';
 
 interface VoteSummarySectionProps {
   options: PollOption[] | undefined;

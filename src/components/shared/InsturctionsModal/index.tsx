@@ -1,5 +1,5 @@
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
 import Modal from '../Modal';
 import styles from './index.module.css';
 
