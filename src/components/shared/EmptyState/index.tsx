@@ -1,9 +1,9 @@
-'use client'
-import styles from './index.module.css'
+'use client';
+import styles from './index.module.css';
 
 interface IEmptyState {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
 const EmptyState: React.FC<IEmptyState> = ({ title, description }) => {
@@ -12,7 +12,7 @@ const EmptyState: React.FC<IEmptyState> = ({ title, description }) => {
       <h3>{title}</h3>
       <p>{description}</p>
     </div>
-  )
-}
+  );
+};
 
-export default EmptyState
+export default EmptyState;

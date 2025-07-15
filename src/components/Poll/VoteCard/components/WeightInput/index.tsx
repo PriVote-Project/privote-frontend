@@ -1,15 +1,15 @@
-'use client'
-import { useEffect, useState } from 'react'
-import styles from './index.module.css'
-import { EMode } from '@/types'
+'use client';
+import { useEffect, useState } from 'react';
+import styles from './index.module.css';
+import { EMode } from '@/types';
 
 interface WeightInputProps {
-  index: number
-  votes: number | string
-  maxVotePerPerson: number | undefined
-  handleWeightedVoteChange: (prevVotes: string | undefined, votes: string, index: number) => void
-  isInvalid: boolean
-  isQv: EMode
+  index: number;
+  votes: number | string;
+  maxVotePerPerson: number | undefined;
+  handleWeightedVoteChange: (prevVotes: string | undefined, votes: string, index: number) => void;
+  isInvalid: boolean;
+  isQv: EMode;
 }
 
 const WeightInput = ({
@@ -20,35 +20,35 @@ const WeightInput = ({
   isInvalid,
   isQv
 }: WeightInputProps) => {
-  const [showInitial, setShowInitial] = useState(true)
+  const [showInitial, setShowInitial] = useState(true);
 
   useEffect(() => {
-    if (Number(votes) > 0) setShowInitial(false)
-  }, [votes])
+    if (Number(votes) > 0) setShowInitial(false);
+  }, [votes]);
 
   return (
     <div className={styles['mw']}>
       <div className={styles.box}>
         <button
-          type="button"
+          type='button'
           onClick={() => {
             if (Number(votes) > 0) {
               // setShowInitial(false);
-              const newValue = Number(votes) - 1
-              handleWeightedVoteChange(votes.toString(), newValue.toString(), index)
+              const newValue = Number(votes) - 1;
+              handleWeightedVoteChange(votes.toString(), newValue.toString(), index);
             }
           }}
         >
-          <img src="/minus.svg" alt="minus" width={16} height={16} />
+          <img src='/minus.svg' alt='minus' width={16} height={16} />
         </button>
         <input
-          type="text"
-          onChange={(e) => {
-            setShowInitial(false)
-            const value = e.target.value
+          type='text'
+          onChange={e => {
+            setShowInitial(false);
+            const value = e.target.value;
             // Only allow numeric input (empty or numbers)
             if (value === '' || /^\d+$/.test(value)) {
-              handleWeightedVoteChange(votes.toString(), value, index)
+              handleWeightedVoteChange(votes.toString(), value, index);
             }
           }}
           min={0}
@@ -57,16 +57,16 @@ const WeightInput = ({
           className={`${styles.weightInput} ${isInvalid ? styles.invalid : ''}`}
         />
         <button
-          type="button"
+          type='button'
           onClick={() => {
-            const newValue = Number(votes) + 5
+            const newValue = Number(votes) + 5;
             if (!maxVotePerPerson || Number(newValue) <= maxVotePerPerson) {
               // setShowInitial(false);
-              handleWeightedVoteChange(votes.toString(), newValue.toString(), index)
+              handleWeightedVoteChange(votes.toString(), newValue.toString(), index);
             }
           }}
         >
-          <img src="/plus.svg" alt="plus" width={16} height={16} />
+          <img src='/plus.svg' alt='plus' width={16} height={16} />
         </button>
       </div>
       {isQv === EMode.QV && (
@@ -75,7 +75,7 @@ const WeightInput = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default WeightInput
+export default WeightInput;

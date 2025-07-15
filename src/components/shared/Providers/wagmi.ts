@@ -1,7 +1,7 @@
-import { http, createConfig } from 'wagmi'
-import { optimismSepolia } from 'wagmi/chains'
-import { connectorsForWallets } from '@rainbow-me/rainbowkit'
-import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
+import { createConfig, http } from 'wagmi';
+import { optimismSepolia } from 'wagmi/chains';
 
 export const connectors = connectorsForWallets(
   [
@@ -18,7 +18,7 @@ export const connectors = connectorsForWallets(
     appName: 'Privote',
     projectId: 'ed72cdc1d051302a6b881988c7a991fb'
   }
-)
+);
 
 export const config = createConfig({
   connectors,
@@ -26,4 +26,4 @@ export const config = createConfig({
   transports: {
     [optimismSepolia.id]: http()
   }
-})
+});

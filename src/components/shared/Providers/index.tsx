@@ -1,17 +1,17 @@
-'use client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider } from 'wagmi'
-import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainbowkit'
-import { AnonAadhaarProvider } from '@anon-aadhaar/react'
-import { Toaster } from 'react-hot-toast'
-import merge from 'lodash.merge'
-import SigContextProvider from '@/contexts/SigContext'
-import BlockieAvatar from '../BlockieAvatar'
-import { config } from './wagmi'
+'use client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainbowkit';
+import { AnonAadhaarProvider } from '@anon-aadhaar/react';
+import { Toaster } from 'react-hot-toast';
+import merge from 'lodash.merge';
+import SigContextProvider from '@/contexts/SigContext';
+import BlockieAvatar from '../BlockieAvatar';
+import { config } from './wagmi';
 
-import '@rainbow-me/rainbowkit/styles.css'
+import '@rainbow-me/rainbowkit/styles.css';
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const customTheme: Theme = merge(midnightTheme(), {
   colors: {
@@ -23,7 +23,7 @@ const customTheme: Theme = merge(midnightTheme(), {
   radii: {
     actionButton: 30
   }
-})
+});
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -39,5 +39,5 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
-  )
+  );
 }

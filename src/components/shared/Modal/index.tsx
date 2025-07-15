@@ -1,16 +1,16 @@
-'use client'
-import React, { useEffect, useRef } from 'react'
-import styles from './Modal.module.css'
-import { FaTimes } from 'react-icons/fa'
+'use client';
+import React, { useEffect, useRef } from 'react';
+import styles from './Modal.module.css';
+import { FaTimes } from 'react-icons/fa';
 
 interface ModalProps {
-  isOpen: boolean
-  showCloseButton?: boolean
-  onClose: () => void
-  children: React.ReactNode
-  title?: string
-  maxWidth?: string
-  padding?: string
+  isOpen: boolean;
+  showCloseButton?: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  title?: string;
+  maxWidth?: string;
+  padding?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -22,35 +22,35 @@ const Modal: React.FC<ModalProps> = ({
   showCloseButton = true,
   padding = '24px'
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose()
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.addEventListener('mousedown', handleClickOutside)
-      document.body.style.overflow = 'hidden'
+      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className={styles.modalOverlay}>
@@ -68,7 +68,7 @@ const Modal: React.FC<ModalProps> = ({
         <div className={styles.modalBody}>{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

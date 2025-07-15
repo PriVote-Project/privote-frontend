@@ -1,7 +1,7 @@
-import styles from './index.module.css'
-import WithoutImageInput from '../WithoutImageInput'
-import Link from 'next/link'
-import { type PollConfigurationProps } from '../../types'
+import styles from './index.module.css';
+import WithoutImageInput from '../WithoutImageInput';
+import Link from 'next/link';
+import { type PollConfigurationProps } from '../../types';
 
 const PollConfiguration = ({
   setPollConfig,
@@ -25,15 +25,15 @@ const PollConfiguration = ({
                   <WithoutImageInput
                     onChange={handlePubKeyChange}
                     value={publicKey}
-                    placeholder="macipk.a26f6f713fdf9ab73e2bf57662977f8f4539552b3ca0fb2a65654472427f601b"
+                    placeholder='macipk.a26f6f713fdf9ab73e2bf57662977f8f4539552b3ca0fb2a65654472427f601b'
                     className={styles['pub-key-input']}
                   />
                   <div className={styles['key-gen']}>
                     You can generate maci key pair from{' '}
                     <Link
-                      href="https://maci.pse.dev/docs/core-concepts/maci-keys#generate-maci-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href='https://maci.pse.dev/docs/core-concepts/maci-keys#generate-maci-keys'
+                      target='_blank'
+                      rel='noopener noreferrer'
                     >
                       here
                     </Link>
@@ -51,7 +51,7 @@ const PollConfiguration = ({
               {pollConfig === 2 && (
                 <div className={styles['public-input-container']}>
                   <button
-                    type="button"
+                    type='button'
                     className={styles['gen-btn']}
                     onClick={generateKeyPair}
                     disabled={showKeys.show}
@@ -76,7 +76,7 @@ const PollConfiguration = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollConfiguration
+export default PollConfiguration;

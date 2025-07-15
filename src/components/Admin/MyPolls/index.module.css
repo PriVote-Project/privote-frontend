@@ -1,30 +1,6 @@
-.empty-state {
-  text-align: center;
-  padding: 2rem;
-  border: 1px dashed #333;
-  border-radius: 8px;
-  margin-top: 2rem;
-}
-
-.empty-state h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  color: #888;
-  margin-bottom: 1.5rem;
-}
-
 .connect-button {
   display: flex;
   justify-content: center;
-}
-
-.feedback-state {
-  text-align: center;
-  padding: 2rem;
-  color: #888;
 }
 
 .polls-list-container {

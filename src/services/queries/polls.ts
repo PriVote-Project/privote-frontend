@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request'
+import { gql } from 'graphql-request';
 
 export const GET_POLLS_QUERY = gql`
   query GetPolls(
@@ -8,13 +8,7 @@ export const GET_POLLS_QUERY = gql`
     $orderBy: Poll_orderBy
     $orderDirection: OrderDirection
   ) {
-    polls(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: $where
-    ) {
+    polls(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection, where: $where) {
       id
       pollId
       name
@@ -25,7 +19,7 @@ export const GET_POLLS_QUERY = gql`
       policyTrait
     }
   }
-`
+`;
 
 export const GET_POLL_QUERY = gql`
   query GetPoll($id: Bytes!) {
@@ -66,4 +60,4 @@ export const GET_POLL_QUERY = gql`
       }
     }
   }
-`
+`;

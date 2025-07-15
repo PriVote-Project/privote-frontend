@@ -1,1 +1,1 @@
-export { default as PollsList } from './PollsList'
+export { default as PollsList } from './PollsList';

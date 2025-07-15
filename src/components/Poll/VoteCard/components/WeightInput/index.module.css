@@ -43,7 +43,7 @@
   margin: 0;
 }
 
-.weightInput[type="number"] {
+.weightInput[type='number'] {
   -moz-appearance: textfield;
 }
 

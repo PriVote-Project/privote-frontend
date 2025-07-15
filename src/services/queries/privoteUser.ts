@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request'
+import { gql } from 'graphql-request';
 
 export const GET_PRIVOTE_USER_QUERY = gql`
   query GetPrivoteUser($id: Bytes!) {
@@ -12,4 +12,4 @@ export const GET_PRIVOTE_USER_QUERY = gql`
       }
     }
   }
-`
+`;

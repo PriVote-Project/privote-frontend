@@ -39,10 +39,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(
-    --grd,
-    linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%)
-  );
+  background: var(--grd, linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -64,10 +61,7 @@
   padding: 12px;
   flex: 0 1 400px;
 
-  background: var(
-    --grd,
-    linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%)
-  );
+  background: var(--grd, linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

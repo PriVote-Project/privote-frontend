@@ -1,4 +1,4 @@
-import Hero from './Hero'
-import Trending from './Trending'
+import Hero from './Hero';
+import Trending from './Trending';
 
-export { Hero, Trending }
+export { Hero, Trending };

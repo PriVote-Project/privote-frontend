@@ -1,8 +1,8 @@
 // Poll Deployment Helpers
-import type { IPollData } from '../types'
-import { PublicKey } from '@maci-protocol/domainobjs'
-import { PollPolicyType, PollType, EMode } from '@/types'
-import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants'
+import type { IPollData } from '../types';
+import { PublicKey } from '@maci-protocol/domainobjs';
+import { PollPolicyType, PollType, EMode } from '@/types';
+import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
 
 /**
  * Maps PollType string values to their corresponding numeric indices for contract use
@@ -12,7 +12,7 @@ const pollTypeToIndex = {
   [PollType.SINGLE_VOTE]: 1,
   [PollType.MULTIPLE_VOTE]: 2,
   [PollType.WEIGHTED_MULTIPLE_VOTE]: 3
-}
+};
 
 /**
  * Maps EMode string values to their corresponding numeric indices for contract use
@@ -21,7 +21,7 @@ const eModeToIndex = {
   [EMode.QV]: 0,
   [EMode.NON_QV]: 1,
   [EMode.FULL]: 2
-}
+};
 
 /**
  * Converts a PollType string value to its numeric index
@@ -29,7 +29,7 @@ const eModeToIndex = {
  * @returns The corresponding numeric index for the contract
  */
 function getPollTypeIndex(pollType: PollType): number {
-  return pollTypeToIndex[pollType] ?? 0
+  return pollTypeToIndex[pollType] ?? 0;
 }
 
 /**
@@ -38,18 +38,18 @@ function getPollTypeIndex(pollType: PollType): number {
  * @returns The corresponding numeric index for the contract
  */
 function getEModeIndex(mode: EMode | null): number {
-  return mode ? eModeToIndex[mode] ?? 0 : 0
+  return mode ? (eModeToIndex[mode] ?? 0) : 0;
 }
 
 /**
  * Interface for the arguments needed by the getPollArgs function
  */
 interface GetPollArgsParams {
-  pollData: IPollData
-  encodedOptions: string[]
-  startTime: bigint
-  endTime: bigint
-  voiceCredits?: bigint
+  pollData: IPollData;
+  encodedOptions: string[];
+  startTime: bigint;
+  endTime: bigint;
+  voiceCredits?: bigint;
 }
 
 /**
@@ -71,14 +71,14 @@ export function getPollArgs({
     pollType: getPollTypeIndex(pollData.pollType),
     maxVotePerPerson: pollData.maxVotePerPerson,
     description: pollData.description
-  })
+  });
 
-  console.log(metadata)
+  console.log(metadata);
 
   // Common base arguments used by all policy types
   const baseArgs = [
     pollData.title as string,
-    pollData.options.map((option) => option.title ?? ''),
+    pollData.options.map(option => option.title ?? ''),
     encodedOptions,
     metadata,
     startTime,
@@ -86,33 +86,33 @@ export function getPollArgs({
     getEModeIndex(pollData.mode), // Convert EMode string to numeric index
     PublicKey.deserialize(pollData.publicKey).asContractParam(),
     [ZERO_ADDRESS] // relayers - currently just one zero address
-  ]
+  ];
 
   // Get policy-specific configuration
-  const config = pollData.policyConfig || {}
+  const config = pollData.policyConfig || {};
 
   // Handle arguments based on policy type
   switch (pollData.policyType) {
     case PollPolicyType.FreeForAll:
-      return [...baseArgs, voiceCredits]
+      return [...baseArgs, voiceCredits];
 
     case PollPolicyType.AnonAadhaar:
-      const verifierAddress = config.verifierAddress || ZERO_ADDRESS
-      const nullifierSeed = config.nullifierSeed || '1'
+      const verifierAddress = config.verifierAddress || ZERO_ADDRESS;
+      const nullifierSeed = config.nullifierSeed || '1';
 
-      return [...baseArgs, verifierAddress, nullifierSeed, voiceCredits]
+      return [...baseArgs, verifierAddress, nullifierSeed, voiceCredits];
 
     case PollPolicyType.ERC20: {
-      const tokenAddress = config.tokenAddress || ZERO_ADDRESS
-      const threshold = config.threshold ? BigInt(config.threshold) : 1n
+      const tokenAddress = config.tokenAddress || ZERO_ADDRESS;
+      const threshold = config.threshold ? BigInt(config.threshold) : 1n;
 
-      return [...baseArgs, tokenAddress, threshold, voiceCredits]
+      return [...baseArgs, tokenAddress, threshold, voiceCredits];
     }
 
     case PollPolicyType.Token: {
-      const tokenAddress = config.tokenAddress || ZERO_ADDRESS
+      const tokenAddress = config.tokenAddress || ZERO_ADDRESS;
 
-      return [...baseArgs, tokenAddress, voiceCredits]
+      return [...baseArgs, tokenAddress, voiceCredits];
     }
 
     // case PollPolicyType.EAS: {
@@ -151,6 +151,6 @@ export function getPollArgs({
     // }
 
     default:
-      return [...baseArgs, voiceCredits]
+      return [...baseArgs, voiceCredits];
   }
 }

@@ -92,7 +92,7 @@
   color: #535861;
 }
 
-.input-field-container > input[type="datetime-local"] {
+.input-field-container > input[type='datetime-local'] {
   color-scheme: dark;
 }
 

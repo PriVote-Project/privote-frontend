@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { encodeAbiParameters, parseAbiParameters } from 'viem'
-import { useReadContract } from 'wagmi'
-import { PolicyHookProps, PolicyHookResult } from './types'
+import React, { useState } from 'react';
+import { encodeAbiParameters, parseAbiParameters } from 'viem';
+import { useReadContract } from 'wagmi';
+import { PolicyHookProps, PolicyHookResult } from './types';
 
 // ERC721 minimal ABI with functions we need
 const erc721ABI = [
@@ -26,7 +26,7 @@ const erc721ABI = [
     outputs: [{ name: 'owner', type: 'address' }],
     stateMutability: 'view'
   }
-] as const
+] as const;
 
 /**
  * Hook for handling Token (NFT) policy
@@ -36,13 +36,13 @@ const erc721ABI = [
  * @returns Policy hook result with methods and components
  */
 export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
-  const { isConnected, isRegistered, policyData, address } = props
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedTokenId, setSelectedTokenId] = useState<bigint | null>(null)
+  const { isConnected, isRegistered, policyData, address } = props;
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedTokenId, setSelectedTokenId] = useState<bigint | null>(null);
 
   // Extract token contract address from policyData
-  const tokenAddress = policyData?.token?.address || '0x'
-  const tokenName = policyData?.token?.name || 'Unknown'
+  const tokenAddress = policyData?.token?.address || '0x';
+  const tokenName = policyData?.token?.name || 'Unknown';
 
   // Get user's token balance
   const { data: balanceData } = useReadContract({
@@ -53,83 +53,83 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
     query: {
       enabled: !!address && !!tokenAddress && tokenAddress !== '0x'
     }
-  })
+  });
 
-  const tokenBalance = balanceData ? Number(balanceData) : 0
+  const tokenBalance = balanceData ? Number(balanceData) : 0;
 
   // Get tokens owned by user (up to 10 tokens for UI display)
-  const [userTokenIds, setUserTokenIds] = useState<bigint[]>([])
+  const [userTokenIds, setUserTokenIds] = useState<bigint[]>([]);
 
   // Fetch user's token IDs when balance changes
   const fetchUserTokenIds = async () => {
     if (!address || !tokenAddress || tokenAddress === '0x' || !tokenBalance) {
-      return []
+      return [];
     }
 
-    const tokenIds: bigint[] = []
+    const tokenIds: bigint[] = [];
     // For simplicity, check the first 100 tokens
     // In a production app, you'd use a more efficient method like events or a tokenOfOwnerByIndex function
     for (let i = 0; i < 100 && tokenIds.length < tokenBalance && tokenIds.length < 10; i++) {
       try {
         const owner = await fetch(`/api/token-owner?tokenAddress=${tokenAddress}&tokenId=${i}`)
-          .then((res) => res.json())
-          .then((data) => data.owner)
+          .then(res => res.json())
+          .then(data => data.owner);
 
         if (owner && owner.toLowerCase() === address.toLowerCase()) {
-          tokenIds.push(BigInt(i))
+          tokenIds.push(BigInt(i));
         }
       } catch (error) {
-        console.error(`Error fetching token ${i} owner:`, error)
+        console.error(`Error fetching token ${i} owner:`, error);
       }
     }
 
-    setUserTokenIds(tokenIds)
+    setUserTokenIds(tokenIds);
     if (tokenIds.length > 0 && !selectedTokenId) {
-      setSelectedTokenId(tokenIds[0])
+      setSelectedTokenId(tokenIds[0]);
     }
 
-    return tokenIds
-  }
+    return tokenIds;
+  };
 
   // User can join if connected, not registered, and owns at least one token
-  const canJoin = isConnected && !isRegistered && tokenBalance > 0 && selectedTokenId !== null
+  const canJoin = isConnected && !isRegistered && tokenBalance > 0 && selectedTokenId !== null;
 
   /**
    * Get signup data for Token policy (encode the selected tokenId)
    */
   const getSignupData = async (): Promise<string> => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       if (!isConnected) {
-        throw new Error('Wallet not connected')
+        throw new Error('Wallet not connected');
       }
 
       if (isRegistered) {
-        throw new Error('Already registered')
+        throw new Error('Already registered');
       }
 
       if (!tokenAddress || tokenAddress === '0x') {
-        throw new Error('Invalid token address')
+        throw new Error('Invalid token address');
       }
 
       if (tokenBalance <= 0) {
-        throw new Error('You do not own any tokens from this collection')
+        throw new Error('You do not own any tokens from this collection');
       }
 
       if (!selectedTokenId) {
-        throw new Error('No token selected')
+        throw new Error('No token selected');
       }
 
       // Encode the token ID as uint256 for the signup data
-      return encodeAbiParameters(parseAbiParameters('uint256'), [selectedTokenId])
+      return encodeAbiParameters(parseAbiParameters('uint256'), [selectedTokenId]);
     } catch (error) {
-      console.error('Error generating Token policy signup data:', error)
-      throw error
+      console.error('Error generating Token policy signup data:', error);
+      throw error;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   /**
    * Token Policy UI Component
@@ -138,12 +138,12 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
     // Fetch user tokens when component mounts
     React.useEffect(() => {
       if (tokenBalance > 0) {
-        fetchUserTokenIds()
+        fetchUserTokenIds();
       }
-    }, [tokenBalance, address])
+    }, [tokenBalance, address]);
 
     if (tokenBalance <= 0) {
-      return <p>You don't own any {tokenName || 'tokens'} from this collection</p>
+      return <p>You don't own any {tokenName || 'tokens'} from this collection</p>;
     }
 
     return (
@@ -157,7 +157,7 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
             <p>Select a token to use for joining:</p>
             <select
               value={selectedTokenId?.toString()}
-              onChange={(e) => setSelectedTokenId(BigInt(e.target.value))}
+              onChange={e => setSelectedTokenId(BigInt(e.target.value))}
               style={{
                 padding: '8px',
                 borderRadius: '4px',
@@ -166,7 +166,7 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
                 width: '100%'
               }}
             >
-              {userTokenIds.map((tokenId) => (
+              {userTokenIds.map(tokenId => (
                 <option key={tokenId.toString()} value={tokenId.toString()}>
                   Token #{tokenId.toString()}
                 </option>
@@ -175,16 +175,14 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
           </div>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return {
     canJoin,
     getSignupData,
     isLoading,
     PolicyComponent: TokenPolicyComponent,
-    requirementsDescription: `This poll requires you to own a ${
-      tokenName || 'token'
-    } from collection ${tokenAddress}`
-  }
-}
+    requirementsDescription: `This poll requires you to own a ${tokenName || 'token'} from collection ${tokenAddress}`
+  };
+};

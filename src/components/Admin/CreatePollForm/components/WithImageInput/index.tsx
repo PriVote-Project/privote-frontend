@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import styles from '../index.module.css'
-import { IoMdClose } from 'react-icons/io'
-import type { PollOption } from '../../types'
+import React, { useState, useEffect } from 'react';
+import styles from '../index.module.css';
+import { IoMdClose } from 'react-icons/io';
+import type { PollOption } from '../../types';
 
 interface WithImageInputProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: 'title' | 'description' | 'link'
-  ) => void
-  index: number
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onFileRemove: () => void
-  placeholder: string
-  option: PollOption
-  type?: string
-  className?: string
-  file?: File | null
-  required?: boolean
+  ) => void;
+  index: number;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileRemove: () => void;
+  placeholder: string;
+  option: PollOption;
+  type?: string;
+  className?: string;
+  file?: File | null;
+  required?: boolean;
 }
 
 const WithImageInput = ({
@@ -32,19 +32,19 @@ const WithImageInput = ({
   required = false,
   ...rest
 }: WithImageInputProps) => {
-  const [preview, setPreview] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     } else {
-      setPreview(null)
+      setPreview(null);
     }
-  }, [file])
+  }, [file]);
 
   return (
     <div className={`${styles['with-img-input']} ${className}`}>
@@ -54,12 +54,8 @@ const WithImageInput = ({
             <div className={styles['selected-file']}>
               {preview ? (
                 <div className={styles['file-preview']}>
-                  <img src={preview} alt="Preview" className={styles['image-preview']} />
-                  <button
-                    onClick={onFileRemove}
-                    className={styles['remove-file-btn']}
-                    type="button"
-                  >
+                  <img src={preview} alt='Preview' className={styles['image-preview']} />
+                  <button onClick={onFileRemove} className={styles['remove-file-btn']} type='button'>
                     <IoMdClose size={16} />
                   </button>
                 </div>
@@ -71,13 +67,8 @@ const WithImageInput = ({
             </div>
           ) : (
             <label className={styles['file-input-label']}>
-              <input
-                type="file"
-                onChange={onFileChange}
-                accept="image/*"
-                className={styles['hidden-file-input']}
-              />
-              <img src={'/img-square.svg'} alt="Preview" width={92} height={92} />
+              <input type='file' onChange={onFileChange} accept='image/*' className={styles['hidden-file-input']} />
+              <img src={'/img-square.svg'} alt='Preview' width={92} height={92} />
             </label>
           )}
         </div>
@@ -85,7 +76,7 @@ const WithImageInput = ({
       <div className={styles['text-fields']}>
         <input
           type={type}
-          onChange={(e) => onChange(e, 'title')}
+          onChange={e => onChange(e, 'title')}
           placeholder={placeholder}
           className={styles['input-field']}
           required={required}
@@ -94,18 +85,18 @@ const WithImageInput = ({
         <textarea
           placeholder={`Description...`}
           value={option.description || ''}
-          onChange={(e) => onChange(e, 'description')}
+          onChange={e => onChange(e, 'description')}
           rows={3}
         />
         <input
           type={'text'}
-          onChange={(e) => onChange(e, 'link')}
+          onChange={e => onChange(e, 'link')}
           placeholder={`Link...`}
           className={styles['input-field']}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WithImageInput
+export default WithImageInput;

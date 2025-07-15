@@ -1,21 +1,21 @@
-import { PollStatus } from '@/types'
+import { PollStatus } from '@/types';
 
 interface VotingStateProps {
-  authType: string
-  pollStatus: PollStatus | undefined
-  isConnected: boolean
-  isUserRegistered: boolean
-  anonAadhaarStatus: string
-  isVotesInvalid: boolean
+  authType: string;
+  pollStatus: PollStatus | undefined;
+  isConnected: boolean;
+  isUserRegistered: boolean;
+  anonAadhaarStatus: string;
+  isVotesInvalid: boolean;
 }
 
 interface VotingState {
-  canVote: boolean
-  message: string | null
-  showRegisterButton: boolean
-  showVoteButton: boolean
-  showLoginButton: boolean
-  showConnectWallet: boolean
+  canVote: boolean;
+  message: string | null;
+  showRegisterButton: boolean;
+  showVoteButton: boolean;
+  showLoginButton: boolean;
+  showConnectWallet: boolean;
 }
 
 export const useVotingState = ({
@@ -33,7 +33,7 @@ export const useVotingState = ({
       showVoteButton: false,
       showLoginButton: false,
       showConnectWallet: false
-    }
+    };
   }
 
   if (pollStatus === PollStatus.NOT_STARTED) {
@@ -44,7 +44,7 @@ export const useVotingState = ({
       showVoteButton: false,
       showLoginButton: false,
       showConnectWallet: false
-    }
+    };
   }
 
   if (pollStatus === PollStatus.CLOSED) {
@@ -55,7 +55,7 @@ export const useVotingState = ({
       showVoteButton: false,
       showLoginButton: false,
       showConnectWallet: false
-    }
+    };
   }
 
   if (!isConnected) {
@@ -66,7 +66,7 @@ export const useVotingState = ({
       showVoteButton: false,
       showLoginButton: false,
       showConnectWallet: true
-    }
+    };
   }
 
   if (authType === 'free') {
@@ -78,7 +78,7 @@ export const useVotingState = ({
         showVoteButton: false,
         showLoginButton: false,
         showConnectWallet: false
-      }
+      };
     }
   } else if (authType === 'anon') {
     if (!isUserRegistered && anonAadhaarStatus === 'logged-out') {
@@ -89,7 +89,7 @@ export const useVotingState = ({
         showVoteButton: false,
         showLoginButton: true,
         showConnectWallet: false
-      }
+      };
     }
 
     if (!isUserRegistered && anonAadhaarStatus === 'logged-in') {
@@ -100,7 +100,7 @@ export const useVotingState = ({
         showVoteButton: false,
         showLoginButton: false,
         showConnectWallet: false
-      }
+      };
     }
   }
 
@@ -112,7 +112,7 @@ export const useVotingState = ({
       showVoteButton: true,
       showLoginButton: false,
       showConnectWallet: false
-    }
+    };
   }
 
   return {
@@ -122,5 +122,5 @@ export const useVotingState = ({
     showVoteButton: false,
     showLoginButton: false,
     showConnectWallet: false
-  }
-}
+  };
+};

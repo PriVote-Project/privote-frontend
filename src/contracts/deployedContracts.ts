@@ -1,4 +1,4 @@
-import type { GenericContractsDeclaration } from './types'
+import type { GenericContractsDeclaration } from './types';
 
 const deployedContracts = {
   421614: {
@@ -6091,6 +6091,6 @@ const deployedContracts = {
       ]
     }
   }
-} as const
+} as const;
 
-export default deployedContracts satisfies GenericContractsDeclaration
+export default deployedContracts satisfies GenericContractsDeclaration;

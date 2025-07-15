@@ -1,9 +1,9 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface MarkdownRendererProps {
-  content: string
-  className?: string
+  content: string;
+  className?: string;
 }
 
 const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
@@ -11,12 +11,12 @@ const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        a: ({ node, ...props }) => <a target="_blank" rel="noopener noreferrer" {...props} />
+        a: ({ node, ...props }) => <a target='_blank' rel='noopener noreferrer' {...props} />
       }}
     >
       {content}
     </ReactMarkdown>
-  )
-}
+  );
+};
 
-export default MarkdownRenderer
+export default MarkdownRenderer;

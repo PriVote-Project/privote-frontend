@@ -1,3 +1,3 @@
-import WeightInput from "./WeightInput";
+import WeightInput from './WeightInput';
 
 export { WeightInput };

@@ -1,7 +1,7 @@
-import styles from './index.module.css'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Logo, Github, Telegram, X, Mail } from '../../../../public'
+import styles from './index.module.css';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Logo, Github, Telegram, X, Mail } from '../../../../public';
 
 const socialMedia = [
   {
@@ -20,33 +20,28 @@ const socialMedia = [
     icon: Mail,
     link: 'mailto:privote.live@gmail.com'
   }
-]
+];
 
 const Footer = () => {
   return (
     <div className={styles.container}>
       <footer className={styles.footer}>
         <div className={styles['logo']}>
-          <Image src={Logo} alt="logo" width={30} height={30} />
+          <Image src={Logo} alt='logo' width={30} height={30} />
           <p>
             PRI<span className={styles.highlight}>VOTE</span>
           </p>
         </div>
         <div className={styles['social-media']}>
           {socialMedia.map((social, index) => (
-            <Link
-              href={social.link}
-              className={styles['img-container']}
-              key={index}
-              target="_blank"
-            >
-              <Image src={social.icon} alt="social" width={20} height={20} />
+            <Link href={social.link} className={styles['img-container']} key={index} target='_blank'>
+              <Image src={social.icon} alt='social' width={20} height={20} />
             </Link>
           ))}
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

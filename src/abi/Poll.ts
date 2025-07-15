@@ -795,6 +795,6 @@ const pollAbi = [
     stateMutability: 'view',
     type: 'function'
   }
-]
+];
 
-export default pollAbi
+export default pollAbi;

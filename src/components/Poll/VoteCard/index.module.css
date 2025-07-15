@@ -148,10 +148,7 @@
   font-weight: 500;
   line-height: 160%;
 
-  background: var(
-    --grd,
-    linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%)
-  );
+  background: var(--grd, linear-gradient(328deg, #c65ec6 11.74%, #7f58b7 87.19%));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -167,8 +164,8 @@
   justify-content: center;
 }
 
-.voteControls input[type="checkbox"],
-.voteControls input[type="radio"] {
+.voteControls input[type='checkbox'],
+.voteControls input[type='radio'] {
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -286,7 +283,7 @@
   margin: 0;
 }
 
-.weightInput[type="number"] {
+.weightInput[type='number'] {
   -moz-appearance: textfield;
 }
 

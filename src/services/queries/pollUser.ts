@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request'
+import { gql } from 'graphql-request';
 
 export const GET_POLL_USER_QUERY = gql`
   query GetPollUser($id: Bytes!) {
@@ -13,4 +13,4 @@ export const GET_POLL_USER_QUERY = gql`
       }
     }
   }
-`
+`;

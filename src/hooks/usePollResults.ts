@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react'
-import { useReadContract } from 'wagmi'
-import type { PollOption, TransformedPoll } from '@/types'
-import { useAccount } from 'wagmi'
-import deployedContracts from '@/contracts/deployedContracts'
+import { useState, useEffect } from 'react';
+import { useReadContract } from 'wagmi';
+import type { PollOption, TransformedPoll } from '@/types';
+import { useAccount } from 'wagmi';
+import deployedContracts from '@/contracts/deployedContracts';
 
 interface IResult {
-  candidate: string
-  votes: number
+  candidate: string;
+  votes: number;
 }
 
 interface UsePollResultsReturn {
-  result: IResult[] | null
-  totalVotes: number
-  isLoading: boolean
-  error: Error | null
-  refetch: () => Promise<void>
+  result: IResult[] | null;
+  totalVotes: number;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => Promise<void>;
 }
 
 export const usePollResults = (poll: TransformedPoll | null | undefined): UsePollResultsReturn => {
-  const [result, setResult] = useState<IResult[] | null>(null)
-  const [totalVotes, setTotalVotes] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [result, setResult] = useState<IResult[] | null>(null);
+  const [totalVotes, setTotalVotes] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   // const { chainId } = useAccount()
   // const {
   //   data: tally,
@@ -79,7 +79,7 @@ export const usePollResults = (poll: TransformedPoll | null | undefined): UsePol
     isLoading,
     error,
     refetch: () => {}
-  }
-}
+  };
+};
 
-export default usePollResults
+export default usePollResults;

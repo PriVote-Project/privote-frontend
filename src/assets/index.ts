@@ -1,5 +1,5 @@
-import SearchIcon from './search.svg'
-import SendIcon from './send.svg'
-import Circle from './circle.svg'
+import SearchIcon from './search.svg';
+import SendIcon from './send.svg';
+import Circle from './circle.svg';
 
-export { SearchIcon, SendIcon, Circle }
+export { SearchIcon, SendIcon, Circle };

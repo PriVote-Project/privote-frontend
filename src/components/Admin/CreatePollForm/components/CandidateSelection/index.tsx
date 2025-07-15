@@ -1,6 +1,6 @@
-import styles from './index.module.css'
-import PollOption from '../PollOption'
-import { type CandidateSelectionProps } from '../../types'
+import { type CandidateSelectionProps } from '../../types';
+import PollOption from '../PollOption';
+import styles from './index.module.css';
 
 const CandidateSelection = ({
   candidateSelection,
@@ -17,8 +17,8 @@ const CandidateSelection = ({
       <div className={styles['candidate-header']}>
         <h1>Add your Candidates</h1>
         <div className={styles['candidate-add']}>
-          <button type="button" className={styles['add-candidate-btn']} onClick={handleAddOption}>
-            <img src={'/plus-circle.svg'} width={32} height={32} alt="plus circle" />
+          <button type='button' className={styles['add-candidate-btn']} onClick={handleAddOption}>
+            <img src={'/plus-circle.svg'} width={32} height={32} alt='plus circle' />
             Add option
           </button>
         </div>
@@ -42,7 +42,7 @@ const CandidateSelection = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CandidateSelection
+export default CandidateSelection;

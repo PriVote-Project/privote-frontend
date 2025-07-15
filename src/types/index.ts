@@ -1,67 +1,67 @@
-import { Hex } from 'viem'
+import { Hex } from 'viem';
 
 export const PollStatus = {
   NOT_STARTED: 'Not Started',
   OPEN: 'Open',
   CLOSED: 'Closed',
   RESULT_COMPUTED: 'Result Computed'
-} as const
+} as const;
 
-export type PollStatus = (typeof PollStatus)[keyof typeof PollStatus]
+export type PollStatus = (typeof PollStatus)[keyof typeof PollStatus];
 
 export type PollOption = {
-  id: string
-  name: string
-  description: string
-  link: string
-  cid: string
-}
+  id: string;
+  name: string;
+  description: string;
+  link: string;
+  cid: string;
+};
 
 export interface RawPoll {
-  id: string
-  pollId: string
-  name: string
-  description?: string
-  startDate: string
-  endDate: string
-  voteOptions: string
-  owner: string
-  policyTrait: PollPolicyType
-  policyData?: Hex
-  options?: PollOption[]
-  maxVotePerPerson?: string
-  pollType?: string
-  mode?: string
-  totalSignups?: string
-  numMessages?: string
-  pollUsers?: PollUser[]
+  id: string;
+  pollId: string;
+  name: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  voteOptions: string;
+  owner: string;
+  policyTrait: PollPolicyType;
+  policyData?: Hex;
+  options?: PollOption[];
+  maxVotePerPerson?: string;
+  pollType?: string;
+  mode?: string;
+  totalSignups?: string;
+  numMessages?: string;
+  pollUsers?: PollUser[];
 }
 
 export interface Poll extends RawPoll {
-  status: PollStatus
+  status: PollStatus;
 }
 
 export interface BaseUser {
-  id: string
-  createdAt: string
+  id: string;
+  createdAt: string;
 }
 
 export interface User extends BaseUser {
-  accounts: Account[]
+  accounts: Account[];
 }
 
 export interface PollUser extends BaseUser {
-  accounts: PollAccount[]
+  accounts: PollAccount[];
 }
 
 export interface Account {
-  id: string
-  voiceCreditBalance: string
-  createdAt: string
+  id: string;
+  voiceCreditBalance: string;
+  createdAt: string;
 }
 
 export interface PollAccount extends Account {
-  nullifier: string
+  nullifier: string;
 }
 
 export const PollType = {
@@ -69,7 +69,7 @@ export const PollType = {
   SINGLE_VOTE: 'SINGLE_VOTE',
   MULTIPLE_VOTE: 'MULTIPLE_VOTE',
   WEIGHTED_MULTIPLE_VOTE: 'WEIGHTED_MULTIPLE_VOTE'
-} as const
+} as const;
 
 export const PollPolicyType = {
   FreeForAll: 'FreeForAll',
@@ -81,21 +81,21 @@ export const PollPolicyType = {
   // Merkle: 'Merkle',
   // Semaphore: 'Semaphore',
   // Zupass: 'Zupass'
-} as const
+} as const;
 
 export const EMode = {
   QV: 'QV',
   NON_QV: 'NON_QV',
   FULL: 'FULL'
-} as const
+} as const;
 
-export type PollType = (typeof PollType)[keyof typeof PollType]
-export type PollPolicyType = (typeof PollPolicyType)[keyof typeof PollPolicyType]
-export type EMode = (typeof EMode)[keyof typeof EMode]
+export type PollType = (typeof PollType)[keyof typeof PollType];
+export type PollPolicyType = (typeof PollPolicyType)[keyof typeof PollPolicyType];
+export type EMode = (typeof EMode)[keyof typeof EMode];
 
 // Type for the transformed poll object that will be returned by the hook
 export type TransformedPoll = RawPoll & {
-  status: PollStatus
-  pollType: PollType
-  mode: EMode
-}
+  status: PollStatus;
+  pollType: PollType;
+  mode: EMode;
+};

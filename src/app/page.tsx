@@ -1,8 +1,8 @@
-'use client'
-import React from 'react'
-import styles from '@/styles/page.module.css'
-import { Hero, Trending } from '@/components/Home'
-import { Footer } from '@/components/shared'
+'use client';
+import { Hero, Trending } from '@/components/Home';
+import { Footer } from '@/components/shared';
+import styles from '@/styles/home.module.css';
+import React from 'react';
 
 const Home: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ const Home: React.FC = () => {
       <Trending />
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

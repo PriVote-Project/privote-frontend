@@ -1,21 +1,21 @@
-import React from 'react'
-import Link from 'next/link'
-import { GoLink } from 'react-icons/go'
-import { IoMdClose } from 'react-icons/io'
-import { Button, Modal, MarkdownRenderer } from '@/components/shared'
-import { PollType } from '@/types'
-import styles from './OptionDetailsModal.module.css'
+import React from 'react';
+import Link from 'next/link';
+import { GoLink } from 'react-icons/go';
+import { IoMdClose } from 'react-icons/io';
+import { Button, Modal, MarkdownRenderer } from '@/components/shared';
+import { PollType } from '@/types';
+import styles from './OptionDetailsModal.module.css';
 
 interface OptionDetailsModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  description: string
-  imageUrl?: string
-  link?: string
-  pollType: PollType
-  onVote?: () => void
-  isLoading: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  link?: string;
+  pollType: PollType;
+  onVote?: () => void;
+  isLoading: boolean;
 }
 
 const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
@@ -30,7 +30,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
   isLoading
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false} maxWidth="700px" padding="8px">
+    <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false} maxWidth='700px' padding='8px'>
       <div className={styles.container}>
         {/* <div className={styles.blur}></div> */}
         <div className={styles.header}>
@@ -41,7 +41,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
           )}
           <h2 className={styles.title}>{title}</h2>
           <button onClick={onClose} className={styles.closeButton}>
-            <IoMdClose size={24} fill="#434343" />
+            <IoMdClose size={24} fill='#434343' />
           </button>
         </div>
         <div className={styles.divider} />
@@ -50,8 +50,8 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
             <MarkdownRenderer content={description} className={styles.description} />
           </div>
           {link && (
-            <Link className={styles.link} to={link} target="_blank" rel="noopener noreferrer">
-              <GoLink fill="#7F58B7" size={18} /> <span className={styles['link-text']}>Link</span>
+            <Link className={styles.link} to={link} target='_blank' rel='noopener noreferrer'>
+              <GoLink fill='#7F58B7' size={18} /> <span className={styles['link-text']}>Link</span>
             </Link>
           )}
         </div>
@@ -68,7 +68,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
         )}
       </div>
     </Modal>
-  )
-}
+  );
+};
 
-export default OptionDetailsModal
+export default OptionDetailsModal;

@@ -1,11 +1,11 @@
-import { PollPolicyType } from '@/types'
+import { PollPolicyType } from '@/types';
 
 export type IPollCreationFunction =
   | 'createPollWithFreeForAll'
   | 'createPollWithAnonAadhaar'
   | 'createPollWithERC20'
-  | 'createPollWithToken'
+  | 'createPollWithToken';
 
 export const getWrapperFunctionName = (policy: PollPolicyType) => {
-  return `createPollWith${policy}` as IPollCreationFunction
-}
+  return `createPollWith${policy}` as IPollCreationFunction;
+};

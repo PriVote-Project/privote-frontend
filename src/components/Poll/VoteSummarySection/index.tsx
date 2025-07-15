@@ -1,24 +1,24 @@
-import { useState, useMemo, useRef, useEffect } from 'react'
-import styles from './index.module.css'
-import { WeightInput } from '../VoteCard/components'
-import { EMode, PollType, type PollOption } from '@/types'
+import { useState, useMemo, useRef, useEffect } from 'react';
+import styles from './index.module.css';
+import { WeightInput } from '../VoteCard/components';
+import { EMode, PollType, type PollOption } from '@/types';
 
 interface VoteSummarySectionProps {
-  options: PollOption[] | undefined
-  votes: { index: number; votes: string }[]
-  maxVotePerPerson?: number
-  currentTotalVotes: number
-  onVoteChange: (index: number, votes: string) => void
-  handleWeightedVoteChange: (prevVotes: string | undefined, votes: string, index: number) => void
-  onVote: () => void
-  isLoading: boolean
-  canVote: boolean
-  children: React.ReactNode
-  pollType: PollType
-  isQv: EMode
+  options: PollOption[] | undefined;
+  votes: { index: number; votes: string }[];
+  maxVotePerPerson?: number;
+  currentTotalVotes: number;
+  onVoteChange: (index: number, votes: string) => void;
+  handleWeightedVoteChange: (prevVotes: string | undefined, votes: string, index: number) => void;
+  onVote: () => void;
+  isLoading: boolean;
+  canVote: boolean;
+  children: React.ReactNode;
+  pollType: PollType;
+  isQv: EMode;
 }
 
-let showSummary = false
+let showSummary = false;
 
 const VoteSummarySection = ({
   options,
@@ -33,24 +33,21 @@ const VoteSummarySection = ({
   pollType,
   isQv
 }: VoteSummarySectionProps) => {
-  const [selectedOption, setSelectedOption] = useState<number>(0)
-  const optionRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [selectedOption, setSelectedOption] = useState<number>(0);
+  const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const scrollToOption = (index: number) => {
-    optionRefs.current[index]?.scrollIntoView({ behavior: 'smooth' })
-  }
-  const totalVotesCast = useMemo(
-    () => votes.reduce((acc, vote) => acc + Number(vote.votes), 0),
-    [votes]
-  )
+    optionRefs.current[index]?.scrollIntoView({ behavior: 'smooth' });
+  };
+  const totalVotesCast = useMemo(() => votes.reduce((acc, vote) => acc + Number(vote.votes), 0), [votes]);
 
-  const votesLeft = maxVotePerPerson - totalVotesCast
+  const votesLeft = maxVotePerPerson - totalVotesCast;
 
   useEffect(() => {
-    showSummary = false
-  }, [])
+    showSummary = false;
+  }, []);
 
-  showSummary = !showSummary ? currentTotalVotes > 0 : showSummary
+  showSummary = !showSummary ? currentTotalVotes > 0 : showSummary;
 
   return (
     <div className={`${styles.container} ${showSummary ? styles.show : ''}`}>
@@ -65,8 +62,8 @@ const VoteSummarySection = ({
             <div className={styles.optionsList}>
               {options &&
                 options.map((option, index) => {
-                  const optionVotes = votes.find((v) => v.index === index)?.votes
-                  if (!optionVotes || Number(optionVotes) <= 0) return
+                  const optionVotes = votes.find(v => v.index === index)?.votes;
+                  if (!optionVotes || Number(optionVotes) <= 0) return;
                   return (
                     <div
                       key={`title_${index}`}
@@ -75,8 +72,8 @@ const VoteSummarySection = ({
                       }`}
                       onClick={() => {
                         if (selectedOption !== index) {
-                          setSelectedOption(index)
-                          scrollToOption(index)
+                          setSelectedOption(index);
+                          scrollToOption(index);
                         }
                       }}
                     >
@@ -92,21 +89,13 @@ const VoteSummarySection = ({
                         />
                       </div>
                     </div>
-                  )
+                  );
                 })}
             </div>
             <div className={styles.bottom}>
               <div className={styles.divider}></div>
-              <button
-                className={styles.voteButton}
-                onClick={onVote}
-                disabled={!canVote || isLoading}
-              >
-                {isLoading ? (
-                  <span className={`${styles.spinner} spinner`}></span>
-                ) : (
-                  <p>Vote Now</p>
-                )}
+              <button className={styles.voteButton} onClick={onVote} disabled={!canVote || isLoading}>
+                {isLoading ? <span className={`${styles.spinner} spinner`}></span> : <p>Vote Now</p>}
               </button>
             </div>
           </div>
@@ -114,7 +103,7 @@ const VoteSummarySection = ({
       )}
       <div className={styles.rightColumn}>{children}</div>
     </div>
-  )
-}
+  );
+};
 
-export default VoteSummarySection
+export default VoteSummarySection;

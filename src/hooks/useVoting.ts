@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { useWriteContract } from 'wagmi'
-import { VoteCommand, Keypair, PublicKey } from '@maci-protocol/domainobjs'
-import { PollType, EMode, PollStatus } from '@/types'
-import PollAbi from '@/abi/Poll'
-import { notification, handleNotice } from '@/utils/notification'
+import { useState } from 'react';
+import { useWriteContract } from 'wagmi';
+import { VoteCommand, Keypair, PublicKey } from '@maci-protocol/domainobjs';
+import { PollType, EMode, PollStatus } from '@/types';
+import PollAbi from '@/abi/Poll';
+import { notification, handleNotice } from '@/utils/notification';
 
 interface UseVotingProps {
-  pollAddress?: string
-  pollType: PollType
-  status?: PollStatus
-  stateIndex: number | null
-  coordinatorPubKey?: PublicKey
-  keypair?: Keypair | null
-  pollId?: bigint
-  maxVotePerPerson?: number
-  mode?: EMode
+  pollAddress?: string;
+  pollType: PollType;
+  status?: PollStatus;
+  stateIndex: number | null;
+  coordinatorPubKey?: PublicKey;
+  keypair?: Keypair | null;
+  pollId?: bigint;
+  maxVotePerPerson?: number;
+  mode?: EMode;
 }
 
 export const useVoting = ({
@@ -28,11 +28,11 @@ export const useVoting = ({
   maxVotePerPerson,
   mode
 }: UseVotingProps) => {
-  const [votes, setVotes] = useState<{ index: number; votes: string }[]>([])
-  const [isVotesInvalid, setIsVotesInvalid] = useState<Record<number, boolean>>({})
-  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null)
+  const [votes, setVotes] = useState<{ index: number; votes: string }[]>([]);
+  const [isVotesInvalid, setIsVotesInvalid] = useState<Record<number, boolean>>({});
+  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
 
-  const { writeContractAsync, isPending } = useWriteContract()
+  const { writeContractAsync, isPending } = useWriteContract();
 
   const getMessageAndEncKeyPair = (
     stateIndex: bigint,
@@ -43,39 +43,29 @@ export const useVoting = ({
     coordinatorPubKey: PublicKey,
     keypair: Keypair
   ) => {
-    const command = new VoteCommand(
-      stateIndex,
-      keypair.publicKey,
-      candidateIndex,
-      weight,
-      nonce,
-      pollIndex
-    )
+    const command = new VoteCommand(stateIndex, keypair.publicKey, candidateIndex, weight, nonce, pollIndex);
 
-    const signature = command.sign(keypair.privateKey)
-    const encKeyPair = new Keypair()
-    const message = command.encrypt(
-      signature,
-      Keypair.generateEcdhSharedKey(encKeyPair.privateKey, coordinatorPubKey)
-    )
+    const signature = command.sign(keypair.privateKey);
+    const encKeyPair = new Keypair();
+    const message = command.encrypt(signature, Keypair.generateEcdhSharedKey(encKeyPair.privateKey, coordinatorPubKey));
 
-    return { message, encKeyPair }
-  }
+    return { message, encKeyPair };
+  };
 
   const voteUpdated = (index: number, checked: boolean, voteCounts: string) => {
     if (pollType === PollType.SINGLE_VOTE) {
       if (checked) {
-        setVotes([{ index, votes: voteCounts }])
+        setVotes([{ index, votes: voteCounts }]);
       }
-      return
+      return;
     }
 
     if (checked) {
-      setVotes([...votes.filter((v) => v.index !== index), { index, votes: voteCounts }])
+      setVotes([...votes.filter(v => v.index !== index), { index, votes: voteCounts }]);
     } else {
-      setVotes(votes.filter((v) => v.index !== index))
+      setVotes(votes.filter(v => v.index !== index));
     }
-  }
+  };
 
   const castVote = async () => {
     if (
@@ -86,58 +76,51 @@ export const useVoting = ({
       !coordinatorPubKey ||
       !keypair
     ) {
-      console.log(
-        'Missing required parameters',
-        pollAddress,
-        pollId,
-        stateIndex,
-        coordinatorPubKey,
-        keypair
-      )
-      notification.error('Error casting vote. Please refresh the page and try again.')
-      return
+      console.log('Missing required parameters', pollAddress, pollId, stateIndex, coordinatorPubKey, keypair);
+      notification.error('Error casting vote. Please refresh the page and try again.');
+      return;
     }
 
-    if (Object.values(isVotesInvalid).some((v) => v)) {
-      notification.error('Please enter a valid number of votes')
-      return
+    if (Object.values(isVotesInvalid).some(v => v)) {
+      notification.error('Please enter a valid number of votes');
+      return;
     }
 
     if (votes.length === 0) {
-      notification.error('Please select at least one option to vote')
-      return
+      notification.error('Please select at least one option to vote');
+      return;
     }
 
     if (status !== PollStatus.OPEN) {
-      notification.error('Voting is closed for this poll')
-      return
+      notification.error('Voting is closed for this poll');
+      return;
     }
 
     // remove any votes from the array that are invalid
     let updatedVotes = votes
-      .map((v) => ({
+      .map(v => ({
         index: v.index,
         votes: parseInt(v.votes)
       }))
-      .filter((v) => !isNaN(v.votes))
+      .filter(v => !isNaN(v.votes));
 
     if (
       pollType === PollType.WEIGHTED_MULTIPLE_VOTE &&
       maxVotePerPerson &&
       updatedVotes.reduce((a, b) => a + b.votes, 0) > maxVotePerPerson
     ) {
-      notification.error(`You can't vote more than ${maxVotePerPerson} per poll`)
-      return
+      notification.error(`You can't vote more than ${maxVotePerPerson} per poll`);
+      return;
     }
 
     if (pollType === PollType.WEIGHTED_MULTIPLE_VOTE && mode === EMode.QV) {
-      updatedVotes = votes.map((v) => ({
+      updatedVotes = votes.map(v => ({
         index: v.index,
         votes: Math.floor(Math.sqrt(parseInt(v.votes)))
-      }))
+      }));
     }
 
-    let notificationId = notification.loading('Submitting votes...')
+    const notificationId = notification.loading('Submitting votes...');
 
     const votesToMessage = updatedVotes
       .sort((a, b) => a.index - b.index)
@@ -151,7 +134,7 @@ export const useVoting = ({
           coordinatorPubKey,
           keypair
         )
-      )
+      );
 
     try {
       if (votesToMessage.length === 1) {
@@ -162,22 +145,11 @@ export const useVoting = ({
             functionName: 'publishMessage',
             args: [
               votesToMessage[0].message.asContractParam() as unknown as {
-                data: readonly [
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint,
-                  bigint
-                ]
+                data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
               },
               votesToMessage[0].encKeyPair.publicKey.asContractParam() as unknown as {
-                x: bigint
-                y: bigint
+                x: bigint;
+                y: bigint;
               }
             ]
           },
@@ -187,7 +159,7 @@ export const useVoting = ({
                 message: 'Votes submitted successfully!',
                 type: 'success',
                 id: notificationId
-              })
+              });
             },
             onError: () =>
               handleNotice({
@@ -196,8 +168,8 @@ export const useVoting = ({
                 id: notificationId
               })
           }
-        )
-        setSelectedCandidate(null)
+        );
+        setSelectedCandidate(null);
       } else {
         await writeContractAsync(
           {
@@ -206,27 +178,16 @@ export const useVoting = ({
             functionName: 'publishMessageBatch',
             args: [
               votesToMessage.map(
-                (v) =>
+                v =>
                   v.message.asContractParam() as unknown as {
-                    data: readonly [
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint,
-                      bigint
-                    ]
+                    data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
                   }
               ),
               votesToMessage.map(
-                (v) =>
+                v =>
                   v.encKeyPair.publicKey.asContractParam() as {
-                    x: bigint
-                    y: bigint
+                    x: bigint;
+                    y: bigint;
                   }
               )
             ]
@@ -237,7 +198,7 @@ export const useVoting = ({
                 message: 'Votes submitted successfully!',
                 type: 'success',
                 id: notificationId
-              })
+              });
             },
             onError: () =>
               handleNotice({
@@ -246,17 +207,17 @@ export const useVoting = ({
                 id: notificationId
               })
           }
-        )
-        setSelectedCandidate(null)
+        );
+        setSelectedCandidate(null);
       }
 
-      setVotes([])
+      setVotes([]);
     } catch (err) {
-      console.error('err', err)
+      console.error('err', err);
     } finally {
-      if (notificationId) notification.remove(notificationId)
+      if (notificationId) notification.remove(notificationId);
     }
-  }
+  };
 
   return {
     votes,
@@ -267,7 +228,7 @@ export const useVoting = ({
     setSelectedCandidate,
     voteUpdated,
     castVote
-  }
-}
+  };
+};
 
-export default useVoting
+export default useVoting;

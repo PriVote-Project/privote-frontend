@@ -41,6 +41,6 @@ const ercAbi = [
     stateMutability: 'view',
     type: 'function'
   }
-] as const
+] as const;
 
-export default ercAbi
+export default ercAbi;

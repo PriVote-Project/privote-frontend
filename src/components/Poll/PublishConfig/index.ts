@@ -1,2 +1,2 @@
-export { default as DockerConfig } from "./DockerConfig";
-export { default as BackendConfig } from "./BackendConfig";
+export { default as DockerConfig } from './DockerConfig';
+export { default as BackendConfig } from './BackendConfig';

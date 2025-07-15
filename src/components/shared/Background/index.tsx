@@ -1,4 +1,4 @@
-import styles from './index.module.css'
+import styles from './index.module.css';
 
 const Background = () => {
   return (
@@ -14,7 +14,7 @@ const Background = () => {
         <div className={styles['bottom-color']}></div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Background
+export default Background;

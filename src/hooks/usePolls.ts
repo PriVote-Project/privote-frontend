@@ -1,11 +1,11 @@
-import { useInfiniteQuery, type QueryFunctionContext } from '@tanstack/react-query'
-import { client } from '@/lib/graphql'
-import { GET_POLLS_QUERY } from '@/services/queries/polls'
-import { PollStatus } from '@/types'
-import type { Poll, RawPoll } from '@/types'
+import { useInfiniteQuery, type QueryFunctionContext } from '@tanstack/react-query';
+import { client } from '@/lib/graphql';
+import { GET_POLLS_QUERY } from '@/services/queries/polls';
+import { PollStatus } from '@/types';
+import type { Poll, RawPoll } from '@/types';
 
 interface PollsData {
-  polls: RawPoll[]
+  polls: RawPoll[];
 }
 
 interface UsePollsParams {
@@ -17,19 +17,19 @@ interface UsePollsParams {
 }
 
 export function getPollStatus(poll: RawPoll): PollStatus {
-  const now = Math.round(new Date().getTime() / 1000)
-  const startTime = parseInt(poll.startDate, 10)
-  const endTime = parseInt(poll.endDate, 10)
+  const now = Math.round(new Date().getTime() / 1000);
+  const startTime = parseInt(poll.startDate, 10);
+  const endTime = parseInt(poll.endDate, 10);
 
   if (startTime > now) {
-    return PollStatus.NOT_STARTED
+    return PollStatus.NOT_STARTED;
   }
 
   if (endTime > now) {
-    return PollStatus.OPEN
+    return PollStatus.OPEN;
   }
 
-  return PollStatus.CLOSED
+  return PollStatus.CLOSED;
 }
 
 const fetchPolls = async (
@@ -54,11 +54,11 @@ const fetchPolls = async (
     skip: pageParam * (limit || 10),
     where: Object.keys(where).length > 0 ? where : undefined,
     orderBy: orderBy || 'createdAt',
-    orderDirection: orderDirection || 'desc',
+    orderDirection: orderDirection || 'desc'
   };
 
   const data: PollsData = await client.request(GET_POLLS_QUERY, variables);
-  return data.polls.map((poll) => ({ ...poll, status: getPollStatus(poll) }));
+  return data.polls.map(poll => ({ ...poll, status: getPollStatus(poll) }));
 };
 
 export const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit }: UsePollsParams) => {
@@ -69,6 +69,6 @@ export const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirectio
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length === 0) return undefined;
       return allPages.length;
-    },
+    }
   });
 };

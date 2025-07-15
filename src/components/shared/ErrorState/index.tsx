@@ -1,11 +1,11 @@
-'use client'
-import styles from './index.module.css'
-import Button from '../Button'
+'use client';
+import styles from './index.module.css';
+import Button from '../Button';
 
 interface IErrorState {
-  title: string
-  retryAction: () => void
-  error?: Error | null
+  title: string;
+  retryAction: () => void;
+  error?: Error | null;
 }
 
 const ErrorState: React.FC<IErrorState> = ({ title, error, retryAction }) => {
@@ -19,7 +19,7 @@ const ErrorState: React.FC<IErrorState> = ({ title, error, retryAction }) => {
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ErrorState
+export default ErrorState;

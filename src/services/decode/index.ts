@@ -1,7 +1,7 @@
-import { PollPolicyType } from '@/types'
-import { decodeAbiParameters, Hex, parseAbiParameters, PublicClient } from 'viem'
-import { AnonAadhaarPolicyData, TokenPolicyData, ERC20PolicyData, Token, PolicyData } from './types'
-import ERCAbi from '@/abi/ERC'
+import ERCAbi from '@/abi/ERC';
+import { PollPolicyType } from '@/types';
+import { decodeAbiParameters, Hex, parseAbiParameters, PublicClient } from 'viem';
+import { AnonAadhaarPolicyData, ERC20PolicyData, PolicyData, Token, TokenPolicyData } from './types';
 
 export class DecodeService {
   constructor(
@@ -13,13 +13,13 @@ export class DecodeService {
   private getAbiString(): string {
     switch (this.policyTrait) {
       case PollPolicyType.AnonAadhaar:
-        return 'address verifier, uint256 nullifierSeed'
+        return 'address verifier, uint256 nullifierSeed';
       case PollPolicyType.Token:
-        return 'address token'
+        return 'address token';
       case PollPolicyType.ERC20:
-        return 'address token, uint256 threshold'
+        return 'address token, uint256 threshold';
       default:
-        return ''
+        return '';
     }
   }
 
@@ -27,7 +27,7 @@ export class DecodeService {
     const ercContract = {
       abi: ERCAbi,
       address
-    }
+    };
 
     try {
       const result = await this.client.multicall({
@@ -36,66 +36,66 @@ export class DecodeService {
           { ...ercContract, functionName: 'symbol' },
           { ...ercContract, functionName: 'decimals' }
         ]
-      })
+      });
 
       return {
         address,
         name: result[0].status === 'success' ? result[0].result : '',
         symbol: result[1].status === 'success' ? result[1].result : '',
         decimals: result[2].status === 'success' ? Number(result[2].result) : 18
-      }
+      };
     } catch (error) {
-      console.error('Error fetching token details:', error)
+      console.error('Error fetching token details:', error);
       return {
         address,
         name: '',
         symbol: '',
         decimals: 18
-      }
+      };
     }
   }
 
   async decode(): Promise<PolicyData> {
-    const abiString = this.getAbiString()
+    const abiString = this.getAbiString();
     if (!abiString) {
-      return {}
+      return {};
     }
 
     try {
-      const decodedValues = decodeAbiParameters(parseAbiParameters(abiString), this.policyData)
+      const decodedValues = decodeAbiParameters(parseAbiParameters(abiString), this.policyData);
 
       switch (this.policyTrait) {
         case PollPolicyType.AnonAadhaar: {
-          const [verifier, nullifierSeed] = decodedValues as [Hex, bigint]
+          const [verifier, nullifierSeed] = decodedValues as [Hex, bigint];
           return {
             verifier,
             nullifierSeed
-          } as AnonAadhaarPolicyData
+          } as AnonAadhaarPolicyData;
         }
 
         case PollPolicyType.Token: {
-          const [tokenAddress] = decodedValues as [Hex]
-          const tokenDetails = await this.fetchTokenDetails(tokenAddress)
+          const [tokenAddress] = decodedValues as [Hex];
+          const tokenDetails = await this.fetchTokenDetails(tokenAddress);
           return {
             token: tokenDetails
-          } as TokenPolicyData
+          } as TokenPolicyData;
         }
 
         case PollPolicyType.ERC20: {
-          const [tokenAddress, threshold] = decodedValues as [Hex, bigint]
-          const tokenDetails = await this.fetchTokenDetails(tokenAddress)
+          const [tokenAddress, threshold] = decodedValues as [Hex, bigint];
+          const tokenDetails = await this.fetchTokenDetails(tokenAddress);
           return {
             token: tokenDetails,
             threshold
-          } as ERC20PolicyData
+          } as ERC20PolicyData;
         }
 
         default:
-          return {}
+          return {};
       }
     } catch (error) {
-      console.error('Error decoding policy data:', error)
-      return {}
+      console.error('Error decoding policy data:', error);
+      return {};
     }
   }
 }

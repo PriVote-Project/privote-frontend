@@ -1,21 +1,21 @@
-import React from 'react'
-import { Toast, ToastPosition, toast } from 'react-hot-toast'
+import React from 'react';
+import { Toast, ToastPosition, toast } from 'react-hot-toast';
 import {
   HiXMark,
   HiMiniExclamationCircle,
   HiExclamationTriangle,
   HiInformationCircle,
   HiCheckCircle
-} from 'react-icons/hi2'
-import styles from './index.module.css'
+} from 'react-icons/hi2';
+import styles from './index.module.css';
 
 type NotificationProps = {
-  content: React.ReactNode
-  status: 'success' | 'info' | 'loading' | 'error' | 'warning'
-  duration?: number
-  icon?: string
-  position?: ToastPosition
-}
+  content: React.ReactNode;
+  status: 'success' | 'info' | 'loading' | 'error' | 'warning';
+  duration?: number;
+  icon?: string;
+  position?: ToastPosition;
+};
 
 const ENUM_STATUSES = {
   success: <HiCheckCircle size={22} className={styles.successIcon} />,
@@ -23,10 +23,10 @@ const ENUM_STATUSES = {
   error: <HiMiniExclamationCircle size={22} className={styles.errorIcon} />,
   info: <HiInformationCircle size={22} className={styles.infoIcon} />,
   warning: <HiExclamationTriangle size={22} className={styles.warningIcon} />
-}
+};
 
-const DEFAULT_DURATION = 3000
-const DEFAULT_POSITION: ToastPosition = 'bottom-center'
+const DEFAULT_DURATION = 3000;
+const DEFAULT_POSITION: ToastPosition = 'bottom-center';
 
 /**
  * Custom Notification
@@ -43,18 +43,12 @@ const Notification = ({
       <div
         className={`${styles.notificationContainer} ${
           position.substring(0, 3) === 'top'
-            ? `${styles.topPositionHover} ${
-                t.visible ? styles.topPosition : styles.topPositionHidden
-              }`
-            : `${styles.bottomPositionHover} ${
-                t.visible ? styles.bottomPosition : styles.bottomPositionHidden
-              }`
+            ? `${styles.topPositionHover} ${t.visible ? styles.topPosition : styles.topPositionHidden}`
+            : `${styles.bottomPositionHover} ${t.visible ? styles.bottomPosition : styles.bottomPositionHidden}`
         }`}
       >
         <div className={styles.iconContainer}>{icon ? icon : ENUM_STATUSES[status]}</div>
-        <div className={`${styles.contentContainer} ${icon ? styles.contentWithIcon : ''}`}>
-          {content}
-        </div>
+        <div className={`${styles.contentContainer} ${icon ? styles.contentWithIcon : ''}`}>{content}</div>
 
         <div
           className={`${styles.closeButton} ${icon ? styles.closeButtonWithIcon : ''}`}
@@ -68,7 +62,7 @@ const Notification = ({
       duration: status === 'loading' ? Infinity : duration,
       position
     }
-  )
-}
+  );
+};
 
-export default Notification
+export default Notification;

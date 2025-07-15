@@ -1,12 +1,12 @@
-import styles from '../index.module.css'
+import styles from '../index.module.css';
 
 interface WithoutImageInputProps {
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  placeholder: string
-  type?: string
-  className?: string
-  name?: string
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  type?: string;
+  className?: string;
+  name?: string;
 }
 
 const WithoutImageInput = ({
@@ -28,7 +28,7 @@ const WithoutImageInput = ({
       name={name}
       {...rest}
     />
-  )
-}
+  );
+};
 
-export default WithoutImageInput
+export default WithoutImageInput;

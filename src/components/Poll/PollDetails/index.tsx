@@ -1,46 +1,33 @@
-import { useEffect, useState } from 'react'
-import { useReadContract } from 'wagmi'
-import { useAccount } from 'wagmi'
-import { PublicKey } from '@maci-protocol/domainobjs'
-// import { useAnonAadhaar } from '@anon-aadhaar/react'
-import styles from '@/styles/userPoll.module.css'
-import PollAbi from '@/abi/Poll'
-import { PollType } from '@/types'
-import { usePoll } from '@/hooks/usePollContext'
-import { useVoting } from '@/hooks/useVoting'
-import usePollResults from '@/hooks/usePollResults'
-import PollHeader from '../PollHeader'
-import VotingSection from '../VotingSection'
-import { Button, ErrorState } from '@/components/shared'
-import { useSigContext } from '@/contexts/SigContext'
+import { useEffect, useState } from 'react';
+import { useReadContract } from 'wagmi';
+import { useAccount } from 'wagmi';
+import { PublicKey } from '@maci-protocol/domainobjs';
+import styles from './index.module.css';
+import PollAbi from '@/abi/Poll';
+import { PollType } from '@/types';
+import { usePoll } from '@/hooks/usePollContext';
+import { useVoting } from '@/hooks/useVoting';
+import usePollResults from '@/hooks/usePollResults';
+import PollHeader from '../PollHeader';
+import VotingSection from '../VotingSection';
+import { useSigContext } from '@/contexts/SigContext';
 
 interface IPollDetails {
-  pollAddress: string
+  pollAddress: string;
 }
 
 const PollDetails = ({ pollAddress }: IPollDetails) => {
-  const { address, isConnected } = useAccount()
-  // const [AnonAadhaar] = useAnonAadhaar()
-  const {
-    hasJoinedPoll,
-    pollStateIndex,
-    poll,
-    isPollError,
-    pollError,
-    onJoinPoll,
-    isLoading: isRegistering,
-    refetchPoll
-  } = usePoll()
-  const { maciKeypair, isRegistered, onSignup } = useSigContext()
-  // const { registerUser, isLoading: isRegistering } = useUserRegister()
-  const [coordinatorPubKey, setCoordinatorPubKey] = useState<PublicKey>()
-  const { result, totalVotes } = usePollResults(poll)
+  const { address, isConnected } = useAccount();
+  const { hasJoinedPoll, pollStateIndex, poll } = usePoll();
+  const { maciKeypair } = useSigContext();
+  const [coordinatorPubKey, setCoordinatorPubKey] = useState<PublicKey>();
+  const { result, totalVotes } = usePollResults(poll);
 
   const { data: coordinatorPubKeyResult } = useReadContract({
     abi: PollAbi,
     address: pollAddress as `0x${string}`,
     functionName: 'coordinatorPublicKey'
-  })
+  });
 
   const {
     votes,
@@ -61,26 +48,22 @@ const PollDetails = ({ pollAddress }: IPollDetails) => {
     pollId: BigInt(poll?.pollId || 0),
     stateIndex: Number(pollStateIndex),
     maxVotePerPerson: Number(poll?.maxVotePerPerson || 0)
-  })
+  });
 
   useEffect(() => {
-    if (!coordinatorPubKeyResult) return
+    if (!coordinatorPubKeyResult) return;
     try {
       const publicKey = new PublicKey([
         BigInt((coordinatorPubKeyResult as bigint[])[0].toString()),
         BigInt((coordinatorPubKeyResult as bigint[])[1].toString())
-      ])
-      setCoordinatorPubKey(publicKey)
+      ]);
+      setCoordinatorPubKey(publicKey);
     } catch (err) {
-      console.error('Error setting coordinator public key:', err)
+      console.error('Error setting coordinator public key:', err);
     }
-  }, [coordinatorPubKeyResult])
+  }, [coordinatorPubKeyResult]);
 
-  if (isPollError) {
-    return <ErrorState title="Error Loading Poll" error={pollError} retryAction={refetchPoll} />
-  }
-
-  if (!poll) return null
+  if (!poll) return null;
   return (
     <div className={styles['poll-details']}>
       <PollHeader
@@ -121,7 +104,7 @@ const PollDetails = ({ pollAddress }: IPollDetails) => {
         onVote={castVote}
       />
     </div>
-  )
-}
+  );
+};
 
-export default PollDetails
+export default PollDetails;

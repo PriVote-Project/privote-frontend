@@ -1,16 +1,16 @@
-'use client'
-import React, { useState } from 'react'
-import { PollsList } from '@/components/Polls'
-import SearchBar from '@/components/SearchBar'
-import styles from '@/styles/page.module.css'
+'use client';
+import { PollsList } from '@/components/Polls';
+import SearchBar from '@/components/SearchBar';
+import styles from '@/styles/home.module.css';
+import React, { useState } from 'react';
 
 const AllPolls: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [activeSearch, setActiveSearch] = useState('')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
 
   const handleSearch = () => {
-    setActiveSearch(searchTerm)
-  }
+    setActiveSearch(searchTerm);
+  };
 
   return (
     <div className={styles.container}>
@@ -18,17 +18,13 @@ const AllPolls: React.FC = () => {
         <div className={styles['polls-container']}>
           <h2>Polls</h2>
           <div className={styles['search-poll-container']}>
-            <SearchBar
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              onSearch={handleSearch}
-            />
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSearch={handleSearch} />
             <PollsList searchTerm={activeSearch} />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AllPolls
+export default AllPolls;

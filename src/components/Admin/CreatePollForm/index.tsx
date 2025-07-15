@@ -1,14 +1,14 @@
-import { useAccount } from 'wagmi'
-import styles from './index.module.css'
-import { type CreatePollFormProps } from './types'
-import { PollSettings } from './components/PollSettings'
-import { Divider, CandidateSelection, Verification, PollConfiguration } from './components'
-import { Button } from '@/components/shared'
-import { usePollForm } from './context'
-import type { EMode, PollType } from '@/types'
+import { useAccount } from 'wagmi';
+import styles from './index.module.css';
+import { type CreatePollFormProps } from './types';
+import { PollSettings } from './components/PollSettings';
+import { Divider, CandidateSelection, Verification, PollConfiguration } from './components';
+import { Button } from '@/components/shared';
+import { usePollForm } from './context';
+import type { EMode, PollType } from '@/types';
 
 const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
-  const { isConnected } = useAccount()
+  const { isConnected } = useAccount();
   const {
     pollData,
     setPollData,
@@ -28,30 +28,30 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
     handleSubmit,
     handlePolicyTypeChange,
     handlePolicyConfigChange
-  } = usePollForm()
+  } = usePollForm();
 
   if (!isConnected) {
     return (
       <div className={styles.container}>
         <h1>Please connect your wallet</h1>
       </div>
-    )
+    );
   }
 
   return (
     <div className={styles['create-form']}>
       <button className={styles.back} onClick={onClose}>
-        <img src="/arrow-left.svg" alt="arrow left" width={27} height={27} />
+        <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
       </button>
       <form onSubmit={handleSubmit} className={styles.form}>
         <h1 className={styles.heading}>Create a Poll</h1>
         <div className={styles['input-field-container']}>
           <label className={styles.label}>Title</label>
           <input
-            type="text"
+            type='text'
             value={pollData.title}
-            onChange={(e) => setPollData((prev) => ({ ...prev, title: e.target.value }))}
-            placeholder="Enter poll title"
+            onChange={e => setPollData(prev => ({ ...prev, title: e.target.value }))}
+            placeholder='Enter poll title'
           />
         </div>
 
@@ -59,18 +59,18 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
           <label className={styles.label}>Description</label>
           <textarea
             value={pollData.description}
-            onChange={(e) => setPollData((prev) => ({ ...prev, description: e.target.value }))}
-            placeholder="Enter poll description"
+            onChange={e => setPollData(prev => ({ ...prev, description: e.target.value }))}
+            placeholder='Enter poll description'
           />
         </div>
 
         <div className={styles['input-field-container']}>
           <label className={styles.label}>Start Date</label>
           <input
-            type="datetime-local"
+            type='datetime-local'
             value={pollData.startTime?.toLocaleString('sv').replace(' ', 'T').slice(0, -3)}
-            onChange={(e) =>
-              setPollData((prev) => ({
+            onChange={e =>
+              setPollData(prev => ({
                 ...prev,
                 startTime: new Date(e.target.value)
               }))
@@ -81,10 +81,10 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
         <div className={styles['input-field-container']}>
           <label className={styles.label}>End Date</label>
           <input
-            type="datetime-local"
+            type='datetime-local'
             value={pollData.endTime?.toLocaleString('sv').replace(' ', 'T').slice(0, -3)}
-            onChange={(e) =>
-              setPollData((prev) => ({
+            onChange={e =>
+              setPollData(prev => ({
                 ...prev,
                 endTime: new Date(e.target.value)
               }))
@@ -94,38 +94,35 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
 
         <PollSettings
           pollData={pollData}
-          onPollTypeChange={(e) =>
-            setPollData((prev) => ({
+          onPollTypeChange={e =>
+            setPollData(prev => ({
               ...prev,
               pollType: e.target.value as PollType
             }))
           }
-          onModeChange={(e) =>
-            setPollData((prev) => ({
+          onModeChange={e =>
+            setPollData(prev => ({
               ...prev,
               mode: e.target.value as EMode
             }))
           }
-          onMaxVoteChange={(
-            e: number | React.ChangeEvent<HTMLInputElement>,
-            action?: 'add' | 'remove'
-          ) => {
+          onMaxVoteChange={(e: number | React.ChangeEvent<HTMLInputElement>, action?: 'add' | 'remove') => {
             if (action === 'add') {
-              setPollData((prev) => ({
+              setPollData(prev => ({
                 ...prev,
                 maxVotePerPerson: prev.maxVotePerPerson + 1
-              }))
+              }));
             } else if (action === 'remove') {
-              setPollData((prev) => ({
+              setPollData(prev => ({
                 ...prev,
                 maxVotePerPerson: prev.maxVotePerPerson - 1
-              }))
+              }));
             } else {
-              const value = typeof e === 'number' ? e : parseInt(e.target.value)
-              setPollData((prev) => ({
+              const value = typeof e === 'number' ? e : parseInt(e.target.value);
+              setPollData(prev => ({
                 ...prev,
                 maxVotePerPerson: value
-              }))
+              }));
             }
           }}
         />
@@ -157,24 +154,17 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
           setPollConfig={setPollConfig}
           pollConfig={pollConfig}
           publicKey={pollData.publicKey}
-          handlePubKeyChange={(e) =>
-            setPollData((prev) => ({ ...prev, publicKey: e.target.value }))
-          }
+          handlePubKeyChange={e => setPollData(prev => ({ ...prev, publicKey: e.target.value }))}
           generateKeyPair={generateKeyPair}
           showKeys={showKeys}
         />
 
         <div className={styles['actions']}>
-          <button
-            type="button"
-            className={styles['cancel-btn']}
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <button type='button' className={styles['cancel-btn']} onClick={onClose} disabled={isLoading}>
             Cancel
           </button>
           <Button
-            type="submit"
+            type='submit'
             action={() => {}}
             className={`${styles['submit-btn']} ${isLoading ? styles.loading : ''}`}
             disabled={isLoading}
@@ -184,7 +174,7 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CreatePollForm
+export default CreatePollForm;

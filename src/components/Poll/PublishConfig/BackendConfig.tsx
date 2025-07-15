@@ -1,15 +1,15 @@
-import styles from '~~/styles/publish.module.css'
-import WithoutImageInput from '~~/components/admin/CreatePollForm/components/WithoutImageInput'
-import { ProofGenerationStatus } from '~~/services/socket/types/response'
+import styles from '~~/styles/publish.module.css';
+import WithoutImageInput from '~~/components/admin/CreatePollForm/components/WithoutImageInput';
+import { ProofGenerationStatus } from '~~/services/socket/types/response';
 
 interface BackendConfigProps {
-  isSelected: boolean
-  proofGenerationState: ProofGenerationStatus
-  onClick: () => void
-  privKeyValue: string
-  onFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onPublish: () => void
-  btnText: string
+  isSelected: boolean;
+  proofGenerationState: ProofGenerationStatus;
+  onClick: () => void;
+  privKeyValue: string;
+  onFormChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPublish: () => void;
+  btnText: string;
 }
 
 const btnTextMap = {
@@ -22,7 +22,7 @@ const btnTextMap = {
   [ProofGenerationStatus.SUCCESS]: 'Result Published',
   [ProofGenerationStatus.ERROR]: 'Publish Result',
   [ProofGenerationStatus.REJECTED]: 'Publish Result'
-}
+};
 
 export const BackendConfig = ({
   isSelected,
@@ -38,19 +38,15 @@ export const BackendConfig = ({
       <div className={styles['config-option']} onClick={onClick}>
         <div className={`${styles.dot} ${isSelected ? styles.selected : ''}`}></div>
         <div className={styles['gen-container']}>
-          <p className={styles['config-heading']}>
-            Use Privote's Backend Services (trust us we're good 🙂)
-          </p>
+          <p className={styles['config-heading']}>Use Privote's Backend Services (trust us we're good 🙂)</p>
           {isSelected && (
             <div className={styles['public-input-container']}>
-              <p className={`${styles['bg-card']} ${styles.text}`}>
-                Use Privote's backend services to publish results
-              </p>
+              <p className={`${styles['bg-card']} ${styles.text}`}>Use Privote's backend services to publish results</p>
               <WithoutImageInput
-                placeholder="Enter Coordinator private key..."
+                placeholder='Enter Coordinator private key...'
                 value={privKeyValue}
                 onChange={onFormChange}
-                name="privateKey"
+                name='privateKey'
                 className={styles['public-input']}
               />
               <button
@@ -70,7 +66,7 @@ export const BackendConfig = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default BackendConfig
+export default BackendConfig;
