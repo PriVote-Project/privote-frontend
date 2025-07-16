@@ -1,8 +1,10 @@
+import { useTokenDetails } from '@/hooks/useTokenDetails';
 import { PollPolicyType } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { MdPolicy } from 'react-icons/md';
 import type { PolicyConfigType, VerificationProps } from '../../types';
+import TokenDetails from './TokenDetails';
 import styles from './index.module.css';
 
 // Display names for each policy
@@ -40,30 +42,35 @@ const ERC20PolicyConfig = ({
 }: {
   config: PolicyConfigType;
   onConfigChange: (config: PolicyConfigType) => void;
-}) => (
-  <div className={styles.policyConfig}>
-    <div className={styles.configField}>
-      <label htmlFor='tokenAddress'>Token Address</label>
-      <input
-        type='text'
-        id='tokenAddress'
-        placeholder='0x...'
-        value={config.tokenAddress || ''}
-        onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
-      />
+}) => {
+  const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC20');
+
+  return (
+    <div className={styles.policyConfig}>
+      <div className={styles.configField}>
+        <label htmlFor='tokenAddress'>Token Address</label>
+        <input
+          type='text'
+          id='tokenAddress'
+          placeholder='0x...'
+          value={config.tokenAddress || ''}
+          onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
+        />
+        <TokenDetails tokenDetails={tokenDetails} isLoading={isLoading} error={error} />
+      </div>
+      <div className={styles.configField}>
+        <label htmlFor='tokenThreshold'>Minimum Token Balance</label>
+        <input
+          type='number'
+          id='tokenThreshold'
+          placeholder='1'
+          value={config.threshold || ''}
+          onChange={e => onConfigChange({ ...config, threshold: e.target.value })}
+        />
+      </div>
     </div>
-    <div className={styles.configField}>
-      <label htmlFor='tokenThreshold'>Minimum Token Balance</label>
-      <input
-        type='number'
-        id='tokenThreshold'
-        placeholder='1'
-        value={config.threshold || ''}
-        onChange={e => onConfigChange({ ...config, threshold: e.target.value })}
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 /**
  * Configuration form for Token policy
@@ -74,24 +81,30 @@ const TokenPolicyConfig = ({
 }: {
   config: PolicyConfigType;
   onConfigChange: (config: PolicyConfigType) => void;
-}) => (
-  <div className={styles.policyConfig}>
-    <div className={styles.configField}>
-      <label htmlFor='tokenAddress'>Token Address</label>
-      <input
-        type='text'
-        id='tokenAddress'
-        placeholder='0x...'
-        value={config.tokenAddress || ''}
-        onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
-      />
+}) => {
+  const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC721');
+
+  return (
+    <div className={styles.policyConfig}>
+      <div className={styles.configField}>
+        <label htmlFor='tokenAddress'>Token Address</label>
+        <input
+          type='text'
+          id='tokenAddress'
+          placeholder='0x...'
+          value={config.tokenAddress || ''}
+          onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
+        />
+        <TokenDetails tokenDetails={tokenDetails} isLoading={isLoading} error={error} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /**
  * Configuration form for Merkle proof policy
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MerkleProofPolicyConfig = ({
   config,
   onConfigChange
@@ -116,6 +129,7 @@ const MerkleProofPolicyConfig = ({
 /**
  * Configuration form for EAS policy
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const EASPolicyConfig = ({
   config,
   onConfigChange
@@ -202,7 +216,7 @@ const Verification = ({
     // Create a custom event to pass to the handler
     const event = {
       target: { value: policy }
-    } as React.ChangeEvent<any>;
+    } as React.ChangeEvent<HTMLSelectElement>;
 
     handlePolicyTypeChange(event);
   };
@@ -247,7 +261,7 @@ const Verification = ({
           {getPolicyConfigComponent(
             selectedPolicy,
             policyConfig || {},
-            onPolicyConfigChange || ((_: PolicyConfigType) => console.warn('Policy config change handler not provided'))
+            onPolicyConfigChange || (() => console.warn('Policy config change handler not provided'))
           )}
         </div>
       )}
