@@ -1,6 +1,9 @@
-import { useCallback, useState } from 'react';
+'use client';
+import { DEFAULT_SG_DATA } from '@/utils/constants';
+import { useEffect } from 'react';
+import Common from '../Common';
 import styles from '../styles.module.css';
-import { PolicyHookProps, PolicyHookResult } from '../types';
+import { PolicyProps } from '../types';
 
 /**
  * FreeForAll Policy Component
@@ -58,32 +61,37 @@ const FreeForAllComponent: React.FC = () => {
 };
 
 /**
- * Hook for handling FreeForAll policy
- * @param props Policy hook props
- * @returns Policy hook result with methods and components
+ * Component for handling FreeForAll policy
  */
-export const useFreeForAllPolicy = (props: PolicyHookProps): PolicyHookResult => {
-  const { isConnected, isRegistered } = props;
-  const [isLoading] = useState(false);
+const FreeForAllPolicy = ({ signupState, setSignupState, onNext, onBack }: PolicyProps) => {
+  const requirementsDescription = 'This is an open poll - anyone with a registered Privote account can participate';
 
-  // Anyone can join if connected and not already registered
-  const canJoin = isConnected && !isRegistered;
-
-  // FreeForAll doesn't need any special signup data
-  const getSignupData = async (): Promise<string> => {
-    return '0x';
+  const handleNext = () => {
+    setSignupState(prev => ({
+      ...prev,
+      signupData: DEFAULT_SG_DATA
+    }));
+    onNext();
   };
 
-  // Memoized component to prevent unnecessary re-renders
-  const PolicyComponent: React.FC = useCallback(() => {
-    return <FreeForAllComponent />;
-  }, []);
+  useEffect(() => {
+    setSignupState(prev => ({
+      ...prev,
+      canJoin: true
+    }));
+  }, [setSignupState]);
 
-  return {
-    canJoin,
-    getSignupData,
-    PolicyComponent,
-    requirementsDescription: 'This is an open poll - anyone with a registered Privote account can participate',
-    isLoading
-  };
+  return (
+    <Common
+      canJoin={signupState.canJoin}
+      requirementsDescription={requirementsDescription}
+      isLoading={false}
+      onNext={handleNext}
+      onBack={onBack}
+    >
+      <FreeForAllComponent />
+    </Common>
+  );
 };
+
+export default FreeForAllPolicy;

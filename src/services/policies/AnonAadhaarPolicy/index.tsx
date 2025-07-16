@@ -1,125 +1,30 @@
+'use client';
+
 import useDecodeService from '@/hooks/useDecodeService';
+import { usePoll } from '@/hooks/usePollContext';
 import { AnonAadhaarPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
-import { ArtifactsOrigin, artifactUrls, init, InitArgs } from '@anon-aadhaar/core';
+import { notification } from '@/utils/notification';
 import { LogInWithAnonAadhaar, useAnonAadhaar } from '@anon-aadhaar/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { encodeAbiParameters, parseAbiParameters } from 'viem';
+import { useAccount } from 'wagmi';
+import Common from '../Common';
 import styles from '../styles.module.css';
-import { PolicyHookProps, PolicyHookResult } from '../types';
+import { PolicyProps } from '../types';
 
-const anonAadhaarInitArgs: InitArgs = {
-  wasmURL: artifactUrls.v2.wasm,
-  zkeyURL: artifactUrls.v2.zkey,
-  vkeyURL: artifactUrls.v2.vk,
-  artifactsOrigin: ArtifactsOrigin.server
-};
-
-/**
- * Hook for handling AnonAadhaar policy
- * @param props Policy hook props
- * @returns Policy hook result with methods and components
- */
-export const useAnonAadhaarPolicy = (props: PolicyHookProps): PolicyHookResult => {
-  const { isConnected, isRegistered, policyData, address } = props;
-  const [anonAadhaar] = useAnonAadhaar();
+const AnonAadhaarPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
+  const requirementsDescription = 'AnonAadhaar verification required to join this poll';
   const [isLoading, setIsLoading] = useState(false);
+  const [anonAadhaar] = useAnonAadhaar();
+  const { isConnected, address } = useAccount();
+  const { hasJoinedPoll } = usePoll();
 
   // Extract nullifierSeed from policyData or use default
   const decodedPolicyData = useDecodeService<AnonAadhaarPolicyData>(PollPolicyType.AnonAadhaar, policyData);
   const nullifierSeed = decodedPolicyData?.nullifierSeed ? decodedPolicyData.nullifierSeed : 4534n;
 
-  useEffect(() => {
-    init(anonAadhaarInitArgs);
-  }, []);
-
-  /**
-   * AnonAadhaar Login Component
-   */
-  const AnonAadhaarComponent: React.FC = useCallback(() => {
-    if (!isConnected) {
-      return <div className={styles.errorMessage}>Please connect your wallet to use AnonAadhaar verification</div>;
-    }
-
-    return (
-      <>
-        <div className={styles.policyHeader}>
-          <div className={styles.policyIconWrapper}>
-            <img src='/icons/aadhaar-icon.svg' alt='Aadhaar' className={styles.policyIcon} />
-          </div>
-          <div className={styles.policyTitle}>
-            <h4>AnonAadhaar Verification</h4>
-            <span className={styles.policySubtitle}>Identity Verification Required</span>
-          </div>
-        </div>
-
-        <div className={styles.policyDetails}>
-          <div className={styles.policyDetailRow}>
-            <span className={styles.detailLabel}>Verification:</span>
-            <span className={styles.detailValue}>
-              Anonymous <span className={styles.highlight}>Aadhaar proof</span>
-            </span>
-          </div>
-          <div className={styles.policyDetailRow}>
-            <span className={styles.detailLabel}>Privacy:</span>
-            <span className={styles.detailValue}>Zero-knowledge proof system</span>
-          </div>
-          <div className={styles.policyDetailRow}>
-            <span className={styles.detailLabel}>Data Shared:</span>
-            <span className={styles.detailValue}>No personal information revealed</span>
-          </div>
-        </div>
-
-        {/* Verification Status */}
-        <div
-          className={`${styles.statusIndicator} ${anonAadhaar.status === 'logged-in' ? styles.success : styles.warning}`}
-        >
-          {anonAadhaar.status === 'logged-in' ? (
-            <>
-              <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                <path
-                  d='M13.5 4.5L6 12L2.5 8.5'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-              AnonAadhaar verification completed
-            </>
-          ) : (
-            <>
-              <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                <circle cx='8' cy='8' r='7' stroke='currentColor' strokeWidth='2' fill='none' />
-                <path d='M8 5v3' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-                <circle cx='8' cy='11' r='1' fill='currentColor' />
-              </svg>
-              Verification required to join this poll
-            </>
-          )}
-        </div>
-
-        {/* Information about AnonAadhaar */}
-        <div className={styles.anonAadhaarDescription}>
-          <strong>About AnonAadhaar:</strong> This verification system allows you to prove your Indian identity
-          anonymously without revealing any personal information. Your Aadhaar details remain completely private.
-        </div>
-
-        {/* AnonAadhaar Login Component */}
-        <div className={styles.anonAadhaarWrapper}>
-          <LogInWithAnonAadhaar nullifierSeed={nullifierSeed} signal={address} />
-        </div>
-      </>
-    );
-  }, [nullifierSeed, address, isConnected, anonAadhaar.status]);
-
-  // User can join if connected, not registered and logged in with AnonAadhaar
-  const canJoin = isConnected && !isRegistered && anonAadhaar.status === 'logged-in';
-
-  /**
-   * Get signup data for AnonAadhaar policy
-   */
-  const getSignupData = async (): Promise<string> => {
+  const handleNext = () => {
     setIsLoading(true);
 
     try {
@@ -161,25 +66,105 @@ export const useAnonAadhaarPolicy = (props: PolicyHookProps): PolicyHookResult =
         BigInt(groth16Proof.pi_c[1])
       ];
 
-      return encodeAbiParameters(
+      const encodedData = encodeAbiParameters(
         parseAbiParameters(
           'uint256 nullifierSeed, uint256 nullifier, uint256 timestamp, uint256 signal, uint256[4] revealArray, uint256[8] groth16Proof'
         ),
         [BigInt(nullifierSeed), nullifier, timestamp, BigInt(address || '0'), revealArray, groth16Proof8]
       );
+
+      setSignupState(prev => ({ ...prev, data: encodedData }));
+      onNext();
     } catch (error) {
       console.error('Error generating AnonAadhaar signup data:', error);
+      notification.error('Error generating AnonAadhaar signup data');
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    canJoin,
-    getSignupData,
-    PolicyComponent: AnonAadhaarComponent,
-    requirementsDescription: 'AnonAadhaar verification required to join this poll',
-    isLoading
-  };
+  useEffect(() => {
+    const canJoin = isConnected && !hasJoinedPoll && anonAadhaar.status === 'logged-in';
+    setSignupState(prev => ({ ...prev, canJoin }));
+  }, [isConnected, hasJoinedPoll, anonAadhaar.status, setSignupState]);
+
+  return (
+    <Common
+      canJoin={signupState.canJoin}
+      requirementsDescription={requirementsDescription}
+      isLoading={isLoading}
+      onNext={handleNext}
+      onBack={onBack}
+    >
+      <div className={styles.policyHeader}>
+        <div className={styles.policyIconWrapper}>
+          <img src='/icons/aadhaar-icon.svg' alt='Aadhaar' className={styles.policyIcon} />
+        </div>
+        <div className={styles.policyTitle}>
+          <h4>AnonAadhaar Verification</h4>
+          <span className={styles.policySubtitle}>Identity Verification Required</span>
+        </div>
+      </div>
+
+      <div className={styles.policyDetails}>
+        <div className={styles.policyDetailRow}>
+          <span className={styles.detailLabel}>Verification:</span>
+          <span className={styles.detailValue}>
+            Anonymous <span className={styles.highlight}>Aadhaar proof</span>
+          </span>
+        </div>
+        <div className={styles.policyDetailRow}>
+          <span className={styles.detailLabel}>Privacy:</span>
+          <span className={styles.detailValue}>Zero-knowledge proof system</span>
+        </div>
+        <div className={styles.policyDetailRow}>
+          <span className={styles.detailLabel}>Data Shared:</span>
+          <span className={styles.detailValue}>No personal information revealed</span>
+        </div>
+      </div>
+
+      {/* Verification Status */}
+      <div
+        className={`${styles.statusIndicator} ${anonAadhaar.status === 'logged-in' ? styles.success : styles.warning}`}
+      >
+        {anonAadhaar.status === 'logged-in' ? (
+          <>
+            <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+              <path
+                d='M13.5 4.5L6 12L2.5 8.5'
+                stroke='currentColor'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+              />
+            </svg>
+            AnonAadhaar verification completed
+          </>
+        ) : (
+          <>
+            <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+              <circle cx='8' cy='8' r='7' stroke='currentColor' strokeWidth='2' fill='none' />
+              <path d='M8 5v3' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+              <circle cx='8' cy='11' r='1' fill='currentColor' />
+            </svg>
+            Verification required to join this poll
+          </>
+        )}
+      </div>
+
+      {/* Information about AnonAadhaar */}
+      <div className={styles.anonAadhaarDescription}>
+        <strong>About AnonAadhaar:</strong> This verification system allows you to prove your Indian identity
+        anonymously without revealing any personal information. Your Aadhaar details remain completely private.
+      </div>
+
+      {/* AnonAadhaar Login Component */}
+      <div className={styles.anonAadhaarWrapper}>
+        <LogInWithAnonAadhaar nullifierSeed={nullifierSeed} signal={address} />
+      </div>
+    </Common>
+  );
 };
+
+export default AnonAadhaarPolicy;

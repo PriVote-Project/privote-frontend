@@ -1,3 +1,4 @@
+import { ISignupState } from '@/components/Poll/JoinPollModal/JoinPollModal';
 import { Hex } from 'viem';
 
 /**
@@ -33,9 +34,19 @@ export interface PolicyHookResult {
 /**
  * Common props for all policy hooks
  */
-export interface PolicyHookProps {
+export interface PolicyProps {
   policyData?: Hex;
-  address?: `0x${string}`;
-  isConnected: boolean;
-  isRegistered: boolean;
+  signupState: ISignupState;
+  setSignupState: React.Dispatch<React.SetStateAction<ISignupState>>;
+  onNext: () => void;
+  onBack: () => void;
+}
+
+export interface ICommonProps {
+  canJoin: boolean;
+  isLoading: boolean;
+  requirementsDescription: string;
+  onNext: () => void;
+  onBack: () => void;
+  children: React.ReactNode;
 }

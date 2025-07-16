@@ -1,12 +1,16 @@
+'use client';
+
 import useDecodeService from '@/hooks/useDecodeService';
+import { usePoll } from '@/hooks/usePollContext';
 import { TokenPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { encodeAbiParameters, parseAbiParameters } from 'viem';
-import { useReadContract, useReadContracts } from 'wagmi';
+import { useAccount, useReadContract, useReadContracts } from 'wagmi';
+import Common from '../Common';
 import styles from '../styles.module.css';
-import { PolicyHookProps, PolicyHookResult } from '../types';
+import { PolicyProps } from '../types';
 
 // ERC721 minimal ABI with functions we need
 const erc721ABI = [
@@ -68,15 +72,7 @@ interface ManualTokenCheck {
   isChecking: boolean;
 }
 
-/**
- * Hook for handling Token (NFT) policy
- * Automatically fetches user's token IDs and allows selection for poll joining
- *
- * @param props Policy hook props
- * @returns Policy hook result with methods and components
- */
-export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
-  const { isConnected, isRegistered, policyData, address } = props;
+const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTokenId, setSelectedTokenId] = useState<bigint | null>(null);
   const [userTokens, setUserTokens] = useState<TokenInfo[]>([]);
@@ -87,6 +83,8 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
     isOwned: null,
     isChecking: false
   });
+  const { isConnected, address } = useAccount();
+  const { hasJoinedPoll: isRegistered } = usePoll();
 
   // Extract token contract address from policyData
   const decodedPolicyData = useDecodeService<TokenPolicyData>(PollPolicyType.Token, policyData);
@@ -123,8 +121,10 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
   const displayName = contractName || '';
   const displaySymbol = contractSymbol || '';
 
+  const requirementsDescription = `This poll requires you to own a token from the ${displayName || 'specified'} collection (${tokenAddress})`;
+
   // Prepare contracts for fetching token IDs (only if enumerable and user has tokens)
-  const tokenIdContracts = React.useMemo(() => {
+  const tokenIdContracts = useMemo(() => {
     if (!supportsEnumerable || tokenBalance === 0 || !address || !tokenAddress) {
       return [];
     }
@@ -205,13 +205,7 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
     }
   }, [tokenIds, tokenBalance, supportsEnumerable, selectedTokenId]);
 
-  // User can join if connected, not registered, owns tokens, and has selected one
-  const canJoin = isConnected && !isRegistered && tokenBalance > 0 && selectedTokenId !== null;
-
-  /**
-   * Get signup data for Token policy (encode the selected tokenId)
-   */
-  const getSignupData = async (): Promise<string> => {
+  const handleNext = () => {
     setIsLoading(true);
 
     try {
@@ -241,7 +235,9 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
       }
 
       // Encode the token ID as uint256 for the signup data
-      return encodeAbiParameters(parseAbiParameters('uint256'), [selectedTokenId]);
+      const encodedData = encodeAbiParameters(parseAbiParameters('uint256'), [selectedTokenId]);
+      setSignupState(prev => ({ ...prev, data: encodedData }));
+      onNext();
     } catch (error) {
       console.error('Error generating Token policy signup data:', error);
       throw error;
@@ -307,25 +303,27 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
     [handleManualTokenInput]
   );
 
-  /**
-   * Token Policy UI Component
-   */
-  const TokenPolicyComponent: React.FC = useCallback(() => {
-    if (!isConnected) {
-      return <div className={styles.errorMessage}>Please connect your wallet to check token ownership</div>;
-    }
+  useEffect(() => {
+    const canJoin = isConnected && !isRegistered && tokenBalance > 0 && selectedTokenId !== null;
+    setSignupState(prev => ({ ...prev, canJoin }));
+  }, [isConnected, isRegistered, tokenBalance, selectedTokenId, setSignupState]);
 
-    if (basicLoading) {
-      return (
+  return (
+    <Common
+      canJoin={signupState.canJoin}
+      requirementsDescription={requirementsDescription}
+      isLoading={isLoading}
+      onNext={handleNext}
+      onBack={onBack}
+    >
+      {!isConnected ? (
+        <div className={styles.errorMessage}>Please connect your wallet to check token ownership</div>
+      ) : basicLoading ? (
         <div className={styles.loadingSpinner}>
           <div className={styles.spinner}></div>
           <span>Loading contract information...</span>
         </div>
-      );
-    }
-
-    if (tokenBalance === 0) {
-      return (
+      ) : tokenBalance === 0 ? (
         <>
           <div className={styles.policyHeader}>
             <div className={styles.policyIconWrapper}>
@@ -366,198 +364,173 @@ export const useTokenPolicy = (props: PolicyHookProps): PolicyHookResult => {
             <p>You need to own at least one token to participate in this poll.</p>
           </div>
         </>
-      );
-    }
-
-    return (
-      <>
-        <div className={styles.policyHeader}>
-          <div className={styles.policyIconWrapper}>
-            <img src='/icons/nft-icon.svg' alt='NFT' className={styles.policyIcon} />
-          </div>
-          <div className={styles.policyTitle}>
-            <h4>NFT-Based Access</h4>
-            <span className={styles.policySubtitle}>Token Ownership Required</span>
-          </div>
-        </div>
-
-        <div className={styles.policyDetails}>
-          {displayName && (
-            <div className={styles.policyDetailRow}>
-              <span className={styles.detailLabel}>Collection:</span>
-              <span className={styles.detailValue}>
-                {displayName} {displaySymbol && `(${displaySymbol})`}
-              </span>
+      ) : (
+        <>
+          <div className={styles.policyHeader}>
+            <div className={styles.policyIconWrapper}>
+              <img src='/icons/nft-icon.svg' alt='NFT' className={styles.policyIcon} />
             </div>
-          )}
-          <div className={styles.policyDetailRow}>
-            <span className={styles.detailLabel}>Contract:</span>
-            <span className={styles.detailValue}>
-              <span className={styles.addressText}>{tokenAddress}</span>
-            </span>
-          </div>
-          <div className={styles.policyDetailRow}>
-            <span className={styles.detailLabel}>Your Balance:</span>
-            <span className={styles.detailValue}>
-              <span className={styles.highlight}>{tokenBalance} tokens</span>
-            </span>
-          </div>
-        </div>
-
-        {fetchError && <div className={styles.errorMessage}>{fetchError}</div>}
-
-        {!supportsEnumerable ? (
-          <div className={styles.tokenSelection}>
-            <h4 className={styles.tokenSelectionTitle}>Enter your Token ID:</h4>
-
-            <div className={styles.manualTokenInput}>
-              <div className={styles.tokenInputDescription}>
-                This contract doesn&apos;t support automatic token discovery. Please enter the Token ID you own.
-              </div>
-              <input
-                type='text'
-                value={manualTokenId}
-                onChange={handleManualTokenInputMemo}
-                placeholder='Enter Token ID (e.g., 1234)'
-                className={styles.tokenInput}
-              />
-              <div className={styles.tokenInputHint}>
-                Enter a valid token ID number that you own from this collection
-              </div>
+            <div className={styles.policyTitle}>
+              <h4>NFT-Based Access</h4>
+              <span className={styles.policySubtitle}>Token Ownership Required</span>
             </div>
-
-            {manualTokenCheck.isChecking || isCheckingOwnership ? (
-              <div className={styles.loadingSpinner}>
-                <div className={styles.spinner}></div>
-                <span>Checking token ownership...</span>
-              </div>
-            ) : manualTokenCheck.tokenId && manualTokenCheck.isOwned !== null ? (
-              <div className={`${styles.statusIndicator} ${manualTokenCheck.isOwned ? styles.success : styles.error}`}>
-                {manualTokenCheck.isOwned ? (
-                  <>
-                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                      <path
-                        d='M13.5 4.5L6 12L2.5 8.5'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                    You own Token #{manualTokenCheck.tokenId.toString()}
-                  </>
-                ) : (
-                  <>
-                    <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                      <path
-                        d='M15 5L5 15M5 5L15 15'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                    You don&apos;t own Token #{manualTokenCheck.tokenId.toString()}
-                  </>
-                )}
-              </div>
-            ) : manualTokenId && !manualTokenCheck.tokenId ? (
-              <div className={`${styles.statusIndicator} ${styles.error}`}>
-                <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                  <path
-                    d='M15 5L5 15M5 5L15 15'
-                    stroke='currentColor'
-                    strokeWidth='2'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-                Invalid Token ID format
-              </div>
-            ) : null}
           </div>
-        ) : tokenIdsLoading ? (
-          <div className={styles.loadingSpinner}>
-            <div className={styles.spinner}></div>
-            <span>Loading your tokens...</span>
-          </div>
-        ) : userTokens.length > 0 ? (
-          <div className={styles.tokenSelection}>
-            <h4 className={styles.tokenSelectionTitle}>Select a token to use for joining:</h4>
-            <div className={styles.tokenList}>
-              {userTokens.map(token => (
-                <div
-                  key={token.tokenId.toString()}
-                  className={`${styles.tokenItem} ${selectedTokenId === token.tokenId ? styles.selected : ''}`}
-                  onClick={() => handleTokenSelect(token.tokenId)}
-                  role='button'
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      handleTokenSelect(token.tokenId);
-                    }
-                  }}
-                >
-                  <div className={styles.tokenIcon}>#{token.tokenId.toString().slice(-4)}</div>
-                  <div className={styles.tokenInfo}>
-                    <div className={styles.tokenId}>Token #{token.tokenId.toString()}</div>
-                    <div className={styles.tokenDescription}>{displayName} NFT</div>
-                  </div>
-                  <div className={`${styles.tokenStatus} ${styles.owned}`}>
-                    {selectedTokenId === token.tokenId ? 'Selected' : 'Owned'}
-                  </div>
-                </div>
-              ))}
-            </div>
 
-            {selectedTokenId && (
-              <div className={`${styles.statusIndicator} ${styles.success}`}>
-                <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-                  <path
-                    d='M13.5 4.5L6 12L2.5 8.5'
-                    stroke='currentColor'
-                    strokeWidth='2'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-                Token #{selectedTokenId.toString()} selected for poll registration
+          <div className={styles.policyDetails}>
+            {displayName && (
+              <div className={styles.policyDetailRow}>
+                <span className={styles.detailLabel}>Collection:</span>
+                <span className={styles.detailValue}>
+                  {displayName} {displaySymbol && `(${displaySymbol})`}
+                </span>
               </div>
             )}
+            <div className={styles.policyDetailRow}>
+              <span className={styles.detailLabel}>Contract:</span>
+              <span className={styles.detailValue}>
+                <span className={styles.addressText}>{tokenAddress}</span>
+              </span>
+            </div>
+            <div className={styles.policyDetailRow}>
+              <span className={styles.detailLabel}>Your Balance:</span>
+              <span className={styles.detailValue}>
+                <span className={styles.highlight}>{tokenBalance} tokens</span>
+              </span>
+            </div>
           </div>
-        ) : tokenBalance > 0 ? (
-          <div className={styles.errorMessage}>
-            Unable to load your tokens. You own {tokenBalance} tokens but they could not be retrieved.
-          </div>
-        ) : null}
-      </>
-    );
-  }, [
-    isConnected,
-    basicLoading,
-    tokenBalance,
-    displayName,
-    displaySymbol,
-    tokenAddress,
-    fetchError,
-    supportsEnumerable,
-    tokenIdsLoading,
-    userTokens,
-    selectedTokenId,
-    handleTokenSelect,
-    manualTokenId,
-    handleManualTokenInputMemo,
-    manualTokenCheck.isOwned,
-    manualTokenCheck.isChecking,
-    manualTokenCheck.tokenId,
-    isCheckingOwnership
-  ]);
 
-  return {
-    canJoin,
-    getSignupData,
-    isLoading: isLoading || basicLoading || tokenIdsLoading || isCheckingOwnership,
-    PolicyComponent: TokenPolicyComponent,
-    requirementsDescription: `This poll requires you to own a token from the ${displayName || 'specified'} collection (${tokenAddress})`
-  };
+          {fetchError && <div className={styles.errorMessage}>{fetchError}</div>}
+
+          {!supportsEnumerable ? (
+            <div className={styles.tokenSelection}>
+              <h4 className={styles.tokenSelectionTitle}>Enter your Token ID:</h4>
+
+              <div className={styles.manualTokenInput}>
+                <div className={styles.tokenInputDescription}>
+                  This contract doesn&apos;t support automatic token discovery. Please enter the Token ID you own.
+                </div>
+                <input
+                  type='text'
+                  value={manualTokenId}
+                  onChange={handleManualTokenInputMemo}
+                  placeholder='Enter Token ID (e.g., 1234)'
+                  className={styles.tokenInput}
+                />
+                <div className={styles.tokenInputHint}>
+                  Enter a valid token ID number that you own from this collection
+                </div>
+              </div>
+
+              {manualTokenCheck.isChecking || isCheckingOwnership ? (
+                <div className={styles.loadingSpinner}>
+                  <div className={styles.spinner}></div>
+                  <span>Checking token ownership...</span>
+                </div>
+              ) : manualTokenCheck.tokenId && manualTokenCheck.isOwned !== null ? (
+                <div
+                  className={`${styles.statusIndicator} ${manualTokenCheck.isOwned ? styles.success : styles.error}`}
+                >
+                  {manualTokenCheck.isOwned ? (
+                    <>
+                      <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+                        <path
+                          d='M13.5 4.5L6 12L2.5 8.5'
+                          stroke='currentColor'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                      You own Token #{manualTokenCheck.tokenId.toString()}
+                    </>
+                  ) : (
+                    <>
+                      <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+                        <path
+                          d='M15 5L5 15M5 5L15 15'
+                          stroke='currentColor'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                        />
+                      </svg>
+                      You don&apos;t own Token #{manualTokenCheck.tokenId.toString()}
+                    </>
+                  )}
+                </div>
+              ) : manualTokenId && !manualTokenCheck.tokenId ? (
+                <div className={`${styles.statusIndicator} ${styles.error}`}>
+                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+                    <path
+                      d='M15 5L5 15M5 5L15 15'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  Invalid Token ID format
+                </div>
+              ) : null}
+            </div>
+          ) : tokenIdsLoading ? (
+            <div className={styles.loadingSpinner}>
+              <div className={styles.spinner}></div>
+              <span>Loading your tokens...</span>
+            </div>
+          ) : userTokens.length > 0 ? (
+            <div className={styles.tokenSelection}>
+              <h4 className={styles.tokenSelectionTitle}>Select a token to use for joining:</h4>
+              <div className={styles.tokenList}>
+                {userTokens.map(token => (
+                  <div
+                    key={token.tokenId.toString()}
+                    className={`${styles.tokenItem} ${selectedTokenId === token.tokenId ? styles.selected : ''}`}
+                    onClick={() => handleTokenSelect(token.tokenId)}
+                    role='button'
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleTokenSelect(token.tokenId);
+                      }
+                    }}
+                  >
+                    <div className={styles.tokenIcon}>#{token.tokenId.toString().slice(-4)}</div>
+                    <div className={styles.tokenInfo}>
+                      <div className={styles.tokenId}>Token #{token.tokenId.toString()}</div>
+                      <div className={styles.tokenDescription}>{displayName} NFT</div>
+                    </div>
+                    <div className={`${styles.tokenStatus} ${styles.owned}`}>
+                      {selectedTokenId === token.tokenId ? 'Selected' : 'Owned'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {selectedTokenId && (
+                <div className={`${styles.statusIndicator} ${styles.success}`}>
+                  <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
+                    <path
+                      d='M13.5 4.5L6 12L2.5 8.5'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                  Token #{selectedTokenId.toString()} selected for poll registration
+                </div>
+              )}
+            </div>
+          ) : tokenBalance > 0 ? (
+            <div className={styles.errorMessage}>
+              Unable to load your tokens. You own {tokenBalance} tokens but they could not be retrieved.
+            </div>
+          ) : null}
+        </>
+      )}
+    </Common>
+  );
 };
+
+export default TokenPolicy;

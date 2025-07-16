@@ -1,18 +1,16 @@
 'use client';
-import { PolicyHookResult } from '@/services/policies/types';
 import React from 'react';
+import { ISignupState } from './JoinPollModal';
 import styles from './JoinPollModal.module.css';
 
 interface StepThreeProps {
-  policy: PolicyHookResult;
+  signupState: ISignupState;
   isLoading: boolean;
   onJoinPoll: () => void;
   onBack: () => void;
 }
 
-export const StepThree: React.FC<StepThreeProps> = ({ policy, isLoading, onJoinPoll, onBack }) => {
-  const { canJoin, requirementsDescription } = policy;
-
+export const StepThree: React.FC<StepThreeProps> = ({ signupState, isLoading, onJoinPoll, onBack }) => {
   return (
     <div className={styles.stepContainer}>
       <div className={styles.stepHeader}>
@@ -40,44 +38,6 @@ export const StepThree: React.FC<StepThreeProps> = ({ policy, isLoading, onJoinP
           <p className={styles.summaryText}>
             You have successfully registered with Privote and meet all the requirements for this poll. Once you join,
             you'll be able to cast your vote anonymously.
-          </p>
-        </div>
-
-        {/* Final Requirements Check */}
-        <div
-          style={{
-            padding: '16px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            marginBottom: '20px'
-          }}
-        >
-          <h4
-            style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              color: '#fff',
-              marginBottom: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}
-          >
-            <svg width='16' height='16' viewBox='0 0 16 16' fill='none'>
-              <path d='M8 1V15M1 8H15' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-            </svg>
-            Poll Requirements
-          </h4>
-          <p
-            style={{
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontSize: '14px',
-              margin: 0,
-              lineHeight: '1.5'
-            }}
-          >
-            {requirementsDescription}
           </p>
         </div>
 
@@ -115,23 +75,6 @@ export const StepThree: React.FC<StepThreeProps> = ({ policy, isLoading, onJoinP
             <li>You can cast your vote anytime before the poll ends</li>
           </ul>
         </div>
-
-        {!canJoin && (
-          <div
-            style={{
-              padding: '16px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(235, 87, 87, 0.15)',
-              border: '1px solid rgba(235, 87, 87, 0.3)',
-              color: '#eb5757',
-              fontSize: '14px',
-              lineHeight: '1.5',
-              textAlign: 'center'
-            }}
-          >
-            <strong>Unable to join:</strong> You don't meet the requirements for this poll.
-          </div>
-        )}
       </div>
 
       <div className={styles.stepFooter}>
@@ -149,9 +92,9 @@ export const StepThree: React.FC<StepThreeProps> = ({ policy, isLoading, onJoinP
         </button>
 
         <button
-          className={`${styles.button} ${canJoin ? styles.primaryButton : styles.secondaryButton}`}
+          className={`${styles.button} ${signupState.canJoin ? styles.primaryButton : styles.secondaryButton}`}
           onClick={onJoinPoll}
-          disabled={!canJoin || isLoading}
+          disabled={!signupState.canJoin || isLoading}
         >
           {isLoading ? (
             <>

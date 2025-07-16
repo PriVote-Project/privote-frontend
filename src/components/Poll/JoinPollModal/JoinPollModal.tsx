@@ -2,11 +2,10 @@
 import { Modal } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
 import { usePoll } from '@/hooks/usePollContext';
-import { usePolicyFactory } from '@/services/policies/PolicyFactory';
 import { PollPolicyType } from '@/types';
+import { notification } from '@/utils/notification';
 import React, { useCallback, useState } from 'react';
 import { Hex } from 'viem';
-import { useAccount } from 'wagmi';
 import styles from './JoinPollModal.module.css';
 import { StepOne } from './StepOne';
 import { StepThree } from './StepThree';
@@ -19,20 +18,20 @@ interface JoinPollModalProps {
   policyData?: Hex;
 }
 
+export interface ISignupState {
+  canJoin: boolean;
+  data: Hex;
+}
+
 export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, policyType, policyData }) => {
-  const { address, isConnected } = useAccount();
+  const [signupState, setSignupState] = useState<ISignupState>({
+    canJoin: false,
+    data: '0x'
+  });
   const { isRegistered, isLoading: isRegistering, onSignup } = useSigContext();
-  const { hasJoinedPoll, onJoinPoll, isLoading: isJoining } = usePoll();
+  const { onJoinPoll, isLoading: isJoining } = usePoll();
 
   const [currentStep, setCurrentStep] = useState(1);
-
-  // Get the policy for this poll
-  const policy = usePolicyFactory(policyType, {
-    policyData,
-    address,
-    isConnected,
-    isRegistered: hasJoinedPoll
-  });
 
   // Reset step when modal opens
   React.useEffect(() => {
@@ -55,14 +54,16 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
 
   const handleJoinPoll = useCallback(async () => {
     try {
-      const signupData = await policy.getSignupData();
-      console.log(signupData);
-      await onJoinPoll(signupData);
+      if (!signupState.canJoin) {
+        notification.error('You cannot join this poll');
+        return;
+      }
+      await onJoinPoll(signupState.data);
       onClose();
     } catch (error) {
       console.error('Error joining poll:', error);
     }
-  }, [policy, onJoinPoll, onClose]);
+  }, [signupState, onJoinPoll, onClose]);
 
   const getStepStatus = (step: number) => {
     if (step === 1) {
@@ -116,9 +117,21 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
           {currentStep === 1 ? (
             <StepOne isRegistered={isRegistered} isLoading={isRegistering} onSignup={onSignup} onNext={handleNext} />
           ) : currentStep === 2 ? (
-            <StepTwo policy={policy} onNext={handleNext} onBack={handleBack} />
+            <StepTwo
+              policyType={policyType}
+              policyData={policyData}
+              signupState={signupState}
+              setSignupState={setSignupState}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
           ) : currentStep === 3 ? (
-            <StepThree policy={policy} isLoading={isJoining} onJoinPoll={handleJoinPoll} onBack={handleBack} />
+            <StepThree
+              signupState={signupState}
+              isLoading={isJoining}
+              onJoinPoll={handleJoinPoll}
+              onBack={handleBack}
+            />
           ) : null}
         </div>
       </div>
