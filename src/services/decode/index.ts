@@ -1,6 +1,5 @@
-import ERCAbi from '@/abi/ERC';
 import { PollPolicyType } from '@/types';
-import { decodeAbiParameters, Hex, parseAbiParameters, PublicClient } from 'viem';
+import { decodeAbiParameters, erc20Abi, Hex, parseAbiParameters, PublicClient } from 'viem';
 import { AnonAadhaarPolicyData, ERC20PolicyData, PolicyData, Token, TokenPolicyData } from './types';
 
 export class DecodeService {
@@ -25,7 +24,7 @@ export class DecodeService {
 
   private async fetchTokenDetails(address: Hex): Promise<Token> {
     const ercContract = {
-      abi: ERCAbi,
+      abi: erc20Abi,
       address
     };
 

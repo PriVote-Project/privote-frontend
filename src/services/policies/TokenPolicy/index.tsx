@@ -6,60 +6,11 @@ import { TokenPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { encodeAbiParameters, parseAbiParameters } from 'viem';
+import { encodeAbiParameters, erc721Abi, parseAbiParameters } from 'viem';
 import { useAccount, useReadContract, useReadContracts } from 'wagmi';
 import Common from '../Common';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
-
-// ERC721 minimal ABI with functions we need
-const erc721ABI = [
-  {
-    name: 'balanceOf',
-    type: 'function',
-    inputs: [{ name: 'owner', type: 'address' }],
-    outputs: [{ name: 'balance', type: 'uint256' }],
-    stateMutability: 'view'
-  },
-  {
-    name: 'tokenOfOwnerByIndex',
-    type: 'function',
-    inputs: [
-      { name: 'owner', type: 'address' },
-      { name: 'index', type: 'uint256' }
-    ],
-    outputs: [{ name: 'tokenId', type: 'uint256' }],
-    stateMutability: 'view'
-  },
-  {
-    name: 'name',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'name', type: 'string' }],
-    stateMutability: 'view'
-  },
-  {
-    name: 'symbol',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'symbol', type: 'string' }],
-    stateMutability: 'view'
-  },
-  {
-    name: 'ownerOf',
-    type: 'function',
-    inputs: [{ name: 'tokenId', type: 'uint256' }],
-    outputs: [{ name: 'owner', type: 'address' }],
-    stateMutability: 'view'
-  },
-  {
-    name: 'supportsInterface',
-    type: 'function',
-    inputs: [{ name: 'interfaceId', type: 'bytes4' }],
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view'
-  }
-] as const;
 
 interface TokenInfo {
   tokenId: bigint;
@@ -96,13 +47,13 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
   const basicContracts = [
     {
       address: tokenAddress as `0x${string}`,
-      abi: erc721ABI,
+      abi: erc721Abi,
       functionName: 'balanceOf',
       args: [address as `0x${string}`]
     },
     {
       address: tokenAddress as `0x${string}`,
-      abi: erc721ABI,
+      abi: erc721Abi,
       functionName: 'supportsInterface',
       args: ['0x780e9d63'] // ERC721Enumerable interface
     }
