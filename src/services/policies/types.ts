@@ -1,3 +1,5 @@
+import { Hex } from 'viem';
+
 /**
  * Common interface for policy hook results
  */
@@ -32,7 +34,7 @@ export interface PolicyHookResult {
  * Common props for all policy hooks
  */
 export interface PolicyHookProps {
-  policyData?: any;
+  policyData?: Hex;
   address?: `0x${string}`;
   isConnected: boolean;
   isRegistered: boolean;

@@ -14,10 +14,7 @@ export const Hero = ({
   description = 'Create polls, participate in elections, and make your voice heard in a Private and Decentralized way.',
   status = 'Privote: The all new way of voting through'
 }: HeroProps) => {
-  const { isRegistered, onSignup, isLoading, error, maciKeypair } = useSigContext();
-
-  console.log(maciKeypair?.publicKey.serialize());
-  console.log(maciKeypair?.privateKey.serialize());
+  const { isRegistered, onSignup, isLoading, error } = useSigContext();
 
   return (
     <div className={styles.hero}>

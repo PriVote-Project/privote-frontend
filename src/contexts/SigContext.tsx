@@ -17,6 +17,7 @@ interface ISigContext {
   isLoading: boolean;
   error: string | undefined;
   generateKeypair: () => void;
+  deleteKeypair: () => void;
   onSignup: () => void;
 }
 
@@ -31,8 +32,6 @@ export default function SigContextProvider({ children }: { children: React.React
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  console.log(maciKeypair);
-
   const { signMessageAsync } = useSignMessage();
   const signer = useEthersSigner();
   const privoteContract = usePrivoteContract();
@@ -45,7 +44,6 @@ export default function SigContextProvider({ children }: { children: React.React
     try {
       const storedKeypair = window.localStorage.getItem(storageKey);
       if (storedKeypair) {
-        console.log('storedKeypair', storedKeypair);
         const privateKey = PrivateKey.deserialize(storedKeypair);
         return new Keypair(privateKey);
       }
@@ -72,7 +70,7 @@ export default function SigContextProvider({ children }: { children: React.React
   );
 
   const generateKeypair = useCallback(async () => {
-    if (!address) return;
+    if (!address) return null;
 
     try {
       const signature = await signMessageAsync({ message: signatureMessage });
@@ -89,6 +87,18 @@ export default function SigContextProvider({ children }: { children: React.React
       return null;
     }
   }, [address, signMessageAsync, signatureMessage, saveKeypairToLocalStorage]);
+
+  const deleteKeypair = useCallback(() => {
+    if (!address) return;
+
+    const storageKey = `maciKeypair-${address}`;
+    try {
+      window.localStorage.removeItem(storageKey);
+      setMaciKeypair(null);
+    } catch (error) {
+      console.error('Error deleting keypair from localStorage:', error);
+    }
+  }, [address]);
 
   const onSignup = useCallback(async () => {
     setError(undefined);
@@ -126,14 +136,16 @@ export default function SigContextProvider({ children }: { children: React.React
       return;
     }
 
-    if (!maciKeypair) {
+    let keypair = maciKeypair;
+    if (!keypair) {
       try {
-        await generateKeypair();
+        keypair = (await generateKeypair()) as Keypair;
       } catch (error) {
         setError('Error creating keypair');
         setIsLoading(false);
 
         notification.error('Error creating keypair');
+        console.log('Error creating keypair:', error);
         return;
       }
     }
@@ -142,7 +154,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
     let isUserRegistered = false;
     try {
-      const { isRegistered: _isRegistered } = await getSignedupUserData(maciKeypair);
+      const { isRegistered: _isRegistered } = await getSignedupUserData(keypair);
 
       isUserRegistered = _isRegistered;
       setIsRegistered(_isRegistered);
@@ -155,6 +167,7 @@ export default function SigContextProvider({ children }: { children: React.React
         type: 'error',
         id: notificationId
       });
+      console.log('Error checking if user is registered:', error);
       return;
     }
 
@@ -199,7 +212,7 @@ export default function SigContextProvider({ children }: { children: React.React
         id: notificationId
       });
     }
-  }, [isConnected, isRegistered, maciKeypair, signMessageAsync, signer]);
+  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair]);
 
   useEffect(() => {
     // Reset keypair when wallet disconnects
@@ -216,7 +229,7 @@ export default function SigContextProvider({ children }: { children: React.React
       setMaciKeypair(null);
       generateKeypair();
     }
-  }, [address, loadKeypairFromLocalStorage]);
+  }, [address, loadKeypairFromLocalStorage, generateKeypair]);
 
   useEffect(() => {
     setSignatureMessage(`Login to ${window.location.origin}`);
@@ -246,7 +259,7 @@ export default function SigContextProvider({ children }: { children: React.React
         setIsRegistered(false);
       }
     })();
-  }, [maciKeypair]);
+  }, [maciKeypair, isConnected]);
 
   return (
     <SigContext.Provider
@@ -257,6 +270,7 @@ export default function SigContextProvider({ children }: { children: React.React
         isLoading,
         error,
         generateKeypair,
+        deleteKeypair,
         onSignup
       }}
     >

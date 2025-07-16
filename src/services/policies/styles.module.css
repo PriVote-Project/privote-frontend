@@ -1,173 +1,495 @@
-.tokenPolicyContainer {
-  width: 100%;
-}
-
-.tokenInfoCard {
+/* COMMON STYLES */
+.policyHeader {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-bottom: 20px;
   padding: 16px;
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.05);
-  margin-bottom: 16px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
 }
 
-.tokenIconContainer {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+.policyIconWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(215, 232, 132, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d7e884, #9de980);
   flex-shrink: 0;
 }
 
-.tokenIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: contain;
+.policyIcon {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%);
 }
 
-.tokenDetails {
+.policyTitle {
   flex: 1;
 }
 
-.tokenName {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.policyTitle h4 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
 }
 
-.tokenSymbol {
+.policySubtitle {
   font-size: 14px;
-  opacity: 0.7;
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
-.tokenAddress {
-  font-family: monospace;
-  font-size: 13px;
-  opacity: 0.6;
-  margin-bottom: 8px;
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.policyDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 4px;
 }
 
-.balanceContainer {
-  margin-top: 10px;
-}
-
-.balanceRow {
+.policyDetailRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 14px;
+  line-height: 1.4;
 }
 
-.balanceLabel {
-  opacity: 0.8;
-}
-
-.balanceValue {
+.detailLabel {
   font-weight: 600;
-  font-family: monospace;
-  padding: 3px 8px;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 90px;
+}
+
+.detailValue {
+  color: #fff;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+  margin-left: 12px;
+}
+
+.highlight {
+  color: #d7e884;
+  font-weight: 700;
+}
+
+.addressText {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #89dceb;
+  background-color: rgba(137, 220, 235, 0.1);
+  padding: 4px 8px;
   border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
+  word-break: break-all;
+  border: 1px solid rgba(137, 220, 235, 0.2);
 }
 
-.progressContainer {
-  margin-top: 12px;
-  padding: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
-  position: relative;
-  height: 10px;
-  overflow: hidden;
-}
-
-.progressBar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  border-radius: 50px;
-  transition: width 0.5s ease-out;
-}
-
-.sufficientBalance {
-  background: linear-gradient(90deg, rgba(215, 232, 132, 0.4), rgba(215, 232, 132, 0.7));
-}
-
-.insufficientBalance {
-  background: linear-gradient(90deg, rgba(235, 87, 87, 0.4), rgba(235, 87, 87, 0.7));
-}
-
-.statusMessage {
-  font-size: 14px;
-  margin-top: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  text-align: center;
+/* Status indicators */
+.statusIndicator {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.sufficientMessage {
-  background-color: rgba(215, 232, 132, 0.15);
-  color: #d7e884;
+.statusIndicator.success {
+  background-color: rgba(157, 233, 128, 0.15);
+  border: 1px solid rgba(157, 233, 128, 0.3);
+  color: #9de980;
 }
 
-.insufficientMessage {
+.statusIndicator.error {
   background-color: rgba(235, 87, 87, 0.15);
+  border: 1px solid rgba(235, 87, 87, 0.3);
   color: #eb5757;
 }
 
-.tokenSelectContainer {
+.statusIndicator.warning {
+  background-color: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  color: #ffc107;
+}
+
+/* FREEFORALLPOLICY STYLES */
+.freeForAllDescription {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(215, 232, 132, 0.1), rgba(157, 233, 128, 0.1));
+  border-radius: 8px;
+  border: 1px solid rgba(215, 232, 132, 0.2);
+}
+
+/* ANONAADHAAR POLICY STYLES */
+.anonAadhaarWrapper {
   margin-top: 16px;
 }
 
-.tokenSelectLabel {
-  font-size: 14px;
-  margin-bottom: 8px;
-  display: block;
-  opacity: 0.8;
+.anonAadhaarStatus {
+  margin-bottom: 16px;
 }
 
-.tokenSelect {
-  width: 100%;
+.anonAadhaarDescription {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #d7e884;
+}
+
+/* ERC20POLICY STYLES */
+.balanceInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(137, 220, 235, 0.1), rgba(116, 199, 229, 0.1));
+  border: 1px solid rgba(137, 220, 235, 0.2);
+}
+
+.balanceLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.balanceValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #89dceb;
+}
+
+.balanceStatus {
+  margin-top: 12px;
   padding: 12px;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
   font-size: 14px;
-  appearance: none;
+  font-weight: 600;
+  text-align: center;
+}
+
+.balanceStatus.sufficient {
+  background-color: rgba(157, 233, 128, 0.15);
+  border: 1px solid rgba(157, 233, 128, 0.3);
+  color: #9de980;
+}
+
+.balanceStatus.insufficient {
+  background-color: rgba(235, 87, 87, 0.15);
+  border: 1px solid rgba(235, 87, 87, 0.3);
+  color: #eb5757;
+}
+
+/* TOKENPOLICY STYLES */
+.tokenSelection {
+  margin-top: 20px;
+}
+
+.tokenSelectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.tokenList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.tokenItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-color: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.tokenSelect:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.tokenItem:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(215, 232, 132, 0.3);
 }
 
-.tokenSelect:focus {
+.tokenItem.selected {
+  background-color: rgba(215, 232, 132, 0.1);
+  border-color: #d7e884;
+}
+
+.tokenIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d7e884, #9de980);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.tokenInfo {
+  flex: 1;
+}
+
+.tokenId {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.tokenDescription {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tokenStatus {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.tokenStatus.owned {
+  background-color: rgba(157, 233, 128, 0.2);
+  color: #9de980;
+}
+
+.noTokensMessage {
+  text-align: center;
+  padding: 32px 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.noTokensIcon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  opacity: 0.5;
+}
+
+.loadingSpinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  gap: 12px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #d7e884;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Error states */
+.errorMessage {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: rgba(235, 87, 87, 0.1);
+  border: 1px solid rgba(235, 87, 87, 0.3);
+  color: #eb5757;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.retryButton {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: rgba(235, 87, 87, 0.2);
+  border: 1px solid rgba(235, 87, 87, 0.4);
+  color: #eb5757;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+  background-color: rgba(235, 87, 87, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .policyHeader {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .policyDetailRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detailValue {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  .addressText {
+    font-size: 11px;
+    word-break: break-all;
+  }
+
+  .tokenList {
+    max-height: 150px;
+  }
+
+  .tokenItem {
+    padding: 10px;
+  }
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.policyHeader,
+.policyDetails,
+.tokenSelection {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+.tokenItem:focus {
+  outline: 2px solid #d7e884;
+  outline-offset: 2px;
+}
+
+.retryButton:focus {
+  outline: 2px solid #eb5757;
+  outline-offset: 2px;
+}
+
+/* Utility classes */
+.textCenter {
+  text-align: center;
+}
+
+.textLeft {
+  text-align: left;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.marginTop {
+  margin-top: 16px;
+}
+
+.marginBottom {
+  margin-bottom: 16px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* Manual Token Input Styles */
+.manualTokenInput {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-block: 16px;
+}
+
+.tokenInput {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.tokenInput:focus {
   outline: none;
-  border-color: rgba(215, 232, 132, 0.5);
+  border-color: #d7e884;
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(215, 232, 132, 0.2);
+}
+
+.tokenInput:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.tokenInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tokenInput:invalid {
+  border-color: rgba(235, 87, 87, 0.5);
+}
+
+.tokenInputDescription {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.tokenInputHint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
 }

@@ -15,7 +15,7 @@ export interface IJoinedUserData {
   pollStateIndex: string | undefined;
 }
 
-export const getSignedupUserData = async (keyPair?: Keypair | null) => {
+export const getSignedupUserData = async (keyPair: Keypair) => {
   try {
     const data: { user: User } = await client.request(GET_PRIVOTE_USER_QUERY, {
       id: `${keyPair?.publicKey.asContractParam().x} ${keyPair?.publicKey.asContractParam().y}`

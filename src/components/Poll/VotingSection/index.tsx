@@ -64,8 +64,6 @@ export const VotingSection = ({
   const [isContentOverflowing, setIsContentOverflowing] = useState(false);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
 
-  console.log(pollDeployer);
-
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);

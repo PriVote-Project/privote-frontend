@@ -1,54 +1,39 @@
-import { useSigContext } from '@/contexts/SigContext';
 import { usePoll } from '@/hooks/usePollContext';
-import { usePolicyFactory } from '@/services/policies/PolicyFactory';
 import { PollPolicyType } from '@/types';
-import React from 'react';
+import React, { useState } from 'react';
+import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
+import { JoinPollModal } from '../JoinPollModal';
 import styles from './index.module.css';
 
 interface JoinPollButtonProps {
   policyType: PollPolicyType;
-  policyData?: any;
+  policyData?: Hex;
 }
 
 /**
- * A policy-driven button component for joining polls
- * Adapts its UI and behavior based on the poll's policy type
+ * A simplified button component for joining polls that opens a step-by-step modal
  */
 export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, policyData }) => {
-  const { address, isConnected } = useAccount();
-  const { hasJoinedPoll, onJoinPoll, isLoading: isJoining } = usePoll();
-  const { isRegistered, isLoading: isRegistering, onSignup } = useSigContext();
+  const { isConnected } = useAccount();
+  const { hasJoinedPoll } = usePoll();
 
-  // Use the policy factory to get the appropriate policy
-  const policy = usePolicyFactory(policyType, {
-    policyData,
-    address,
-    isConnected,
-    isRegistered: hasJoinedPoll
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // If the user is already registered, show a success message
+  // If the user has already joined the poll, don't show the button
   if (hasJoinedPoll) {
     return null;
   }
 
-  // Handler for joining the poll
-  const handleJoinPoll = async () => {
-    try {
-      if (!policy.canJoin) {
-        console.error('You cannot join this poll. Check requirements.');
-        return;
-      }
-
-      const signupData = await policy.getSignupData();
-      await onJoinPoll(signupData);
-    } catch (error) {
-      console.error('Error joining poll:', error);
-    }
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
   };
 
-  // If user is not connected, show connect wallet button
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // If user is not connected, show connect wallet prompt
   if (!isConnected) {
     return (
       <div className={styles.joinButtonWrapper}>
@@ -63,64 +48,16 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
     );
   }
 
-  // If user is not registered, show register button
-  if (!isRegistered) {
-    return (
-      <div className={styles.joinButtonWrapper}>
-        <div className={styles.walletPrompt}>
-          <img src='/icons/free-icon.svg' alt='Register' className={styles.walletIcon} />
-          <p>Registration required to join polls</p>
-          <button className={styles.connectWalletButton} onClick={onSignup} disabled={isRegistering}>
-            {isRegistering ? (
-              <>
-                <span className={styles.loader}></span>
-                Registering...
-              </>
-            ) : (
-              'Register with Privote'
-            )}
-          </button>
-        </div>
-      </div>
-    );
-  }
-  // Render the policy-specific UI component
-  const PolicyComponent = policy.PolicyComponent;
-
+  // Main join button - opens the step modal
   return (
     <div className={styles.joinButtonWrapper}>
-      {policy.requirementsDescription && (
-        <div className={styles.eligibilityStatus + ' ' + (policy.canJoin ? styles.eligible : styles.notEligible)}>
-          {policy.canJoin ? (
-            <img src='/icons/check-icon.svg' alt='Eligible' className={styles.statusIcon} />
-          ) : (
-            <img src='/icons/error-icon.svg' alt='Not Eligible' className={styles.statusIcon} />
-          )}
-          <span>{policy.requirementsDescription}</span>
-        </div>
-      )}
+      <button onClick={handleOpenModal} className={styles.joinButton}>
+        <img src='/icons/join-icon.svg' alt='Join' width='16' height='16' />
+        <span>Join Poll</span>
+      </button>
 
-      {/* Render the policy-specific UI component in a styled container */}
-      <div className={styles.policyComponent}>
-        <PolicyComponent />
-      </div>
-
-      {/* Show join button only if the user can join */}
-      {policy.canJoin && (
-        <button onClick={handleJoinPoll} disabled={isJoining || policy.isLoading} className={styles.joinButton}>
-          {isJoining || policy.isLoading ? (
-            <>
-              <span className={styles.loader}></span>
-              <span>Joining Poll...</span>
-            </>
-          ) : (
-            <>
-              <img src='/icons/join-icon.svg' alt='Join' width='16' height='16' />
-              <span>Join Poll</span>
-            </>
-          )}
-        </button>
-      )}
+      {/* Step-by-step modal */}
+      <JoinPollModal isOpen={isModalOpen} onClose={handleCloseModal} policyType={policyType} policyData={policyData} />
     </div>
   );
 };
