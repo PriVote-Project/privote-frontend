@@ -1,4 +1,4 @@
-import PollDetails from './PollDetails';
-import VoteCard from './VoteCard';
+import PollHeader from './PollHeader';
+import VotingSection from './VotingSection';
 
-export { PollDetails, VoteCard };
+export { PollHeader, VotingSection };

@@ -1,5 +1,6 @@
 import { MarkdownRenderer } from '@/components/shared';
 import { EMode, PollType, type PollOption } from '@/types';
+import { notification } from '@/utils/notification';
 import { CID } from 'multiformats';
 import { fromHex } from 'multiformats/bytes';
 import Link from 'next/link';
@@ -56,13 +57,12 @@ const VoteCard = ({
   const handleVoteChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isUserRegistered || !isConnected) {
-        // notification.error('Please register to vote')
+        notification.error('Please Join Poll first to Vote!');
         console.log('Please register to vote');
         return;
       }
       const isChecked = e.target.checked;
 
-      console.log(pollType, isChecked);
       if (isChecked) {
         switch (pollType) {
           case PollType.SINGLE_VOTE:

@@ -1,5 +1,5 @@
 'use client';
-import { PollDetails } from '@/components/Poll';
+import { PollHeader, VotingSection } from '@/components/Poll';
 import { EmptyState, ErrorState } from '@/components/shared';
 import { PollProvider } from '@/contexts/PollContext';
 import { usePollContext } from '@/hooks/usePollContext';
@@ -67,7 +67,10 @@ const UserPoll = () => {
 
   return (
     <div className={styles['main-container']}>
-      <PollDetails pollAddress={poll.id} />
+      <div>
+        <PollHeader />
+        <VotingSection pollAddress={poll.id} />
+      </div>
     </div>
   );
 };

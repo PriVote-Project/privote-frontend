@@ -36,9 +36,9 @@ export const PollHeader = () => {
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(
     status === PollStatus.OPEN
-      ? Number(pollStartTime) - Date.now() / 1000
+      ? Number(pollEndTime) - Date.now() / 1000
       : status === PollStatus.NOT_STARTED
-        ? Number(pollEndTime) - Date.now() / 1000
+        ? Number(pollStartTime) - Date.now() / 1000
         : 0
   );
 
@@ -59,8 +59,8 @@ export const PollHeader = () => {
       const timer = setInterval(() => {
         const newTime =
           status === PollStatus.OPEN
-            ? Number(pollStartTime) - Date.now() / 1000
-            : Number(pollEndTime) - Date.now() / 1000;
+            ? Number(pollEndTime) - Date.now() / 1000
+            : Number(pollStartTime) - Date.now() / 1000;
         setTimeRemaining(newTime);
 
         if (newTime <= 0) {
@@ -108,7 +108,9 @@ export const PollHeader = () => {
           <div className={styles.status}>
             <Image src='/clock.svg' alt='clock' width={24} height={24} />
             {(status === PollStatus.CLOSED || status === PollStatus.RESULT_COMPUTED) && 'Poll ended'}
-            {status === PollStatus.OPEN && (
+            {status === PollStatus.OPEN && timeRemaining <= 0 ? (
+              'Poll ended'
+            ) : (
               <span className={styles.timeInfo}>Time left: {formatTimeRemaining(timeRemaining)}</span>
             )}
             {status === PollStatus.NOT_STARTED && (
