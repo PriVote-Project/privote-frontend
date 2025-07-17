@@ -5,6 +5,7 @@ import { usePollContext } from '@/hooks/usePollContext';
 import usePollResults from '@/hooks/usePollResults';
 import useVoting from '@/hooks/useVoting';
 import { PollStatus, PollType } from '@/types';
+import { notification } from '@/utils/notification';
 import { PublicKey } from '@maci-protocol/domainobjs';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -42,8 +43,6 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const isTallied = resultData?.tallied || false;
   const totalVotes = resultData?.total || BigInt(0);
   const pollResults = resultData?.results;
-
-  console.log(resultData);
 
   const { data: coordinatorPubKeyResult } = useReadContract({
     abi: pollAbi,
@@ -122,12 +121,12 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const handleWeightedVoteChange = useCallback(
     (prevVotes: string | undefined, votes: string, index: number) => {
       if (!isConnected) {
-        // notification.error('Please connect your wallet')
+        notification.error('Please connect your wallet');
         return;
       }
 
       if (!isUserJoined) {
-        // notification.error('Please register to vote')
+        notification.error('Please register to vote');
         return;
       }
 
@@ -136,7 +135,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
         Number(maxVotePerPerson) &&
         currentTotalVotes - (Number(prevVotes) ?? 0) + Number(votes) > Number(maxVotePerPerson)
       ) {
-        // notification.info('You have reached the maximum vote limit')
+        notification.info('You have reached the maximum vote limit');
         return;
       }
       handleVoteChange(index, votes);
@@ -235,8 +234,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
                 totalVotes={Number(totalVotes || 0)}
                 isUserRegistered={isUserJoined}
                 handleWeightedVoteChange={handleWeightedVoteChange}
-                // TODO: Compute winner
-                isWinner={false}
+                isWinner={false} // TODO: Compute winner
                 pollType={PollType.SINGLE_VOTE}
                 isInvalid={Boolean(isVotesInvalid[prevIndex])}
                 onVoteChange={(index, votes) => {
@@ -249,7 +247,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
             ))}
         </ul>
       </VoteSummarySection>
-      {isUserJoined && (
+      {isUserJoined && pollStatus === PollStatus.OPEN && (
         <div className={styles.col}>
           {pollType !== PollType.WEIGHTED_MULTIPLE_VOTE && (
             <button

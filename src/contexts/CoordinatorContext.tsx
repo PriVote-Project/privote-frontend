@@ -19,7 +19,6 @@ import {
 export const CoordinatorContext = createContext<ICoordinatorContextType | undefined>(undefined);
 
 async function makeCoordinatorServicePostRequest<T>(url: string, body: string): Promise<TCoordinatorServiceResult<T>> {
-  console.log('making req to:', url, 'with body:', body);
   const type = url.split('/').pop() ?? 'finalize';
   try {
     const response = await fetch(url, {
@@ -126,7 +125,6 @@ export const CoordinatorProvider = ({ children }: { children: ReactNode }) => {
 
       let notificationId = '';
       const hasMerged = await checkMergeStatus().catch(() => setFinalizeStatus('notStarted'));
-      console.log(hasMerged);
       if (!hasMerged) {
         setFinalizeStatus('merging');
         notificationId = notification.loading('Merging poll...');

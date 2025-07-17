@@ -205,9 +205,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const checkMergeStatus = useCallback(async () => {
     const poll = PollFactory.connect(pollAddress, signer);
 
-    console.log(poll);
     const hasMerged = await poll.stateMerged();
-    console.log(hasMerged);
     return hasMerged;
   }, [signer, pollAddress]);
 

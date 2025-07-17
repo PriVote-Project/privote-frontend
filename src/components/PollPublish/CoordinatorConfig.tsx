@@ -35,7 +35,7 @@ const CoordinatorConfig = ({ isSelected, onClick }: CoordinatorConfigProps) => {
           {isSelected && (
             <div className={styles['public-input-container']}>
               <p className={`${styles['bg-card']} ${styles.text}`}>
-                Use Privote&aposs backend services to publish results
+                Use Privote&apos;s backend services to publish results
               </p>
               <WithoutImageInput
                 placeholder='Enter Coordinator private key...'
