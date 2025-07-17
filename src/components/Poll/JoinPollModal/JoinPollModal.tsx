@@ -1,7 +1,7 @@
 'use client';
 import { Modal } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
 import React, { useCallback, useState } from 'react';
@@ -29,7 +29,7 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
     data: '0x'
   });
   const { isRegistered, isLoading: isRegistering, onSignup } = useSigContext();
-  const { onJoinPoll, isLoading: isJoining } = usePoll();
+  const { onJoinPoll, isLoading: isJoining } = usePollContext();
 
   const [currentStep, setCurrentStep] = useState(1);
 

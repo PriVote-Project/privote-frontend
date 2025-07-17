@@ -17,10 +17,14 @@ export type TCoordinatorServiceResult<T, E = Error> = { success: true; data: T }
 
 export type FinalizeStatus = 'notStarted' | 'merging' | 'proving' | 'submitting' | 'submitted';
 
+export interface IFinalizePollArgs {
+  setFinalizeStatus: (status: FinalizeStatus) => void;
+}
+
 export interface ICoordinatorContextType {
-  finalizeStatus: FinalizeStatus;
-  checkIsTallied: (pollId: number) => Promise<boolean>;
-  finalizeProposal: (pollId: number) => Promise<void>;
+  privKey: string;
+  setPrivKey: React.Dispatch<React.SetStateAction<string>>;
+  finalizePoll: (args: IFinalizePollArgs) => Promise<void>;
 }
 
 export interface IPollContextType {
@@ -37,6 +41,8 @@ export interface IPollContextType {
   maciKeypair?: Keypair;
   stateIndex?: string;
   onJoinPoll: (signupData?: string) => Promise<void>;
+  checkIsTallied: () => Promise<boolean>;
+  checkMergeStatus: () => Promise<boolean>;
   refetchPoll: (options?: RefetchOptions) => Promise<QueryObserverResult<TransformedPoll | null, Error>>;
 }
 

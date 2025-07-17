@@ -1,7 +1,7 @@
 'use client';
 
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import { TokenPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
@@ -35,7 +35,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
     isChecking: false
   });
   const { isConnected, address } = useAccount();
-  const { hasJoinedPoll: isRegistered } = usePoll();
+  const { hasJoinedPoll: isRegistered } = usePollContext();
 
   // Extract token contract address from policyData
   const decodedPolicyData = useDecodeService<TokenPolicyData>(PollPolicyType.Token, policyData);

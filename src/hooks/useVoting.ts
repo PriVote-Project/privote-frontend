@@ -30,7 +30,6 @@ export const useVoting = ({
 }: UseVotingProps) => {
   const [votes, setVotes] = useState<{ index: number; votes: string }[]>([]);
   const [isVotesInvalid, setIsVotesInvalid] = useState<Record<number, boolean>>({});
-  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
 
   const { writeContractAsync, isPending } = useWriteContract();
 
@@ -169,7 +168,6 @@ export const useVoting = ({
               })
           }
         );
-        setSelectedCandidate(null);
       } else {
         await writeContractAsync(
           {
@@ -208,7 +206,6 @@ export const useVoting = ({
               })
           }
         );
-        setSelectedCandidate(null);
       }
 
       setVotes([]);
@@ -222,10 +219,8 @@ export const useVoting = ({
   return {
     votes,
     isVotesInvalid,
-    selectedCandidate,
     isPending,
     setIsVotesInvalid,
-    setSelectedCandidate,
     voteUpdated,
     castVote
   };

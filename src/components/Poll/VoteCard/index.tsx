@@ -13,32 +13,27 @@ import OptionDetailsModal from './OptionDetailsModal';
 interface VoteCardProps {
   option: PollOption;
   votes: number | string;
-  result?: {
-    candidate: string;
-    votes: number;
-  };
+  isTallied: boolean;
   totalVotes: number;
   isWinner: boolean;
   index: number;
   pollOpen: boolean;
   pollType: PollType;
   isInvalid: boolean;
-  isSelected: boolean;
   onVoteChange: (index: number, votes: string) => void;
   onInvalidStatusChange: (status: boolean) => void;
   handleWeightedVoteChange: (prevVotes: string | undefined, votes: string, index: number) => void;
-  onSelect: (index: number) => void;
   maxVotePerPerson?: number;
   onVote: () => void;
   isLoading: boolean;
   isUserRegistered: boolean;
-  isQv: EMode;
+  mode: EMode;
 }
 
 const VoteCard = ({
   votes,
   option,
-  result,
+  isTallied,
   totalVotes,
   isWinner,
   pollType,
@@ -52,7 +47,7 @@ const VoteCard = ({
   maxVotePerPerson,
   onVote,
   isLoading,
-  isQv
+  mode
 }: VoteCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isConnected } = useAccount();
@@ -87,7 +82,7 @@ const VoteCard = ({
     [index, pollType, onVoteChange, onInvalidStatusChange]
   );
 
-  const votePercentage = totalVotes > 0 && result ? Math.round((result.votes / totalVotes) * 100) : 0;
+  const votePercentage = totalVotes > 0 && isTallied ? Math.round(Number(votes) * 100) : 0;
 
   return (
     <>
@@ -155,7 +150,7 @@ const VoteCard = ({
             {pollType === PollType.WEIGHTED_MULTIPLE_VOTE && (
               <WeightInput
                 index={index}
-                isQv={isQv}
+                isQv={mode}
                 votes={votes}
                 maxVotePerPerson={maxVotePerPerson}
                 handleWeightedVoteChange={handleWeightedVoteChange}
@@ -165,13 +160,13 @@ const VoteCard = ({
           </div>
         )}
 
-        {result && !pollOpen && (
+        {isTallied && !pollOpen && (
           <div className={`${styles.result} ${!option.description && styles.vertical}`}>
             <div className={styles.voteBar}>
               <div className={styles.voteProgress} style={{ width: `${votePercentage}%` }} />
             </div>
             <span className={styles.voteCount}>
-              {result.votes} votes ({votePercentage}%)
+              {votes} votes ({votePercentage}%)
             </span>
           </div>
         )}

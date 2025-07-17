@@ -15,7 +15,7 @@ interface VoteSummarySectionProps {
   canVote: boolean;
   children: React.ReactNode;
   pollType: PollType;
-  isQv: EMode;
+  mode: EMode;
 }
 
 let showSummary = false;
@@ -31,7 +31,7 @@ const VoteSummarySection = ({
   canVote,
   children,
   pollType,
-  isQv
+  mode
 }: VoteSummarySectionProps) => {
   const [selectedOption, setSelectedOption] = useState<number>(0);
   const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -80,7 +80,7 @@ const VoteSummarySection = ({
                       <div className={styles.optionInfo}>
                         <h3>{option.name}</h3>
                         <WeightInput
-                          isQv={isQv}
+                          isQv={mode}
                           index={index}
                           votes={optionVotes}
                           maxVotePerPerson={maxVotePerPerson}

@@ -7,8 +7,10 @@ import { getJoinedUserData } from '@/utils/subgraph';
 import {
   downloadPollJoiningArtifactsBrowser,
   generateSignUpTreeFromKeys,
+  isTallied,
   joinPoll,
-  MaciSubgraph
+  MaciSubgraph,
+  Poll__factory as PollFactory
 } from '@maci-protocol/sdk/browser';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSigContext } from './SigContext';
@@ -187,6 +189,28 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     [artifacts, hasJoinedPoll, inclusionProof, isRegistered, maciKeypair, signer, stateIndex, poll]
   );
 
+  const checkIsTallied = useCallback(async () => {
+    if (!privoteContract || !signer || !poll) {
+      return false;
+    }
+
+    const isPollTallied = await isTallied({
+      maciAddress: privoteContract.address,
+      pollId: poll.pollId.toString(),
+      signer
+    });
+    return isPollTallied;
+  }, [privoteContract, signer, poll]);
+
+  const checkMergeStatus = useCallback(async () => {
+    const poll = PollFactory.connect(pollAddress, signer);
+
+    console.log(poll);
+    const hasMerged = await poll.stateMerged();
+    console.log(hasMerged);
+    return hasMerged;
+  }, [signer, pollAddress]);
+
   // // generate maci state tree locally
   useEffect(() => {
     (async () => {
@@ -278,7 +302,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       pollStateIndex,
       stateIndex,
       onJoinPoll,
-      refetchPoll
+      refetchPoll,
+      checkMergeStatus,
+      checkIsTallied
     }),
     [
       isLoading,
@@ -292,7 +318,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       pollStateIndex,
       stateIndex,
       onJoinPoll,
-      refetchPoll
+      refetchPoll,
+      checkMergeStatus,
+      checkIsTallied
     ]
   );
 

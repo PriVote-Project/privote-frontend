@@ -1,8 +1,8 @@
+import styles from '@/styles/publish.module.css';
 import { EMode, TransformedPoll } from '@/types';
 import { useState } from 'react';
 import { FiCheck, FiCopy } from 'react-icons/fi';
 import { useAccount } from 'wagmi';
-import styles from '~~/styles/publish.module.css';
 
 interface HardhatConfigProps {
   poll?: TransformedPoll | null;
@@ -57,9 +57,9 @@ export const HardhatConfig = ({ poll, pollId, isSelected, onClick }: HardhatConf
                 </div>
 
                 <div className={styles.stepBlock}>
-                  <h3 className={styles.stepTitle}>Step 2: Generate Results</h3>
+                  <h3 className={styles.stepTitle}>Step 2: Generate Results & submit on-chain</h3>
                   <p className={styles.stepDescription}>
-                    Replace <code>&lt;private-key&gt;</code> with your coordinator's private key generated while
+                    Replace <code>&lt;private-key&gt;</code> with your coordinator&apos;s private key generated while
                     creating the poll.
                   </p>
                   <CommandBlock

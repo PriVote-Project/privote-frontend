@@ -1,82 +1,68 @@
-import type { TransformedPoll } from '@/types';
-import { useState } from 'react';
+import { getResults, type IResult } from '@maci-protocol/sdk/browser';
+import { useQuery, type Query } from '@tanstack/react-query';
+import { useEthersSigner } from './useEthersSigner';
+import { usePollContext } from './usePollContext';
+import usePrivoteContract from './usePrivoteContract';
 
-interface IResult {
-  candidate: string;
-  votes: number;
-}
+export const usePollResults = () => {
+  const { poll, checkIsTallied } = usePollContext();
+  const signer = useEthersSigner();
+  const privoteContractAddress = usePrivoteContract()?.address;
+  const pollId = poll?.pollId;
 
-interface UsePollResultsReturn {
-  result: IResult[] | null;
-  totalVotes: number;
-  isLoading: boolean;
-  error: Error | null;
-  refetch: () => Promise<void>;
-}
+  return useQuery({
+    enabled: !!signer && !!poll && !!privoteContractAddress,
+    queryKey: [
+      'get-poll-results',
+      {
+        pollId: String(pollId),
+        signerAddress: signer?.address,
+        privoteContractAddress
+      }
+    ],
+    queryFn: async () => {
+      let tallied = false;
+      let results: IResult[] | undefined = undefined;
 
-export const usePollResults = (poll: TransformedPoll | null | undefined): UsePollResultsReturn => {
-  const [result, setResult] = useState<IResult[] | null>(null);
-  const [totalVotes, setTotalVotes] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  // const { chainId } = useAccount()
-  // const {
-  //   data: tally,
-  //   isLoading: pollTallyLoading,
-  //   error: pollTallyError
-  // } = useReadContract({
-  //   abi: deployedContracts[chainId as keyof typeof deployedContracts]?.privote?.abi,
-  //   address: poll?.id as `0x${string}`,
-  //   functionName: 'getPollResult',
-  //   args: [BigInt(poll?.pollId || 0)]
-  // })
+      const voteEndDate = Number(poll?.endDate.toString());
+      const voteStartDate = Number(poll?.startDate.toString());
+      const now = Math.round(Date.now() / 1000);
+      const voteEnded = voteEndDate < now;
+      let total: bigint = 0n;
 
-  // console.log(pollTallyError)
+      // fetch results only if the vote has ended
+      if (voteEnded && signer && pollId) {
+        try {
+          tallied = await checkIsTallied();
+          if (tallied) {
+            results = await getResults({
+              maciAddress: privoteContractAddress as string,
+              pollId: pollId.toString(),
+              signer
+            });
+            total = results.reduce((acc: bigint, cur: IResult) => acc + cur.value, 0n);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
-  // const fetchResults = async () => {
-  //   if (!poll || !tally) return
-
-  //   setIsLoading(true)
-  //   setError(null)
-
-  //   try {
-  //     if (!poll.options || poll.options.length > tally.length) {
-  //       throw new Error('Invalid tally data')
-  //     }
-
-  //     const tallyCounts: number[] = tally
-  //       .map((v: bigint) => Number(v))
-  //       .slice(0, poll.options.length)
-
-  //     const results = poll.options.map((value: PollOption, i: number) => ({
-  //       candidate: value.name,
-  //       votes: tallyCounts[i]
-  //     }))
-
-  //     results.sort((a: IResult, b: IResult) => b.votes - a.votes)
-  //     const total = results.reduce((acc: number, cur: IResult) => acc + cur.votes, 0)
-
-  //     setResult(results)
-  //     setTotalVotes(total)
-  //   } catch (err) {
-  //     setError(err instanceof Error ? err : new Error('Failed to fetch results'))
-  //     console.error('Error fetching poll results:', err)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchResults()
-  // }, [tally])
-
-  return {
-    result,
-    totalVotes,
-    isLoading,
-    error,
-    refetch: () => {}
-  };
+      return {
+        voteStartDate,
+        voteEndDate,
+        now,
+        voteEnded,
+        tallied,
+        results,
+        total
+      };
+    },
+    // refetch every 10 seconds if the vote is not ended
+    refetchInterval: ({ state }: Query<any, any, any, any>) => {
+      return state?.data?.voteEnded ? false : 10000;
+    },
+    refetchOnWindowFocus: true
+  });
 };
 
 export default usePollResults;

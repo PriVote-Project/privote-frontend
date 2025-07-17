@@ -1,7 +1,7 @@
 'use client';
 
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import { AnonAadhaarPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
@@ -18,7 +18,7 @@ const AnonAadhaarPolicy = ({ policyData, signupState, setSignupState, onNext, on
   const [isLoading, setIsLoading] = useState(false);
   const [anonAadhaar] = useAnonAadhaar();
   const { isConnected, address } = useAccount();
-  const { hasJoinedPoll } = usePoll();
+  const { hasJoinedPoll } = usePollContext();
 
   // Extract nullifierSeed from policyData or use default
   const decodedPolicyData = useDecodeService<AnonAadhaarPolicyData>(PollPolicyType.AnonAadhaar, policyData);

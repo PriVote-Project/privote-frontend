@@ -1,13 +1,33 @@
 'use client';
-import { HardhatConfig } from '@/components/PollPublish';
+import { CoordinatorConfig, HardhatConfig } from '@/components/PollPublish';
+import { EmptyState } from '@/components/shared';
+import { CoordinatorProvider } from '@/contexts/CoordinatorContext';
+import { PollProvider } from '@/contexts/PollContext';
 import { usePoll } from '@/hooks/usePoll';
+import styles from '@/styles/publish.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import styles from '~~/styles/publish.module.css';
 
 export default function Publish() {
+  // Get poll ID from URL parameters
+  const { id } = useParams<{ id: string }>();
+
+  if (!id) {
+    return <EmptyState title='Invalid Poll Id' description='Please try again with a valid poll id' />;
+  }
+
+  return (
+    <PollProvider pollAddress={id}>
+      <CoordinatorProvider>
+        <PublishInternal />
+      </CoordinatorProvider>
+    </PollProvider>
+  );
+}
+
+const PublishInternal = () => {
   const [selected, setSelected] = useState(0);
   const params = useParams();
   const pollAddress = params.id as string;
@@ -41,8 +61,9 @@ export default function Publish() {
             isSelected={selected === 1}
             onClick={() => setSelected(1)}
           />
+          <CoordinatorConfig isSelected={selected === 2} onClick={() => setSelected(2)} />
         </div>
       </div>
     </div>
   );
-}
+};

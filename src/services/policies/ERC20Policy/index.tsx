@@ -1,7 +1,7 @@
 'use client';
 
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import { ERC20PolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
@@ -15,7 +15,7 @@ import { PolicyProps } from '../types';
 const ERC20Policy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { isConnected, address } = useAccount();
-  const { hasJoinedPoll: isRegistered } = usePoll();
+  const { hasJoinedPoll: isRegistered } = usePollContext();
 
   // Extract token tokenAddress and threshold from policyData
   const decodedPolicyData = useDecodeService<ERC20PolicyData>(PollPolicyType.ERC20, policyData);

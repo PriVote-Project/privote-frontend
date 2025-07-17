@@ -2,7 +2,7 @@
 import { PollDetails } from '@/components/Poll';
 import { EmptyState, ErrorState } from '@/components/shared';
 import { PollProvider } from '@/contexts/PollContext';
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import styles from '@/styles/poll.module.css';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -24,7 +24,7 @@ const PollDetail: React.FC = () => {
 };
 
 const UserPoll = () => {
-  const { pollError, pollLoading, poll } = usePoll();
+  const { pollError, pollLoading, poll } = usePollContext();
 
   if (pollLoading) {
     return (

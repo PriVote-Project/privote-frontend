@@ -1,24 +1,12 @@
 import { Modal, ShareModal } from '@/components/shared';
-import { PollPolicyType, PollStatus, PollType } from '@/types';
+import { usePollContext } from '@/hooks/usePollContext';
+import { PollStatus } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaShare } from 'react-icons/fa';
-import { Hex } from 'viem';
 import { JoinPollButton } from '../JoinPollButton';
 import styles from './index.module.css';
-
-interface PollHeaderProps {
-  pollName: string;
-  policyData?: Hex;
-  pollPolicyType: PollPolicyType;
-  pollType: PollType;
-  pollDescription?: string;
-  pollEndTime: bigint;
-  pollStartTime: bigint;
-  status?: PollStatus;
-  isConnected: boolean;
-}
 
 function formatTimeRemaining(time: number) {
   if (time <= 0) return '00:00:00';
@@ -32,25 +20,27 @@ function formatTimeRemaining(time: number) {
     : `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-export const PollHeader = ({
-  pollName,
-  policyData,
-  pollPolicyType,
-  status,
-  pollDescription,
-  pollEndTime,
-  pollStartTime
-}: PollHeaderProps) => {
-  const [timeRemaining, setTimeRemaining] = useState<number>(
-    status === PollStatus.OPEN
-      ? Number(pollEndTime) - Date.now() / 1000
-      : status === PollStatus.NOT_STARTED
-        ? Number(pollStartTime) - Date.now() / 1000
-        : 0
-  );
+export const PollHeader = () => {
+  const { poll } = usePollContext();
+  const {
+    status,
+    policyTrait: pollPolicyType,
+    policyData,
+    description: pollDescription,
+    name: pollName,
+    startDate: pollStartTime,
+    endDate: pollEndTime
+  } = poll!;
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(
+    status === PollStatus.OPEN
+      ? Number(pollStartTime) - Date.now() / 1000
+      : status === PollStatus.NOT_STARTED
+        ? Number(pollEndTime) - Date.now() / 1000
+        : 0
+  );
 
   const handleOpenShareModal = () => {
     setIsShareModalOpen(true);
@@ -69,8 +59,8 @@ export const PollHeader = ({
       const timer = setInterval(() => {
         const newTime =
           status === PollStatus.OPEN
-            ? Number(pollEndTime) - Date.now() / 1000
-            : Number(pollStartTime) - Date.now() / 1000;
+            ? Number(pollStartTime) - Date.now() / 1000
+            : Number(pollEndTime) - Date.now() / 1000;
         setTimeRemaining(newTime);
 
         if (newTime <= 0) {
@@ -80,13 +70,13 @@ export const PollHeader = ({
 
       return () => clearInterval(timer);
     }
-  }, [status, pollEndTime, pollStartTime]);
+  }, [status, pollStartTime, pollEndTime]);
 
   return (
     <div className={styles.header}>
       <div className={styles.headerContent}>
         <Link href={'/polls'} className={styles.back}>
-          <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
+          <Image src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
         </Link>
 
         <div className={styles.end}>

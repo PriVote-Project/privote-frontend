@@ -1,4 +1,4 @@
-import { usePoll } from '@/hooks/usePollContext';
+import { usePollContext } from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
 import React, { useState } from 'react';
 import { Hex } from 'viem';
@@ -16,7 +16,7 @@ interface JoinPollButtonProps {
  */
 export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, policyData }) => {
   const { isConnected } = useAccount();
-  const { hasJoinedPoll } = usePoll();
+  const { hasJoinedPoll } = usePollContext();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
