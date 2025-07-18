@@ -82,7 +82,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
 
     return Array.from({ length: Math.min(tokenBalance, 10) }, (_, index) => ({
       address: tokenAddress as `0x${string}`,
-      abi: erc721ABI,
+      abi: erc721Abi,
       functionName: 'tokenOfOwnerByIndex',
       args: [address as `0x${string}`, BigInt(index)]
     }));
@@ -98,7 +98,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
   // Manual token ownership check for non-enumerable contracts
   const { data: tokenOwner, isLoading: isCheckingOwnership } = useReadContract({
     address: tokenAddress as `0x${string}`,
-    abi: erc721ABI,
+    abi: erc721Abi,
     functionName: 'ownerOf',
     args: [manualTokenCheck.tokenId as bigint],
     query: {
