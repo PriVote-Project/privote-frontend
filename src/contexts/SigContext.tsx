@@ -187,7 +187,6 @@ export default function SigContextProvider({ children }: { children: React.React
       id: notificationId
     });
     try {
-      console.log(privoteContract.address, maciKeypair?.publicKey.serialize(), DEFAULT_SG_DATA);
       const { stateIndex: _stateIndex } = await signup({
         maciAddress: privoteContract.address,
         maciPublicKey: maciKeypair?.publicKey.serialize() as string,
