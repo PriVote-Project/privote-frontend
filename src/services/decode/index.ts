@@ -1,6 +1,19 @@
 import { PollPolicyType } from '@/types';
 import { decodeAbiParameters, erc20Abi, Hex, parseAbiParameters, PublicClient } from 'viem';
-import { AnonAadhaarPolicyData, EASPolicyData, ERC20PolicyData, PolicyData, Token, TokenPolicyData } from './types';
+import {
+  AnonAadhaarPolicyData,
+  EASPolicyData,
+  ERC20PolicyData,
+  ERC20VotesPolicyData,
+  GitcoinPassportPolicyData,
+  HatsPolicyData,
+  MerklePolicyData,
+  SemaphorePolicyData,
+  TokenPolicyData,
+  ZupassPolicyData,
+  PolicyData,
+  Token
+} from './types';
 
 export class DecodeService {
   constructor(
@@ -13,12 +26,24 @@ export class DecodeService {
     switch (this.policyTrait) {
       case PollPolicyType.AnonAadhaar:
         return 'address verifier, uint256 nullifierSeed';
-      case PollPolicyType.Token:
-        return 'address token';
-      case PollPolicyType.ERC20:
-        return 'address token, uint256 threshold';
       case PollPolicyType.EAS:
         return 'address eas, address attester, bytes32 schema';
+      case PollPolicyType.ERC20:
+        return 'address token, uint256 threshold';
+      case PollPolicyType.ERC20Votes:
+        return 'address token, uint256 snapshotBlock, uint256 threshold';
+      case PollPolicyType.GitcoinPassport:
+        return 'address passportDecoder, uint256 thresholdScore';
+      case PollPolicyType.Hats:
+        return 'address hats, uint256[] criterionHats';
+      case PollPolicyType.Merkle:
+        return 'bytes32 merkleRoot';
+      case PollPolicyType.Semaphore:
+        return 'address semaphore, uint256 groupId';
+      case PollPolicyType.Token:
+        return 'address token';
+      case PollPolicyType.Zupass:
+        return 'uint256 eventId, uint256 signer1, uint256 signer2, address zupassVerifier';
       default:
         return '';
     }
@@ -74,12 +99,13 @@ export class DecodeService {
           } as AnonAadhaarPolicyData;
         }
 
-        case PollPolicyType.Token: {
-          const [tokenAddress] = decodedValues as [Hex];
-          const tokenDetails = await this.fetchTokenDetails(tokenAddress);
+        case PollPolicyType.EAS: {
+          const [easAddress, attesterAddress, schema] = decodedValues as [Hex, Hex, Hex];
           return {
-            token: tokenDetails
-          } as TokenPolicyData;
+            easAddress,
+            attesterAddress,
+            schema
+          } as EASPolicyData;
         }
 
         case PollPolicyType.ERC20: {
@@ -91,13 +117,63 @@ export class DecodeService {
           } as ERC20PolicyData;
         }
 
-        case PollPolicyType.EAS: {
-          const [easAddress, attesterAddress, schema] = decodedValues as [Hex, Hex, Hex];
+        case PollPolicyType.ERC20Votes: {
+          const [tokenAddress, snapshotBlock, threshold] = decodedValues as [Hex, bigint, bigint];
+          const tokenDetails = await this.fetchTokenDetails(tokenAddress);
           return {
-            easAddress,
-            attesterAddress,
-            schema
-          } as EASPolicyData;
+            token: tokenDetails,
+            snapshotBlock,
+            threshold
+          } as ERC20VotesPolicyData;
+        }
+
+        case PollPolicyType.GitcoinPassport: {
+          const [passportDecoder, thresholdScore] = decodedValues as [Hex, bigint];
+          return {
+            passportDecoder,
+            thresholdScore
+          } as GitcoinPassportPolicyData;
+        }
+
+        case PollPolicyType.Hats: {
+          const [hats, criterionHats] = decodedValues as [Hex, bigint[]];
+          return {
+            hats,
+            criterionHats
+          } as HatsPolicyData;
+        }
+
+        case PollPolicyType.Merkle: {
+          const [merkleRoot] = decodedValues as [Hex];
+          return {
+            merkleRoot
+          } as MerklePolicyData;
+        }
+
+        case PollPolicyType.Semaphore: {
+          const [semaphore, groupId] = decodedValues as [Hex, bigint];
+          return {
+            semaphore,
+            groupId
+          } as SemaphorePolicyData;
+        }
+
+        case PollPolicyType.Token: {
+          const [tokenAddress] = decodedValues as [Hex];
+          const tokenDetails = await this.fetchTokenDetails(tokenAddress);
+          return {
+            token: tokenDetails
+          } as TokenPolicyData;
+        }
+
+        case PollPolicyType.Zupass: {
+          const [eventId, signer1, signer2, zupassVerifier] = decodedValues as [bigint, bigint, bigint, Hex];
+          return {
+            eventId,
+            signer1,
+            signer2,
+            zupassVerifier
+          } as ZupassPolicyData;
         }
 
         default:

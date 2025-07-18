@@ -1,30 +1,39 @@
 import styles from '../index.module.css';
-import type { PolicyConfigType } from '../../../types';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { EASContractAddresses, EASNetworkSlugs } from '../constants';
-import { TSupportedNetworks } from '@/types/chains';
+import { TSupportedNetworks, ESupportedNetworks } from '@/types/chains';
+import { IPolicyConfigProps } from '../types';
 
 /**
  * Configuration form for EAS policy
  */
-const EASPolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => {
+const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
   const [explorerUrl, setExplorerUrl] = useState('');
+  const [isManualInput, setIsManualInput] = useState(false);
 
   useEffect(() => {
     if (!isConnected) {
       setFeedback('Connect to wallet to auto-select EAS contract.');
-      onConfigChange({ ...config, easContract: '' });
       setExplorerUrl('');
+      setIsManualInput(false);
+      if (!config.easContract) {
+        onConfigChange({ ...config, easContract: '' });
+      }
     } else if (chainId) {
+      // Check if the connected chain is supported by Privote
+      const isChainSupported = chainId in ESupportedNetworks;
+      
+      if (!isChainSupported) {
+        setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
+        setExplorerUrl('');
+        setIsManualInput(false);
+        onConfigChange({ ...config, easContract: '' });
+        return;
+      }
+
       const easContractAddress = EASContractAddresses[chainId as TSupportedNetworks];
       const chainSlug = EASNetworkSlugs[chainId as TSupportedNetworks];
 
@@ -36,10 +45,15 @@ const EASPolicyConfig = ({
 
       if (easContractAddress) {
         setFeedback('');
+        setIsManualInput(false);
         onConfigChange({ ...config, easContract: easContractAddress });
       } else {
-        setFeedback('Chain is not supported.');
-        onConfigChange({ ...config, easContract: '' });
+        setFeedback('EAS contract not found for this network. Please enter the contract address manually.');
+        setIsManualInput(true);
+        // Don't clear existing manual input
+        if (!config.easContract) {
+          onConfigChange({ ...config, easContract: '' });
+        }
       }
     }
   }, [isConnected, chainId]);
@@ -53,7 +67,8 @@ const EASPolicyConfig = ({
           id='easContract'
           placeholder='0x...'
           value={config.easContract || ''}
-          readOnly={!!config.easContract}
+          readOnly={!isManualInput && !!config.easContract}
+          onChange={isManualInput ? (e) => onConfigChange({ ...config, easContract: e.target.value }) : undefined}
         />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>

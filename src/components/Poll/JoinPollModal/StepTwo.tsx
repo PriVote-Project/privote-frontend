@@ -1,5 +1,14 @@
 'use client';
-import { AnonAadhaarPolicy, ERC20Policy, EASPolicy, FreeForAllPolicy, TokenPolicy } from '@/services/policies';
+import {
+  AnonAadhaarPolicy,
+  ERC20Policy,
+  EASPolicy,
+  FreeForAllPolicy,
+  TokenPolicy,
+  GitcoinPolicy,
+  SemaphorePolicy,
+  ERC20VotesPolicy
+} from '@/services/policies';
 import { PollPolicyType } from '@/types';
 import React from 'react';
 import { Hex } from 'viem';
@@ -24,8 +33,8 @@ export const StepTwo: React.FC<StepTwoProps> = ({
 }) => {
   return (
     <>
-      {policyType === PollPolicyType.FreeForAll && (
-        <FreeForAllPolicy
+      {policyType === PollPolicyType.AnonAadhaar && (
+        <AnonAadhaarPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}
@@ -33,8 +42,8 @@ export const StepTwo: React.FC<StepTwoProps> = ({
           onBack={onBack}
         />
       )}
-      {policyType === PollPolicyType.AnonAadhaar && (
-        <AnonAadhaarPolicy
+      {policyType === PollPolicyType.EAS && (
+        <EASPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}
@@ -51,8 +60,8 @@ export const StepTwo: React.FC<StepTwoProps> = ({
           onBack={onBack}
         />
       )}
-      {policyType === PollPolicyType.Token && (
-        <TokenPolicy
+      {policyType === PollPolicyType.ERC20Votes && (
+        <ERC20VotesPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}
@@ -60,8 +69,35 @@ export const StepTwo: React.FC<StepTwoProps> = ({
           onBack={onBack}
         />
       )}
-      {policyType === PollPolicyType.EAS && (
-        <EASPolicy
+      {policyType === PollPolicyType.GitcoinPassport && (
+        <GitcoinPolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.FreeForAll && (
+        <FreeForAllPolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.Semaphore && (
+        <SemaphorePolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.Token && (
+        <TokenPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}

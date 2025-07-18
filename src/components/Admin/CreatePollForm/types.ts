@@ -29,9 +29,10 @@ export interface PollOption {
 }
 
 export interface PolicyConfigType {
-  // ERC20 and Token policy
+  // ERC20, ERC20Votes and Token policy
   tokenAddress?: string;
   threshold?: string;
+  snapshotBlock?: string; // only for ERC20Votes
 
   // Merkle proof policy
   merkleRoot?: string;
@@ -41,8 +42,26 @@ export interface PolicyConfigType {
   attester?: string;
   schema?: string;
 
+  // Gitcoin policy
+  gitcoinDecoderAddress?: string;
+  passingScore?: string;
+
+  // Semaphore policy
+  semaphoreContract?: string;
+  groupId?: string;
+
+  // Zupass policy
+  eventId?: string;
+  signer1?: string;
+  signer2?: string;
+  zupassVerifier?: string;
+
+  // Hats policy
+  hatsContract?: string;
+  hatsCriterions?: string[];
+
   // Additional policy configurations can be added here as needed
-  [key: string]: string | undefined;
+  [key: string]: string | string[] | undefined;
 }
 
 export interface VerificationProps {

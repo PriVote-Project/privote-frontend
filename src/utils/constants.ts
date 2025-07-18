@@ -14,13 +14,15 @@ export const DEFAULT_SG_DATA = '0x';
 export const DEFAULT_IVCP_DATA = '0x';
 
 export const POLICY_ICONS = {
-  [PollPolicyType.FreeForAll]: null,
   [PollPolicyType.AnonAadhaar]: '/anon-icon.svg',
+  [PollPolicyType.EAS]: '/eas-icon.png',
   [PollPolicyType.ERC20]: null,
-  [PollPolicyType.Token]: null,
-  [PollPolicyType.EAS]: '/eas-icon.png'
-  // [PollPolicyType.Gitcoin]: '/passport-icon.svg',
-  // [PollPolicyType.Zupass]: '/zupass-icon.png',
+  [PollPolicyType.ERC20Votes]: null,
+  [PollPolicyType.FreeForAll]: null,
+  [PollPolicyType.GitcoinPassport]: '/passport-icon.svg',
+  // [PollPolicyType.Hats]: null,
   // [PollPolicyType.Merkle]: null,
-  // [PollPolicyType.Semaphore]: '/semaphore-icon.svg',
+  [PollPolicyType.Semaphore]: '/semaphore-icon.svg',
+  [PollPolicyType.Token]: null
+  // [PollPolicyType.Zupass]: '/zupass-icon.png'
 };

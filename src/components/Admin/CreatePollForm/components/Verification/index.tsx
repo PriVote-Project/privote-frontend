@@ -1,6 +1,11 @@
 import ERC20PolicyConfig from './ERC20PolicyConfig';
 import TokenPolicyConfig from './TokenPolicyConfig';
 import EASPolicyConfig from './EASPolicyConfig';
+import GitcoinPolicyConfig from './GitcoinPolicyConfig';
+import HatsPolicyConfig from './HatsPolicyConfig';
+import MerkleProofPolicyConfig from './MerkleProofPolicyConfig';
+import SemaphorePolicyConfig from './SemaphorePolicyConfig';
+import ZupassPolicyConfig from './ZupassPolicyConfig';
 import { PollPolicyType } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
 import { useEffect, useState } from 'react';
@@ -10,15 +15,17 @@ import styles from './index.module.css';
 
 // Display names for each policy
 const POLICY_NAMES = {
-  [PollPolicyType.FreeForAll]: 'None',
   [PollPolicyType.AnonAadhaar]: 'Anon Aadhaar',
+  [PollPolicyType.EAS]: 'Ethereum Attestation Service',
   [PollPolicyType.ERC20]: 'ERC20 Token',
-  [PollPolicyType.Token]: 'Custom Token',
-  [PollPolicyType.EAS]: 'Ethereum Attestation Service'
-  // [PollPolicyType.Gitcoin]: 'Gitcoin Passport',
-  // [PollPolicyType.Zupass]: 'Zupass',
+  [PollPolicyType.ERC20Votes]: 'ERC20 Votes',
+  [PollPolicyType.FreeForAll]: 'None',
+  [PollPolicyType.GitcoinPassport]: 'Gitcoin Passport',
+  // [PollPolicyType.Hats]: 'Hats',
   // [PollPolicyType.Merkle]: 'Merkle Proof',
-  // [PollPolicyType.Semaphore]: 'Semaphore',
+  [PollPolicyType.Semaphore]: 'Semaphore',
+  [PollPolicyType.Token]: 'Custom Token'
+  // [PollPolicyType.Zupass]: 'Zupass'
 };
 
 // Define which policies require additional configuration
@@ -26,12 +33,14 @@ const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.FreeForAll]: false,
   [PollPolicyType.AnonAadhaar]: false,
   [PollPolicyType.ERC20]: true,
+  [PollPolicyType.ERC20Votes]: true,
   [PollPolicyType.Token]: true,
-  [PollPolicyType.EAS]: true
-  // [PollPolicyType.Gitcoin]: false,
-  // [PollPolicyType.Zupass]: false,
+  [PollPolicyType.EAS]: true,
+  [PollPolicyType.GitcoinPassport]: true,
+  // [PollPolicyType.Hats]: true,
   // [PollPolicyType.Merkle]: true,
-  // [PollPolicyType.Semaphore]: false,
+  [PollPolicyType.Semaphore]: true
+  // [PollPolicyType.Zupass]: true
 };
 
 /**
@@ -49,8 +58,16 @@ const getPolicyConfigComponent = (
       return <TokenPolicyConfig config={config} onConfigChange={onConfigChange} />;
     case PollPolicyType.EAS:
       return <EASPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.GitcoinPassport:
+      return <GitcoinPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    // case PollPolicyType.Hats:
+    //   return <HatsPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Merkle:
-    //   return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />
+    //   return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.Semaphore:
+      return <SemaphorePolicyConfig config={config} onConfigChange={onConfigChange} />;
+    // case PollPolicyType.Zupass:
+    //   return <ZupassPolicyConfig config={config} onConfigChange={onConfigChange} />;
     default:
       return null;
   }

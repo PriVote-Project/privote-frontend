@@ -1,18 +1,12 @@
 import TokenDetails from '../TokenDetails';
 import { useTokenDetails } from '@/hooks/useTokenDetails';
 import styles from '../index.module.css';
-import type { PolicyConfigType } from '../../../types';
+import { IPolicyConfigProps } from '../types';
 
 /**
  * Configuration form for Token policy
  */
-const TokenPolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => {
+const TokenPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC721');
 
   return (

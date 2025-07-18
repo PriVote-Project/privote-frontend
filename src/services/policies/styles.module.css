@@ -676,3 +676,323 @@
   font-size: 16px;
   flex-shrink: 0;
 }
+
+/* Semaphore Policy Styles */
+.semaphoreInputSection {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.semaphoreModeSelector {
+  margin-bottom: 20px;
+}
+
+.semaphoreModeSelector h5 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.semaphoreModeButtons {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.semaphoreModeBtn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.semaphoreModeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.semaphoreModeBtn.active {
+  background: linear-gradient(135deg, #d7e884, #9de980);
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.semaphoreInputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.semaphoreInputWrapper label {
+  color: #b4b7bd;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.semaphoreProofInput {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.semaphoreProofInput:focus {
+  outline: none;
+  border-color: #d7e884;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(215, 232, 132, 0.1);
+}
+
+.semaphoreProofInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.semaphorePrivateKeySection,
+.semaphoreCommitmentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.semaphorePrivateKeyInput,
+.semaphoreCommitmentInput {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.semaphorePrivateKeyInput:focus,
+.semaphoreCommitmentInput:focus {
+  outline: none;
+  border-color: #d7e884;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(215, 232, 132, 0.1);
+}
+
+.semaphorePrivateKeyInput::placeholder,
+.semaphoreCommitmentInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.semaphoreGenerateBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d7e884, #9de980);
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.semaphoreGenerateBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e2f090, #a8f48c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(215, 232, 132, 0.3);
+}
+
+.semaphoreGenerateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.semaphoreSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #1a1a1a;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.semaphoreHelpText {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.semaphoreHelpText p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.semaphoreErrorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #ff6b6b;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.semaphoreErrorIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.semaphoreSuccessMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  color: #28a745;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.semaphoreSuccessIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* File Upload Styles */
+.semaphoreFileUploadWrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.semaphoreFileInput {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.semaphoreFileUploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.semaphoreFileUploadArea:hover {
+  border-color: #d7e884;
+  background: rgba(215, 232, 132, 0.05);
+}
+
+.semaphoreUploadIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.semaphoreFileUploadArea p {
+  margin: 0 0 4px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.semaphoreFileUploadArea small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.semaphoreFileName {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+  color: #28a745;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.semaphoreProofPreview {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.semaphoreProofPreview h6 {
+  margin: 0 0 12px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.semaphoreProofDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.semaphoreProofDetails div {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.semaphoreProofDetails strong {
+  color: #d7e884;
+}
+
+.semaphoreCodeBlock {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 8px 0;
+  color: #fff;
+  font-size: 12px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  overflow-x: auto;
+  white-space: pre;
+}

@@ -1,16 +1,10 @@
 import styles from '../index.module.css';
-import type { PolicyConfigType } from '../../../types';
+import { IPolicyConfigProps } from '../types';
 
 /**
  * Configuration form for Merkle proof policy
  */
-const MerklePolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => (
+const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => (
   <div className={styles.policyConfig}>
     <div className={styles.configField}>
       <label htmlFor='merkleRoot'>Merkle Root</label>
@@ -25,4 +19,4 @@ const MerklePolicyConfig = ({
   </div>
 );
 
-export default MerklePolicyConfig;
+export default MerkleProofPolicyConfig;

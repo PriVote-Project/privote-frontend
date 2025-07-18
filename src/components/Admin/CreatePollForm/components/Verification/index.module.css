@@ -99,9 +99,8 @@
 }
 
 .feedback {
-  color: #a9a9a9; /* Light grey for feedback text */
+  color: #a9a9a9;
   font-size: 14px;
-  margin-top: -8px; /* Adjust spacing to be closer to the input field */
 }
 
 .configField label {

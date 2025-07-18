@@ -12,8 +12,10 @@ export type AnonAadhaarPolicyData = {
   nullifierSeed: bigint;
 };
 
-export type TokenPolicyData = {
-  token: Token;
+export type EASPolicyData = {
+  easAddress: Hex;
+  attesterAddress: Hex;
+  schema: Hex;
 };
 
 export type ERC20PolicyData = {
@@ -21,15 +23,51 @@ export type ERC20PolicyData = {
   threshold: bigint;
 };
 
-export type EASPolicyData = {
-  easAddress: Hex;
-  attesterAddress: Hex;
-  schema: Hex;
+export type ERC20VotesPolicyData = {
+  token: Token;
+  snapshotBlock: bigint;
+  threshold: bigint;
+};
+
+export type GitcoinPassportPolicyData = {
+  passportDecoder: Hex;
+  thresholdScore: bigint;
+};
+
+export type HatsPolicyData = {
+  hats: Hex;
+  criterionHats: bigint[];
+};
+
+export type MerklePolicyData = {
+  merkleRoot: Hex;
+};
+
+export type SemaphorePolicyData = {
+  semaphore: Hex;
+  groupId: bigint;
+};
+
+export type TokenPolicyData = {
+  token: Token;
+};
+
+export type ZupassPolicyData = {
+  eventId: bigint;
+  signer1: bigint;
+  signer2: bigint;
+  zupassVerifier: Hex;
 };
 
 export type PolicyData =
   | AnonAadhaarPolicyData
-  | TokenPolicyData
-  | ERC20PolicyData
   | EASPolicyData
+  | ERC20PolicyData
+  | ERC20VotesPolicyData
+  | GitcoinPassportPolicyData
+  | HatsPolicyData
+  | MerklePolicyData
+  | SemaphorePolicyData
+  | TokenPolicyData
+  | ZupassPolicyData
   | Record<string, never>;

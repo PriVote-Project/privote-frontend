@@ -4,8 +4,18 @@ export type IPollCreationFunction =
   | 'createPollWithFreeForAll'
   | 'createPollWithAnonAadhaar'
   | 'createPollWithERC20'
-  | 'createPollWithToken';
+  // | 'createPollWithERC20Votes'
+  | 'createPollWithToken'
+  | 'createPollWithGitcoin'
+  | 'createPollWithMerkle'
+  | 'createPollWithSemaphore'
+  | 'createPollWithZupass';
+// | 'createPollWithHats';
 
 export const getWrapperFunctionName = (policy: PollPolicyType) => {
+  if (policy === PollPolicyType.GitcoinPassport) {
+    return 'createPollWithGitcoin';
+  }
+
   return `createPollWith${policy}` as IPollCreationFunction;
 };

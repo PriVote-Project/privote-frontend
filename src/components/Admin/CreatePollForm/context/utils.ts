@@ -98,7 +98,7 @@ export function getPollArgs({
 
     case PollPolicyType.AnonAadhaar:
       const verifierAddress = config.verifierAddress || ZERO_ADDRESS;
-      const nullifierSeed = config.nullifierSeed || '1';
+      const nullifierSeed = config.nullifierSeed || '156252232102234918017211621622458150229161190';
 
       return [...baseArgs, verifierAddress, nullifierSeed, voiceCredits];
 
@@ -107,6 +107,14 @@ export function getPollArgs({
       const threshold = config.threshold ? BigInt(config.threshold) : 1n;
 
       return [...baseArgs, tokenAddress, threshold, voiceCredits];
+    }
+
+    case PollPolicyType.ERC20Votes: {
+      const tokenAddress = config.tokenAddress || ZERO_ADDRESS;
+      const threshold = config.threshold ? BigInt(config.threshold) : 1n;
+      const snapshotBlock = config.snapshotBlock ? BigInt(config.snapshotBlock) : 0n;
+
+      return [...baseArgs, tokenAddress, threshold, snapshotBlock, voiceCredits];
     }
 
     case PollPolicyType.Token: {
@@ -123,31 +131,38 @@ export function getPollArgs({
       return [...baseArgs, easContract, attester, schema, voiceCredits];
     }
 
-    // case PollPolicyType.Gitcoin:
-    //   const decoderAddress = config.decoderAddress || ZERO_ADDRESS
-    //   const passingScore = config.passingScore ? BigInt(config.passingScore) : 0n
-    //   return [...baseArgs, decoderAddress, passingScore, voiceCredits]
+    case PollPolicyType.GitcoinPassport:
+      const decoderAddress = config.gitcoinDecoderAddress || ZERO_ADDRESS;
+      const passingScore = config.passingScore ? BigInt(config.passingScore) : 0n;
+      return [...baseArgs, decoderAddress, passingScore, voiceCredits];
+
+    // case PollPolicyType.Hats: {
+    //   const hatsContract = config.hatsContract || ZERO_ADDRESS;
+    //   const hatsCriterions = config.hatsCriterions?.map(criterion => BigInt(criterion)) || [];
+
+    //   return [...baseArgs, hatsContract, hatsCriterions, voiceCredits];
+    // }
 
     // case PollPolicyType.Merkle: {
-    //   const merkleRoot = config.merkleRoot || ZERO_BYTES32
+    //   const merkleRoot = config.merkleRoot || ZERO_BYTES32;
 
-    //   return [...baseArgs, merkleRoot, voiceCredits]
+    //   return [...baseArgs, merkleRoot, voiceCredits];
     // }
 
-    // case PollPolicyType.Semaphore: {
-    //   const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS
-    //   const groupId = config.groupId ? BigInt(config.groupId) : 0n
+    case PollPolicyType.Semaphore: {
+      const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
+      const groupId = config.groupId ? BigInt(config.groupId) : 0n;
 
-    //   return [...baseArgs, semaphoreContract, groupId, voiceCredits]
-    // }
+      return [...baseArgs, semaphoreContract, groupId, voiceCredits];
+    }
 
     // case PollPolicyType.Zupass: {
-    //   const eventId = config.eventId || ''
-    //   const signer1 = config.signer1 || ''
-    //   const signer2 = config.signer2 || ''
-    //   const zupassVerifier = config.zupassVerifier || ''
+    //   const eventId = config.eventId || '';
+    //   const signer1 = config.signer1 || '';
+    //   const signer2 = config.signer2 || '';
+    //   const zupassVerifier = config.zupassVerifier || '';
 
-    //   return [...baseArgs, eventId, signer1, signer2, zupassVerifier, voiceCredits]
+    //   return [...baseArgs, eventId, signer1, signer2, zupassVerifier, voiceCredits];
     // }
 
     default:
