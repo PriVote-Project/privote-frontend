@@ -108,11 +108,12 @@ export const PollHeader = () => {
           <div className={styles.status}>
             <Image src='/clock.svg' alt='clock' width={24} height={24} />
             {(status === PollStatus.CLOSED || status === PollStatus.RESULT_COMPUTED) && 'Poll ended'}
-            {status === PollStatus.OPEN && timeRemaining <= 0 ? (
-              'Poll ended'
-            ) : (
-              <span className={styles.timeInfo}>Time left: {formatTimeRemaining(timeRemaining)}</span>
-            )}
+            {status === PollStatus.OPEN &&
+              (timeRemaining <= 0 ? (
+                'Poll ended'
+              ) : (
+                <span className={styles.timeInfo}>Time left: {formatTimeRemaining(timeRemaining)}</span>
+              ))}
             {status === PollStatus.NOT_STARTED && (
               <span className={styles.timeInfo}>Starts in: {formatTimeRemaining(timeRemaining)}</span>
             )}

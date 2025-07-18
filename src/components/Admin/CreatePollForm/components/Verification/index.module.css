@@ -98,6 +98,12 @@
   position: relative;
 }
 
+.feedback {
+  color: #a9a9a9; /* Light grey for feedback text */
+  font-size: 14px;
+  margin-top: -8px; /* Adjust spacing to be closer to the input field */
+}
+
 .configField label {
   color: #b4b7bd;
   font-size: 14px;

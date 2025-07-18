@@ -1,5 +1,5 @@
 'use client';
-import { AnonAadhaarPolicy, ERC20Policy, FreeForAllPolicy, TokenPolicy } from '@/services/policies';
+import { AnonAadhaarPolicy, ERC20Policy, EASPolicy, FreeForAllPolicy, TokenPolicy } from '@/services/policies';
 import { PollPolicyType } from '@/types';
 import React from 'react';
 import { Hex } from 'viem';
@@ -53,6 +53,15 @@ export const StepTwo: React.FC<StepTwoProps> = ({
       )}
       {policyType === PollPolicyType.Token && (
         <TokenPolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.EAS && (
+        <EASPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}

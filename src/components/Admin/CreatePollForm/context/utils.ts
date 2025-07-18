@@ -1,6 +1,6 @@
 // Poll Deployment Helpers
 import { EMode, PollPolicyType, PollType } from '@/types';
-import { ZERO_ADDRESS } from '@/utils/constants';
+import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
 import { PublicKey } from '@maci-protocol/domainobjs';
 import type { IPollData } from '../types';
 
@@ -115,13 +115,13 @@ export function getPollArgs({
       return [...baseArgs, tokenAddress, voiceCredits];
     }
 
-    // case PollPolicyType.EAS: {
-    //   const easContract = config.easContract || ZERO_ADDRESS
-    //   const attester = config.attester || ZERO_ADDRESS
-    //   const schema = config.schema || ZERO_BYTES32
+    case PollPolicyType.EAS: {
+      const easContract = config.easContract || ZERO_ADDRESS;
+      const attester = config.attester || ZERO_ADDRESS;
+      const schema = config.schema || ZERO_BYTES32;
 
-    //   return [...baseArgs, easContract, attester, schema, voiceCredits]
-    // }
+      return [...baseArgs, easContract, attester, schema, voiceCredits];
+    }
 
     // case PollPolicyType.Gitcoin:
     //   const decoderAddress = config.decoderAddress || ZERO_ADDRESS

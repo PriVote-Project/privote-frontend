@@ -1,10 +1,11 @@
-import { useTokenDetails } from '@/hooks/useTokenDetails';
+import ERC20PolicyConfig from './ERC20PolicyConfig';
+import TokenPolicyConfig from './TokenPolicyConfig';
+import EASPolicyConfig from './EASPolicyConfig';
 import { PollPolicyType } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { MdPolicy } from 'react-icons/md';
 import type { PolicyConfigType, VerificationProps } from '../../types';
-import TokenDetails from './TokenDetails';
 import styles from './index.module.css';
 
 // Display names for each policy
@@ -12,12 +13,12 @@ const POLICY_NAMES = {
   [PollPolicyType.FreeForAll]: 'None',
   [PollPolicyType.AnonAadhaar]: 'Anon Aadhaar',
   [PollPolicyType.ERC20]: 'ERC20 Token',
-  [PollPolicyType.Token]: 'Custom Token'
+  [PollPolicyType.Token]: 'Custom Token',
+  [PollPolicyType.EAS]: 'Ethereum Attestation Service'
   // [PollPolicyType.Gitcoin]: 'Gitcoin Passport',
   // [PollPolicyType.Zupass]: 'Zupass',
   // [PollPolicyType.Merkle]: 'Merkle Proof',
   // [PollPolicyType.Semaphore]: 'Semaphore',
-  // [PollPolicyType.EAS]: 'Ethereum Attestation Service'
 };
 
 // Define which policies require additional configuration
@@ -25,151 +26,13 @@ const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.FreeForAll]: false,
   [PollPolicyType.AnonAadhaar]: false,
   [PollPolicyType.ERC20]: true,
-  [PollPolicyType.Token]: true
+  [PollPolicyType.Token]: true,
+  [PollPolicyType.EAS]: true
   // [PollPolicyType.Gitcoin]: false,
   // [PollPolicyType.Zupass]: false,
   // [PollPolicyType.Merkle]: true,
   // [PollPolicyType.Semaphore]: false,
-  // [PollPolicyType.EAS]: true
 };
-
-/**
- * Configuration form for ERC20 policy
- */
-const ERC20PolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => {
-  const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC20');
-
-  return (
-    <div className={styles.policyConfig}>
-      <div className={styles.configField}>
-        <label htmlFor='tokenAddress'>Token Address</label>
-        <input
-          type='text'
-          id='tokenAddress'
-          placeholder='0x...'
-          value={config.tokenAddress || ''}
-          onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
-        />
-        <TokenDetails tokenDetails={tokenDetails} isLoading={isLoading} error={error} />
-      </div>
-      <div className={styles.configField}>
-        <label htmlFor='tokenThreshold'>Minimum Token Balance</label>
-        <input
-          type='number'
-          id='tokenThreshold'
-          placeholder='1'
-          value={config.threshold || ''}
-          onChange={e => onConfigChange({ ...config, threshold: e.target.value })}
-        />
-      </div>
-    </div>
-  );
-};
-
-/**
- * Configuration form for Token policy
- */
-const TokenPolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => {
-  const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC721');
-
-  return (
-    <div className={styles.policyConfig}>
-      <div className={styles.configField}>
-        <label htmlFor='tokenAddress'>Token Address</label>
-        <input
-          type='text'
-          id='tokenAddress'
-          placeholder='0x...'
-          value={config.tokenAddress || ''}
-          onChange={e => onConfigChange({ ...config, tokenAddress: e.target.value })}
-        />
-        <TokenDetails tokenDetails={tokenDetails} isLoading={isLoading} error={error} />
-      </div>
-    </div>
-  );
-};
-
-/**
- * Configuration form for Merkle proof policy
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MerkleProofPolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => (
-  <div className={styles.policyConfig}>
-    <div className={styles.configField}>
-      <label htmlFor='merkleRoot'>Merkle Root</label>
-      <input
-        type='text'
-        id='merkleRoot'
-        placeholder='0x...'
-        value={config.merkleRoot || ''}
-        onChange={e => onConfigChange({ ...config, merkleRoot: e.target.value })}
-      />
-    </div>
-  </div>
-);
-
-/**
- * Configuration form for EAS policy
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const EASPolicyConfig = ({
-  config,
-  onConfigChange
-}: {
-  config: PolicyConfigType;
-  onConfigChange: (config: PolicyConfigType) => void;
-}) => (
-  <div className={styles.policyConfig}>
-    <div className={styles.configField}>
-      <label htmlFor='easContract'>EAS Contract</label>
-      <input
-        type='text'
-        id='easContract'
-        placeholder='0x...'
-        value={config.easContract || ''}
-        onChange={e => onConfigChange({ ...config, easContract: e.target.value })}
-      />
-    </div>
-    <div className={styles.configField}>
-      <label htmlFor='attester'>Attester Address</label>
-      <input
-        type='text'
-        id='attester'
-        placeholder='0x...'
-        value={config.attester || ''}
-        onChange={e => onConfigChange({ ...config, attester: e.target.value })}
-      />
-    </div>
-    <div className={styles.configField}>
-      <label htmlFor='schema'>Schema</label>
-      <input
-        type='text'
-        id='schema'
-        placeholder='0x...'
-        value={config.schema || ''}
-        onChange={e => onConfigChange({ ...config, schema: e.target.value })}
-      />
-    </div>
-  </div>
-);
 
 /**
  * Get the appropriate configuration component based on policy type
@@ -184,10 +47,10 @@ const getPolicyConfigComponent = (
       return <ERC20PolicyConfig config={config} onConfigChange={onConfigChange} />;
     case PollPolicyType.Token:
       return <TokenPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.EAS:
+      return <EASPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Merkle:
     //   return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />
-    // case PollPolicyType.EAS:
-    //   return <EASPolicyConfig config={config} onConfigChange={onConfigChange} />
     default:
       return null;
   }

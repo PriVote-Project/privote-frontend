@@ -75,9 +75,9 @@ export const PollPolicyType = {
   FreeForAll: 'FreeForAll',
   AnonAadhaar: 'AnonAadhaar',
   ERC20: 'ERC20',
-  Token: 'Token'
+  Token: 'Token',
+  EAS: 'EAS'
   // Gitcoin: 'Gitcoin',
-  // EAS: 'EAS',
   // Merkle: 'Merkle',
   // Semaphore: 'Semaphore',
   // Zupass: 'Zupass'

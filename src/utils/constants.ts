@@ -17,10 +17,10 @@ export const POLICY_ICONS = {
   [PollPolicyType.FreeForAll]: null,
   [PollPolicyType.AnonAadhaar]: '/anon-icon.svg',
   [PollPolicyType.ERC20]: null,
-  [PollPolicyType.Token]: null
+  [PollPolicyType.Token]: null,
+  [PollPolicyType.EAS]: '/eas-icon.png'
   // [PollPolicyType.Gitcoin]: '/passport-icon.svg',
   // [PollPolicyType.Zupass]: '/zupass-icon.png',
   // [PollPolicyType.Merkle]: null,
   // [PollPolicyType.Semaphore]: '/semaphore-icon.svg',
-  // [PollPolicyType.EAS]: '/eas-icon.png'
 };

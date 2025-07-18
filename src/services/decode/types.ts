@@ -21,4 +21,15 @@ export type ERC20PolicyData = {
   threshold: bigint;
 };
 
-export type PolicyData = AnonAadhaarPolicyData | TokenPolicyData | ERC20PolicyData | Record<string, never>;
+export type EASPolicyData = {
+  easAddress: Hex;
+  attesterAddress: Hex;
+  schema: Hex;
+};
+
+export type PolicyData =
+  | AnonAadhaarPolicyData
+  | TokenPolicyData
+  | ERC20PolicyData
+  | EASPolicyData
+  | Record<string, never>;

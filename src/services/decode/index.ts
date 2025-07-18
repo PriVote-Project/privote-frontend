@@ -1,6 +1,6 @@
 import { PollPolicyType } from '@/types';
 import { decodeAbiParameters, erc20Abi, Hex, parseAbiParameters, PublicClient } from 'viem';
-import { AnonAadhaarPolicyData, ERC20PolicyData, PolicyData, Token, TokenPolicyData } from './types';
+import { AnonAadhaarPolicyData, EASPolicyData, ERC20PolicyData, PolicyData, Token, TokenPolicyData } from './types';
 
 export class DecodeService {
   constructor(
@@ -17,6 +17,8 @@ export class DecodeService {
         return 'address token';
       case PollPolicyType.ERC20:
         return 'address token, uint256 threshold';
+      case PollPolicyType.EAS:
+        return 'address eas, address attester, bytes32 schema';
       default:
         return '';
     }
@@ -87,6 +89,15 @@ export class DecodeService {
             token: tokenDetails,
             threshold
           } as ERC20PolicyData;
+        }
+
+        case PollPolicyType.EAS: {
+          const [easAddress, attesterAddress, schema] = decodedValues as [Hex, Hex, Hex];
+          return {
+            easAddress,
+            attesterAddress,
+            schema
+          } as EASPolicyData;
         }
 
         default:
