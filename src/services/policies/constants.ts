@@ -21,3 +21,57 @@ export const getGqlUrl = (chainId: TSupportedNetworks) => {
 
   return `https://${slug}.easscan.org/graphql`;
 };
+
+export const SemaphoreNetworks = {
+  1: { name: 'mainnet', address: '0x697c80d1F2654e88d52B16154929EB976568DB04', rpc: 'https://mainnet.infura.io/v3/' },
+  10: {
+    name: 'optimism',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://optimism-mainnet.infura.io/v3/'
+  },
+  42161: {
+    name: 'arbitrum',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://arbitrum-mainnet.infura.io/v3/'
+  },
+  137: {
+    name: 'matic',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://polygon-mainnet.infura.io/v3/'
+  },
+  59144: {
+    name: 'linea',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://linea-mainnet.infura.io/v3/'
+  },
+  8453: {
+    name: 'base',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://base-mainnet.infura.io/v3/'
+  },
+  11155420: {
+    name: 'optimism-sepolia',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://optimism-sepolia.infura.io/v3/'
+  },
+  11155111: {
+    name: 'sepolia',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://sepolia.infura.io/v3/'
+  },
+  421614: {
+    name: 'arbitrum-sepolia',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://arbitrum-sepolia.infura.io/v3/'
+  },
+  84532: {
+    name: 'base-sepolia',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://base-sepolia.infura.io/v3/'
+  },
+  534351: {
+    name: 'scroll-sepolia',
+    address: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+    rpc: 'https://scroll-sepolia.infura.io/v3/'
+  }
+};

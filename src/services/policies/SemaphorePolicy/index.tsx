@@ -10,43 +10,25 @@ import { encodeAbiParameters, parseAbiParameters, Hex } from 'viem';
 import Common from '../Common';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
+import { SemaphoreNetworks } from '../constants';
+import { createScope } from '../utils';
 
 // Semaphore imports
-import { Identity, Group, generateProof, type SemaphoreProof } from '@semaphore-protocol/core';
-import { SemaphoreSubgraph } from '@semaphore-protocol/data';
-
-// Types for better TypeScript support
-interface GroupMember {
-  commitment: string;
-  index?: number;
-}
-
-interface SemaphoreGroup {
-  id: string;
-  admin?: string;
-  merkleTree?: any;
-}
+import { Identity, Group, generateProof, type SemaphoreProof, verifyProof } from '@semaphore-protocol/core';
+import { SemaphoreViem } from '@semaphore-protocol/data';
+import { notification } from '@/utils/notification';
 
 type InputMode = 'proof' | 'privateKey';
 
 // Helper function to get network name from chainId
-const getNetworkName = (chainId?: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'mainnet';
-    case 11155111:
-      return 'sepolia';
-    case 10:
-      return 'optimism';
-    case 42161:
-      return 'arbitrum';
-    case 137:
-      return 'polygon';
-    case 8453:
-      return 'base';
-    default:
-      return 'mainnet'; // Default to mainnet
+const getNetworkName = (chainId?: number): { name: string; address: string; rpc: string } => {
+  const network = SemaphoreNetworks[chainId as keyof typeof SemaphoreNetworks];
+
+  if (!network) {
+    throw new Error(`No network found for chainId: ${chainId}`);
   }
+
+  return network;
 };
 
 const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
@@ -54,7 +36,7 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
   const [inputMode, setInputMode] = useState<InputMode>('proof');
   const [proofData, setProofData] = useState<SemaphoreProof | null>(null);
   const [privateKey, setPrivateKey] = useState('');
-  const [commitment, setCommitment] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const [fileName, setFileName] = useState('');
@@ -70,6 +52,12 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
 
   // Generate proof from private key
   const generateProofFromPrivateKey = async () => {
+    if (!address) {
+      setError('Please Connect your wallet');
+      notification.error('Please connect your wallet!');
+      return;
+    }
+
     if (!privateKey.trim()) {
       setError('Please provide a private key');
       return;
@@ -80,57 +68,49 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
 
     try {
       // Create identity from private key
-      const identity = new Identity(privateKey);
+      const identity = Identity.import(privateKey);
       const identityCommitment = identity.commitment;
 
       // Determine the network based on chainId or use a default
-      const networkName = getNetworkName(chainId);
+      const network = getNetworkName(chainId);
+      const apiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
+      if (!apiKey) throw new Error('Missing Infura API key');
 
-      // Initialize Semaphore subgraph
-      const semaphoreSubgraph = new SemaphoreSubgraph(networkName);
-
-      // Fetch group from subgraph
-      const groupData: SemaphoreGroup | null = await semaphoreSubgraph.getGroup(groupId.toString());
-
-      if (!groupData) {
-        throw new Error(`Group ${groupId} not found on ${networkName} network`);
-      }
-
-      // Get group members
-      const membersData = await semaphoreSubgraph.getGroupMembers(groupId.toString());
-      const members: GroupMember[] = Array.isArray(membersData)
-        ? membersData.map((member: any) => ({
-            commitment: typeof member === 'string' ? member : member.commitment,
-            index: typeof member === 'object' ? member.index : undefined
-          }))
-        : [];
-
-      if (!members || members.length === 0) {
-        throw new Error(`No members found in group ${groupId}`);
-      }
-
-      // Check if identity is a member of the group
-      const isMember = members.some(
-        (member: GroupMember) => member.commitment.toString() === identityCommitment.toString()
-      );
-
-      if (!isMember) {
-        throw new Error(
-          'Your identity is not a member of this Semaphore group. Please ensure you have joined the group with this identity.'
-        );
-      }
-
-      // Create group with members
-      const group = new Group();
-      members.forEach((member: GroupMember) => {
-        group.addMember(BigInt(member.commitment));
+      // Initialize Semaphore viem
+      const rpcUrl = network.rpc + apiKey;
+      const semaphoreViem = new SemaphoreViem(rpcUrl, {
+        address: network.address
       });
 
+      // Check if identity is a member of the group
+      const isMember = await semaphoreViem.isGroupMember(groupId.toString(), identityCommitment.toString());
+
+      // return early if identity is not a member
+      if (!isMember) {
+        setError('You are not a member of the group');
+        return;
+      }
+
+      // get group members from using semaphore viem
+      const members = await semaphoreViem.getGroupMembers(groupId.toString());
+
+      // create off-chain group
+      const group = new Group(members);
+
       // Generate message for proof (use custom commitment or wallet address)
-      const message = commitment || address || '0';
+      const proofMessage = message || address || '0';
+
+      const scope = createScope(address, groupId);
 
       // Generate the proof
-      const proof = await generateProof(identity, group, message, groupId);
+      const proof = await generateProof(identity, group, proofMessage, scope);
+
+      const isVerified = await verifyProof(proof);
+
+      if (!isVerified) {
+        setError('Proof verification failed');
+        return;
+      }
 
       // Set the proof data directly (already in correct format)
       setProofData(proof);
@@ -163,7 +143,7 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
         const parsedProof = JSON.parse(content) as SemaphoreProof;
 
         // Validate proof structure
-        if (!validateSemaphoreProof(parsedProof)) {
+        if (!verifyProof(parsedProof)) {
           throw new Error('Invalid SemaphoreProof format. Please ensure your JSON contains all required fields.');
         }
 
@@ -181,20 +161,6 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
     };
 
     reader.readAsText(file);
-  };
-
-  // Validate SemaphoreProof structure
-  const validateSemaphoreProof = (proof: any): proof is SemaphoreProof => {
-    return (
-      typeof proof === 'object' &&
-      typeof proof.merkleTreeDepth === 'number' &&
-      typeof proof.merkleTreeRoot === 'string' &&
-      typeof proof.message === 'string' &&
-      typeof proof.nullifier === 'string' &&
-      typeof proof.scope === 'string' &&
-      Array.isArray(proof.points) &&
-      proof.points.every((point: any) => typeof point === 'string')
-    );
   };
 
   const handleNext = async () => {
@@ -216,19 +182,29 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
       }
 
       // Encode the SemaphoreProof struct for the signup data
-      const encodedData = encodeAbiParameters(
-        parseAbiParameters('(uint256,uint256,uint256,uint256,uint256,uint256[])'),
-        [
-          [
-            BigInt(proofData.merkleTreeDepth),
-            BigInt(proofData.merkleTreeRoot),
-            BigInt(proofData.message),
-            BigInt(proofData.nullifier),
-            BigInt(proofData.scope),
-            proofData.points.map(point => BigInt(point))
+      const parsedAbi = parseAbiParameters([
+        'Proof SemaphoreProof',
+        'struct Proof { uint256 merkleTreeDepth; uint256 merkleTreeRoot; uint256 nullifier; uint256 message; uint256 scope; uint256[8] points; }'
+      ]);
+      const encodedData = encodeAbiParameters(parsedAbi, [
+        {
+          merkleTreeDepth: BigInt(proofData.merkleTreeDepth),
+          merkleTreeRoot: BigInt(proofData.merkleTreeRoot),
+          nullifier: BigInt(proofData.nullifier),
+          message: BigInt(proofData.message),
+          scope: BigInt(proofData.scope),
+          points: proofData.points.map(point => BigInt(point)) as [
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint
           ]
-        ]
-      );
+        }
+      ]);
 
       setSignupState(prev => ({
         ...prev,
@@ -352,13 +328,13 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
               </p>
               <pre className={styles.semaphoreCodeBlock}>
                 {`{
-                    "merkleTreeDepth": 20,
-                    "merkleTreeRoot": "123...",
-                    "message": "456...",
-                    "nullifier": "789...",
-                    "scope": "101112...",
-                    "points": ["131415...", "161718..."]
-                  }`}
+    "merkleTreeDepth": 20,
+    "merkleTreeRoot": "123...",
+    "message": "456...",
+    "nullifier": "789...",
+    "scope": "101112...",
+    "points": ["131415...", "161718..."]
+}`}
               </pre>
               <p>Upload a JSON file containing your SemaphoreProof with all required fields.</p>
             </div>
@@ -381,13 +357,13 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
             </div>
 
             <div className={styles.semaphoreCommitmentSection}>
-              <label htmlFor='commitment'>Commitment (Optional)</label>
+              <label htmlFor='message'>Message (Optional)</label>
               <input
                 type='text'
-                id='commitment'
-                value={commitment}
-                onChange={e => setCommitment(e.target.value)}
-                placeholder='Custom commitment or leave empty to use wallet address'
+                id='message'
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder='Custom message or leave empty to use wallet address'
                 className={styles.semaphoreCommitmentInput}
               />
             </div>
