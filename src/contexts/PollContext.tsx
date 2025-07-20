@@ -9,12 +9,12 @@ import {
   generateSignUpTreeFromKeys,
   isTallied,
   joinPoll,
-  MaciSubgraph,
   Poll__factory as PollFactory
 } from '@maci-protocol/sdk/browser';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSigContext } from './SigContext';
 import { type IPollContextType } from './types';
+import { getKeys } from '@/utils/subgraph';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 
@@ -59,8 +59,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
     try {
-      const subgraph = new MaciSubgraph(MACI_SUBGRAPH_ENDPOINT as string);
-      const keys = await subgraph.getKeys();
+      const keys = await getKeys();
       const signupTree = generateSignUpTreeFromKeys(keys);
 
       // Find the leaf's index directly from the tree to compare

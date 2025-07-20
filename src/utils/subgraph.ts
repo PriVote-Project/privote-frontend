@@ -1,8 +1,10 @@
 import { client } from '@/lib/graphql';
 import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import { GET_PRIVOTE_USER_QUERY } from '@/services/queries/privoteUser';
+import { GET_USER_QUERY } from '@/services/queries/user';
 import type { PollUser, User } from '@/types';
 import { type Keypair } from '@maci-protocol/domainobjs';
+import { PublicKey } from '@maci-protocol/domainobjs';
 
 export interface ISignedupUserData {
   isRegistered: boolean;
@@ -68,4 +70,19 @@ export const getJoinedUserData = async (pollAddress: string, keyPair?: Keypair) 
       pollStateIndex: undefined
     };
   }
+};
+
+export const getKeys = async () => {
+  const data: { users: { id: string }[] } = await client.request(GET_USER_QUERY);
+  console.log(data);
+
+  if (!data.users) {
+    throw new Error('No users data in response');
+  }
+
+  return data.users.map(user => {
+    // Split the id into x and y coordinates and convert to BigInt
+    const [x, y] = user.id.split(' ');
+    return new PublicKey([BigInt(x), BigInt(y)]);
+  });
 };
