@@ -149,7 +149,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         pollWasm: artifacts.wasm as unknown as string,
         sgDataArg: signupData,
         ivcpDataArg: DEFAULT_IVCP_DATA,
-        blocksPerBatch: 1000000
+        blocksPerBatch: 1000000,
+        useLatestStateIndex: true
       }).catch(error => {
         if (error.message.includes('0xa3281672')) {
           // 0xa3281672 -> signature of BalanceTooLow()
