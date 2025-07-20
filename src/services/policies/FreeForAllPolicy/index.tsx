@@ -69,7 +69,7 @@ const FreeForAllPolicy = ({ signupState, setSignupState, onNext, onBack }: Polic
   const handleNext = () => {
     setSignupState(prev => ({
       ...prev,
-      signupData: DEFAULT_SG_DATA
+      data: DEFAULT_SG_DATA
     }));
     onNext();
   };
