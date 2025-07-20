@@ -2,8 +2,8 @@ import PollAbi from '@/abi/Poll';
 import { EMode, PollStatus, PollType } from '@/types';
 import { handleNotice, notification } from '@/utils/notification';
 import { Keypair, PublicKey, VoteCommand } from '@maci-protocol/domainobjs';
-import { useState } from 'react';
-import { useWriteContract } from 'wagmi';
+import { useState, useEffect } from 'react';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 
 interface UseVotingProps {
   pollAddress?: string;
@@ -28,10 +28,44 @@ export const useVoting = ({
   maxVotePerPerson,
   mode
 }: UseVotingProps) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [votes, setVotes] = useState<{ index: number; votes: string }[]>([]);
   const [isVotesInvalid, setIsVotesInvalid] = useState<Record<number, boolean>>({});
 
-  const { writeContractAsync, isPending } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
+
+  const [txState, setTxState] = useState<{ hash: `0x${string}`; notificationId: string }>();
+
+  const {
+    isSuccess: isConfirmed,
+    error: confirmError,
+    data: receipt
+  } = useWaitForTransactionReceipt({
+    hash: txState?.hash,
+    query: {
+      enabled: !!txState?.hash
+    }
+  });
+
+  useEffect(() => {
+    if (!txState?.hash) return;
+    if (isConfirmed && receipt) {
+      handleNotice({
+        message: 'Poll created successfully!',
+        type: 'success',
+        id: txState?.notificationId
+      });
+      setVotes([]);
+      setIsLoading(false);
+    } else if (confirmError) {
+      handleNotice({
+        message: 'Poll creation failed!',
+        type: 'error',
+        id: txState?.notificationId
+      });
+      setIsLoading(false);
+    }
+  }, [isConfirmed, confirmError, receipt, txState]);
 
   const getMessageAndEncKeyPair = (
     stateIndex: bigint,
@@ -95,6 +129,8 @@ export const useVoting = ({
       return;
     }
 
+    setIsLoading(true);
+
     // remove any votes from the array that are invalid
     let updatedVotes = votes
       .map(v => ({
@@ -119,7 +155,7 @@ export const useVoting = ({
       }));
     }
 
-    const notificationId = notification.loading('Submitting votes...');
+    let notificationId = notification.loading('Submitting votes...');
 
     const votesToMessage = updatedVotes
       .sort((a, b) => a.index - b.index)
@@ -136,8 +172,9 @@ export const useVoting = ({
       );
 
     try {
+      let txHash: `0x${string}`;
       if (votesToMessage.length === 1) {
-        await writeContractAsync(
+        txHash = await writeContractAsync(
           {
             abi: PollAbi,
             address: pollAddress as `0x${string}`,
@@ -169,7 +206,7 @@ export const useVoting = ({
           }
         );
       } else {
-        await writeContractAsync(
+        txHash = await writeContractAsync(
           {
             abi: PollAbi,
             address: pollAddress as `0x${string}`,
@@ -208,18 +245,35 @@ export const useVoting = ({
         );
       }
 
-      setVotes([]);
+      notificationId = handleNotice({
+        message: 'Waiting for transaction confirmation...',
+        type: 'loading',
+        id: notificationId
+      });
+
+      setTxState({
+        hash: txHash,
+        notificationId
+      });
     } catch (err) {
-      console.error('err', err);
-    } finally {
-      if (notificationId) notification.remove(notificationId);
+      console.error('Error submitting votes:', err);
+      const errorMessage =
+        err instanceof Error && err.message.includes('User rejected')
+          ? 'Transaction cancelled by user'
+          : 'Failed to submit votes. Please try again.';
+      handleNotice({
+        message: errorMessage,
+        type: 'error',
+        id: notificationId
+      });
+      setIsLoading(false);
     }
   };
 
   return {
     votes,
     isVotesInvalid,
-    isPending,
+    isPending: isLoading,
     setIsVotesInvalid,
     voteUpdated,
     castVote

@@ -7,8 +7,8 @@ import { encodeOptionInfo } from '@/utils/optionInfo';
 import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
 import { CID } from 'multiformats';
 import { useRouter } from 'next/navigation';
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { useWriteContract } from 'wagmi';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import type { IPollData, PolicyConfigType } from '../types';
 import { getPollArgs } from './utils';
 
@@ -79,6 +79,38 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
   const { writeContractAsync } = useWriteContract();
   const privoteContract = usePrivoteContract();
+  const [txState, setTxState] = useState<{ hash: `0x${string}`; notificationId: string }>();
+
+  const {
+    isSuccess: isConfirmed,
+    error: confirmError,
+    data: receipt
+  } = useWaitForTransactionReceipt({
+    hash: txState?.hash,
+    query: {
+      enabled: !!txState?.hash
+    }
+  });
+
+  useEffect(() => {
+    if (!txState?.hash) return;
+    if (isConfirmed && receipt) {
+      handleNotice({
+        message: 'Poll created successfully!',
+        type: 'success',
+        id: txState?.notificationId
+      });
+      router.push('/polls');
+      setIsLoading(false);
+    } else if (confirmError) {
+      handleNotice({
+        message: 'Poll creation failed!',
+        type: 'error',
+        id: txState?.notificationId
+      });
+      setIsLoading(false);
+    }
+  }, [isConfirmed, confirmError, receipt, txState]);
 
   const generateKeyPair = () => {
     const keyPair = new Keypair();
@@ -179,21 +211,21 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
   const handlePolicyTypeChange = (e: React.ChangeEvent<any>) => {
     // When changing policy type, reset the policy config to prevent invalid configs
-    setPollData({
-      ...pollData,
+    setPollData(prev => ({
+      ...prev,
       policyType: e.target.value,
       policyConfig: {} // Reset policy config when changing policy type
-    });
+    }));
   };
 
   const handlePolicyConfigChange = (config: PolicyConfigType) => {
-    setPollData({
-      ...pollData,
+    setPollData(prev => ({
+      ...prev,
       policyConfig: {
-        ...pollData.policyConfig,
+        ...prev.policyConfig,
         ...config
       }
-    });
+    }));
   };
 
   const handleAddOption = () => {
@@ -280,49 +312,39 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
         endTime
       });
 
-      console.log(args);
-
       notificationId = handleNotice({
-        id: notificationId,
-        message: 'Creating poll...',
-        type: 'loading'
+        message: 'Submitting poll creation transaction...',
+        type: 'loading',
+        id: notificationId
       });
 
-      console.log(getWrapperFunctionName(finalPollData.policyType));
-
-      await writeContractAsync(
-        {
-          abi: privoteContract.abi,
-          address: privoteContract.address,
-          functionName: getWrapperFunctionName(finalPollData.policyType),
-          args: args as any
-        },
-        {
-          onError: error => {
-            console.log('Failed to create poll', error);
-            handleNotice({
-              message: 'Failed to create Poll',
-              type: 'error',
-              id: notificationId
-            });
-          },
-          onSuccess: () =>
-            handleNotice({
-              message: 'Poll created successfully!',
-              type: 'success',
-              id: notificationId
-            })
-        }
-      );
-
-      setIsLoading(false);
-      router.push('/polls');
+      const txHash = await writeContractAsync({
+        abi: privoteContract.abi,
+        address: privoteContract.address,
+        functionName: getWrapperFunctionName(finalPollData.policyType),
+        args: args as any
+      });
+      notificationId = handleNotice({
+        message: 'Waiting for transaction confirmation...',
+        type: 'loading',
+        id: notificationId
+      });
+      setTxState({
+        hash: txHash,
+        notificationId
+      });
     } catch (error) {
       console.error('Error creating poll:', error);
-      notification.error('Failed to create poll');
-    } finally {
+      const errorMessage =
+        error instanceof Error && error.message.includes('User rejected')
+          ? 'Transaction cancelled by user'
+          : 'Failed to create poll. Please try again.';
+      handleNotice({
+        message: errorMessage,
+        type: 'error',
+        id: notificationId
+      });
       setIsLoading(false);
-      if (notificationId) notification.remove(notificationId);
     }
   };
 
