@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 import { JoinPollModal } from '../JoinPollModal';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import styles from './index.module.css';
 
 interface JoinPollButtonProps {
@@ -37,13 +38,7 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
   if (!isConnected) {
     return (
       <div className={styles.joinButtonWrapper}>
-        <div className={styles.walletPrompt}>
-          <img src='/icons/wallet-icon.svg' alt='Wallet' className={styles.walletIcon} />
-          <p>Connect your wallet to join this poll</p>
-          <button className={styles.connectWalletButton} onClick={() => {}}>
-            Connect Wallet
-          </button>
-        </div>
+        <ConnectButton />
       </div>
     );
   }

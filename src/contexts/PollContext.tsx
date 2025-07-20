@@ -75,7 +75,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   }, [maciKeypair, stateIndex]);
 
   const onJoinPoll = useCallback(
-    async (signupData: string = '0x') => {
+    async (signupData: string = DEFAULT_SG_DATA) => {
       setError(undefined);
       setIsLoading(true);
 
@@ -148,7 +148,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         inclusionProof: inclusionProofDirect,
         pollJoiningZkey: artifacts.zKey as unknown as string,
         pollWasm: artifacts.wasm as unknown as string,
-        sgDataArg: signupData || DEFAULT_SG_DATA,
+        sgDataArg: signupData,
         ivcpDataArg: DEFAULT_IVCP_DATA,
         blocksPerBatch: 1000000
       }).catch(error => {
