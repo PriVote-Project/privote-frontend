@@ -2,6 +2,7 @@ import ERC20PolicyConfig from './ERC20PolicyConfig';
 import TokenPolicyConfig from './TokenPolicyConfig';
 import EASPolicyConfig from './EASPolicyConfig';
 import GitcoinPolicyConfig from './GitcoinPolicyConfig';
+import AnonAadhaarPolicyConfig from './AnonAadhaarPolicyConfig';
 import HatsPolicyConfig from './HatsPolicyConfig';
 import MerkleProofPolicyConfig from './MerkleProofPolicyConfig';
 import SemaphorePolicyConfig from './SemaphorePolicyConfig';
@@ -31,7 +32,7 @@ const POLICY_NAMES = {
 // Define which policies require additional configuration
 const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.FreeForAll]: false,
-  [PollPolicyType.AnonAadhaar]: false,
+  [PollPolicyType.AnonAadhaar]: true,
   [PollPolicyType.ERC20]: true,
   [PollPolicyType.ERC20Votes]: true,
   [PollPolicyType.Token]: true,
@@ -52,6 +53,8 @@ const getPolicyConfigComponent = (
   onConfigChange: (config: PolicyConfigType) => void
 ) => {
   switch (policyType) {
+    case PollPolicyType.AnonAadhaar:
+      return <AnonAadhaarPolicyConfig config={config} onConfigChange={onConfigChange} />;
     case PollPolicyType.ERC20:
       return <ERC20PolicyConfig config={config} onConfigChange={onConfigChange} />;
     case PollPolicyType.Token:

@@ -72,11 +72,11 @@ export const PollType = {
 } as const;
 
 export const PollPolicyType = {
+  FreeForAll: 'FreeForAll',
   AnonAadhaar: 'AnonAadhaar',
   EAS: 'EAS',
   ERC20: 'ERC20',
   ERC20Votes: 'ERC20Votes',
-  FreeForAll: 'FreeForAll',
   GitcoinPassport: 'GitcoinPassport',
   // Hats: 'Hats',
   // Merkle: 'Merkle',

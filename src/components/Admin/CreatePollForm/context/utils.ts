@@ -73,8 +73,6 @@ export function getPollArgs({
     description: pollData.description
   });
 
-  console.log(metadata);
-
   // Common base arguments used by all policy types
   const baseArgs = [
     pollData.title as string,

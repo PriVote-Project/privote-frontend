@@ -29,6 +29,10 @@ export interface PollOption {
 }
 
 export interface PolicyConfigType {
+  // Anon Aadhaar policy
+  verifierAddress?: string;
+  nullifierSeed?: string;
+
   // ERC20, ERC20Votes and Token policy
   tokenAddress?: string;
   threshold?: string;
