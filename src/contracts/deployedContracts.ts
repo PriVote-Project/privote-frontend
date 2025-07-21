@@ -73,6 +73,16 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: 'ERC20VotesCheckerFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'ERC20VotesPolicyFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
           name: 'EndTimeMustBeAfterStartTime',
           type: 'error'
         },
@@ -94,6 +104,16 @@ const deployedContracts = {
         {
           inputs: [],
           name: 'GitcoinPolicyFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'HatsCheckerFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'HatsPolicyFactoryNotSet',
           type: 'error'
         },
         {
@@ -405,6 +425,37 @@ const deployedContracts = {
               type: 'address'
             }
           ],
+          name: 'ERC20VotesFactoriesUpdated',
+          type: 'event'
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'newCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldPolicyFactory',
+              type: 'address'
+            },
+            {
+              indexed: false,
+              internalType: 'address',
+              name: 'newPolicyFactory',
+              type: 'address'
+            }
+          ],
           name: 'FreeForAllFactoriesUpdated',
           type: 'event'
         },
@@ -437,6 +488,37 @@ const deployedContracts = {
             }
           ],
           name: 'GitcoinFactoriesUpdated',
+          type: 'event'
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'newCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldPolicyFactory',
+              type: 'address'
+            },
+            {
+              indexed: false,
+              internalType: 'address',
+              name: 'newPolicyFactory',
+              type: 'address'
+            }
+          ],
+          name: 'HatsFactoriesUpdated',
           type: 'event'
         },
         {
@@ -1227,6 +1309,91 @@ const deployedContracts = {
               type: 'address[]'
             },
             {
+              internalType: 'address',
+              name: '_tokenAddress',
+              type: 'address'
+            },
+            {
+              internalType: 'uint256',
+              name: '_threshold',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_snapshotBlock',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_voiceCreditsBalance',
+              type: 'uint256'
+            }
+          ],
+          name: 'createPollWithERC20Votes',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'string',
+              name: '_name',
+              type: 'string'
+            },
+            {
+              internalType: 'string[]',
+              name: '_options',
+              type: 'string[]'
+            },
+            {
+              internalType: 'bytes[]',
+              name: '_optionInfo',
+              type: 'bytes[]'
+            },
+            {
+              internalType: 'string',
+              name: '_metadata',
+              type: 'string'
+            },
+            {
+              internalType: 'uint256',
+              name: '_startTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_endTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'enum DomainObjs.Mode',
+              name: '_mode',
+              type: 'uint8'
+            },
+            {
+              components: [
+                {
+                  internalType: 'uint256',
+                  name: 'x',
+                  type: 'uint256'
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'y',
+                  type: 'uint256'
+                }
+              ],
+              internalType: 'struct DomainObjs.PublicKey',
+              name: '_coordinatorPubKey',
+              type: 'tuple'
+            },
+            {
+              internalType: 'address[]',
+              name: '_relayers',
+              type: 'address[]'
+            },
+            {
               internalType: 'uint256',
               name: '_voiceCreditsBalance',
               type: 'uint256'
@@ -1313,6 +1480,86 @@ const deployedContracts = {
             }
           ],
           name: 'createPollWithGitcoin',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'string',
+              name: '_name',
+              type: 'string'
+            },
+            {
+              internalType: 'string[]',
+              name: '_options',
+              type: 'string[]'
+            },
+            {
+              internalType: 'bytes[]',
+              name: '_optionInfo',
+              type: 'bytes[]'
+            },
+            {
+              internalType: 'string',
+              name: '_metadata',
+              type: 'string'
+            },
+            {
+              internalType: 'uint256',
+              name: '_startTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_endTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'enum DomainObjs.Mode',
+              name: '_mode',
+              type: 'uint8'
+            },
+            {
+              components: [
+                {
+                  internalType: 'uint256',
+                  name: 'x',
+                  type: 'uint256'
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'y',
+                  type: 'uint256'
+                }
+              ],
+              internalType: 'struct DomainObjs.PublicKey',
+              name: '_coordinatorPubKey',
+              type: 'tuple'
+            },
+            {
+              internalType: 'address[]',
+              name: '_relayers',
+              type: 'address[]'
+            },
+            {
+              internalType: 'address',
+              name: '_hatsProtocol',
+              type: 'address'
+            },
+            {
+              internalType: 'uint256[]',
+              name: '_criterionHats',
+              type: 'uint256[]'
+            },
+            {
+              internalType: 'uint256',
+              name: '_voiceCreditsBalance',
+              type: 'uint256'
+            }
+          ],
+          name: 'createPollWithHats',
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function'
@@ -1836,6 +2083,32 @@ const deployedContracts = {
           type: 'function'
         },
         {
+          inputs: [],
+          name: 'erc20VotesCheckerFactory',
+          outputs: [
+            {
+              internalType: 'contract IERC20VotesCheckerFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'erc20VotesPolicyFactory',
+          outputs: [
+            {
+              internalType: 'contract IPolicyFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
           inputs: [
             {
               internalType: 'uint256',
@@ -1918,207 +2191,6 @@ const deployedContracts = {
               internalType: 'struct Privote.PollData',
               name: 'poll_',
               type: 'tuple'
-            }
-          ],
-          stateMutability: 'view',
-          type: 'function'
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: '_page',
-              type: 'uint256'
-            },
-            {
-              internalType: 'uint256',
-              name: '_perPage',
-              type: 'uint256'
-            },
-            {
-              internalType: 'bool',
-              name: '_ascending',
-              type: 'bool'
-            }
-          ],
-          name: 'fetchPolls',
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: 'uint256',
-                  name: 'id',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string',
-                  name: 'name',
-                  type: 'string'
-                },
-                {
-                  internalType: 'string',
-                  name: 'metadata',
-                  type: 'string'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'startTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'endTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string[]',
-                  name: 'options',
-                  type: 'string[]'
-                },
-                {
-                  internalType: 'bytes[]',
-                  name: 'optionInfo',
-                  type: 'bytes[]'
-                },
-                {
-                  components: [
-                    {
-                      internalType: 'uint256',
-                      name: 'x',
-                      type: 'uint256'
-                    },
-                    {
-                      internalType: 'uint256',
-                      name: 'y',
-                      type: 'uint256'
-                    }
-                  ],
-                  internalType: 'struct DomainObjs.PublicKey',
-                  name: 'coordinatorPubKey',
-                  type: 'tuple'
-                },
-                {
-                  internalType: 'address',
-                  name: 'pollDeployer',
-                  type: 'address'
-                },
-                {
-                  internalType: 'enum DomainObjs.Mode',
-                  name: 'mode',
-                  type: 'uint8'
-                },
-                {
-                  internalType: 'address',
-                  name: 'policy',
-                  type: 'address'
-                }
-              ],
-              internalType: 'struct Privote.PollData[]',
-              name: 'polls_',
-              type: 'tuple[]'
-            }
-          ],
-          stateMutability: 'view',
-          type: 'function'
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'user',
-              type: 'address'
-            },
-            {
-              internalType: 'uint256',
-              name: '_page',
-              type: 'uint256'
-            },
-            {
-              internalType: 'uint256',
-              name: '_perPage',
-              type: 'uint256'
-            },
-            {
-              internalType: 'bool',
-              name: '_ascending',
-              type: 'bool'
-            }
-          ],
-          name: 'fetchUserPolls',
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: 'uint256',
-                  name: 'id',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string',
-                  name: 'name',
-                  type: 'string'
-                },
-                {
-                  internalType: 'string',
-                  name: 'metadata',
-                  type: 'string'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'startTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'endTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string[]',
-                  name: 'options',
-                  type: 'string[]'
-                },
-                {
-                  internalType: 'bytes[]',
-                  name: 'optionInfo',
-                  type: 'bytes[]'
-                },
-                {
-                  components: [
-                    {
-                      internalType: 'uint256',
-                      name: 'x',
-                      type: 'uint256'
-                    },
-                    {
-                      internalType: 'uint256',
-                      name: 'y',
-                      type: 'uint256'
-                    }
-                  ],
-                  internalType: 'struct DomainObjs.PublicKey',
-                  name: 'coordinatorPubKey',
-                  type: 'tuple'
-                },
-                {
-                  internalType: 'address',
-                  name: 'pollDeployer',
-                  type: 'address'
-                },
-                {
-                  internalType: 'enum DomainObjs.Mode',
-                  name: 'mode',
-                  type: 'uint8'
-                },
-                {
-                  internalType: 'address',
-                  name: 'policy',
-                  type: 'address'
-                }
-              ],
-              internalType: 'struct Privote.PollData[]',
-              name: 'polls_',
-              type: 'tuple[]'
             }
           ],
           stateMutability: 'view',
@@ -2380,6 +2452,32 @@ const deployedContracts = {
             }
           ],
           stateMutability: 'pure',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'hatsCheckerFactory',
+          outputs: [
+            {
+              internalType: 'contract IHatsCheckerFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'hatsPolicyFactory',
+          outputs: [
+            {
+              internalType: 'contract IPolicyFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
           type: 'function'
         },
         {
@@ -2691,6 +2789,24 @@ const deployedContracts = {
               type: 'address'
             }
           ],
+          name: 'setERC20VotesFactories',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '_newCheckerFactory',
+              type: 'address'
+            },
+            {
+              internalType: 'address',
+              name: '_newPolicyFactory',
+              type: 'address'
+            }
+          ],
           name: 'setFreeForAllFactories',
           outputs: [],
           stateMutability: 'nonpayable',
@@ -2710,6 +2826,24 @@ const deployedContracts = {
             }
           ],
           name: 'setGitcoinFactories',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '_newCheckerFactory',
+              type: 'address'
+            },
+            {
+              internalType: 'address',
+              name: '_newPolicyFactory',
+              type: 'address'
+            }
+          ],
+          name: 'setHatsFactories',
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function'
@@ -3048,7 +3182,7 @@ const deployedContracts = {
   },
   11155420: {
     privote: {
-      address: '0xaaD9aDa5c7cf782041E96e9e9353D5977a329090',
+      address: '0x48b5DEBa3273db7bbaaF35E4fa3290F17afFdD5E',
       abi: [
         {
           inputs: [
@@ -3118,6 +3252,16 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: 'ERC20VotesCheckerFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'ERC20VotesPolicyFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
           name: 'EndTimeMustBeAfterStartTime',
           type: 'error'
         },
@@ -3139,6 +3283,16 @@ const deployedContracts = {
         {
           inputs: [],
           name: 'GitcoinPolicyFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'HatsCheckerFactoryNotSet',
+          type: 'error'
+        },
+        {
+          inputs: [],
+          name: 'HatsPolicyFactoryNotSet',
           type: 'error'
         },
         {
@@ -3450,6 +3604,37 @@ const deployedContracts = {
               type: 'address'
             }
           ],
+          name: 'ERC20VotesFactoriesUpdated',
+          type: 'event'
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'newCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldPolicyFactory',
+              type: 'address'
+            },
+            {
+              indexed: false,
+              internalType: 'address',
+              name: 'newPolicyFactory',
+              type: 'address'
+            }
+          ],
           name: 'FreeForAllFactoriesUpdated',
           type: 'event'
         },
@@ -3482,6 +3667,37 @@ const deployedContracts = {
             }
           ],
           name: 'GitcoinFactoriesUpdated',
+          type: 'event'
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'newCheckerFactory',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'oldPolicyFactory',
+              type: 'address'
+            },
+            {
+              indexed: false,
+              internalType: 'address',
+              name: 'newPolicyFactory',
+              type: 'address'
+            }
+          ],
+          name: 'HatsFactoriesUpdated',
           type: 'event'
         },
         {
@@ -4272,6 +4488,91 @@ const deployedContracts = {
               type: 'address[]'
             },
             {
+              internalType: 'address',
+              name: '_tokenAddress',
+              type: 'address'
+            },
+            {
+              internalType: 'uint256',
+              name: '_threshold',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_snapshotBlock',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_voiceCreditsBalance',
+              type: 'uint256'
+            }
+          ],
+          name: 'createPollWithERC20Votes',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'string',
+              name: '_name',
+              type: 'string'
+            },
+            {
+              internalType: 'string[]',
+              name: '_options',
+              type: 'string[]'
+            },
+            {
+              internalType: 'bytes[]',
+              name: '_optionInfo',
+              type: 'bytes[]'
+            },
+            {
+              internalType: 'string',
+              name: '_metadata',
+              type: 'string'
+            },
+            {
+              internalType: 'uint256',
+              name: '_startTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_endTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'enum DomainObjs.Mode',
+              name: '_mode',
+              type: 'uint8'
+            },
+            {
+              components: [
+                {
+                  internalType: 'uint256',
+                  name: 'x',
+                  type: 'uint256'
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'y',
+                  type: 'uint256'
+                }
+              ],
+              internalType: 'struct DomainObjs.PublicKey',
+              name: '_coordinatorPubKey',
+              type: 'tuple'
+            },
+            {
+              internalType: 'address[]',
+              name: '_relayers',
+              type: 'address[]'
+            },
+            {
               internalType: 'uint256',
               name: '_voiceCreditsBalance',
               type: 'uint256'
@@ -4358,6 +4659,86 @@ const deployedContracts = {
             }
           ],
           name: 'createPollWithGitcoin',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'string',
+              name: '_name',
+              type: 'string'
+            },
+            {
+              internalType: 'string[]',
+              name: '_options',
+              type: 'string[]'
+            },
+            {
+              internalType: 'bytes[]',
+              name: '_optionInfo',
+              type: 'bytes[]'
+            },
+            {
+              internalType: 'string',
+              name: '_metadata',
+              type: 'string'
+            },
+            {
+              internalType: 'uint256',
+              name: '_startTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'uint256',
+              name: '_endTime',
+              type: 'uint256'
+            },
+            {
+              internalType: 'enum DomainObjs.Mode',
+              name: '_mode',
+              type: 'uint8'
+            },
+            {
+              components: [
+                {
+                  internalType: 'uint256',
+                  name: 'x',
+                  type: 'uint256'
+                },
+                {
+                  internalType: 'uint256',
+                  name: 'y',
+                  type: 'uint256'
+                }
+              ],
+              internalType: 'struct DomainObjs.PublicKey',
+              name: '_coordinatorPubKey',
+              type: 'tuple'
+            },
+            {
+              internalType: 'address[]',
+              name: '_relayers',
+              type: 'address[]'
+            },
+            {
+              internalType: 'address',
+              name: '_hatsProtocol',
+              type: 'address'
+            },
+            {
+              internalType: 'uint256[]',
+              name: '_criterionHats',
+              type: 'uint256[]'
+            },
+            {
+              internalType: 'uint256',
+              name: '_voiceCreditsBalance',
+              type: 'uint256'
+            }
+          ],
+          name: 'createPollWithHats',
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function'
@@ -4881,6 +5262,32 @@ const deployedContracts = {
           type: 'function'
         },
         {
+          inputs: [],
+          name: 'erc20VotesCheckerFactory',
+          outputs: [
+            {
+              internalType: 'contract IERC20VotesCheckerFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'erc20VotesPolicyFactory',
+          outputs: [
+            {
+              internalType: 'contract IPolicyFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
           inputs: [
             {
               internalType: 'uint256',
@@ -4963,207 +5370,6 @@ const deployedContracts = {
               internalType: 'struct Privote.PollData',
               name: 'poll_',
               type: 'tuple'
-            }
-          ],
-          stateMutability: 'view',
-          type: 'function'
-        },
-        {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: '_page',
-              type: 'uint256'
-            },
-            {
-              internalType: 'uint256',
-              name: '_perPage',
-              type: 'uint256'
-            },
-            {
-              internalType: 'bool',
-              name: '_ascending',
-              type: 'bool'
-            }
-          ],
-          name: 'fetchPolls',
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: 'uint256',
-                  name: 'id',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string',
-                  name: 'name',
-                  type: 'string'
-                },
-                {
-                  internalType: 'string',
-                  name: 'metadata',
-                  type: 'string'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'startTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'endTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string[]',
-                  name: 'options',
-                  type: 'string[]'
-                },
-                {
-                  internalType: 'bytes[]',
-                  name: 'optionInfo',
-                  type: 'bytes[]'
-                },
-                {
-                  components: [
-                    {
-                      internalType: 'uint256',
-                      name: 'x',
-                      type: 'uint256'
-                    },
-                    {
-                      internalType: 'uint256',
-                      name: 'y',
-                      type: 'uint256'
-                    }
-                  ],
-                  internalType: 'struct DomainObjs.PublicKey',
-                  name: 'coordinatorPubKey',
-                  type: 'tuple'
-                },
-                {
-                  internalType: 'address',
-                  name: 'pollDeployer',
-                  type: 'address'
-                },
-                {
-                  internalType: 'enum DomainObjs.Mode',
-                  name: 'mode',
-                  type: 'uint8'
-                },
-                {
-                  internalType: 'address',
-                  name: 'policy',
-                  type: 'address'
-                }
-              ],
-              internalType: 'struct Privote.PollData[]',
-              name: 'polls_',
-              type: 'tuple[]'
-            }
-          ],
-          stateMutability: 'view',
-          type: 'function'
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'user',
-              type: 'address'
-            },
-            {
-              internalType: 'uint256',
-              name: '_page',
-              type: 'uint256'
-            },
-            {
-              internalType: 'uint256',
-              name: '_perPage',
-              type: 'uint256'
-            },
-            {
-              internalType: 'bool',
-              name: '_ascending',
-              type: 'bool'
-            }
-          ],
-          name: 'fetchUserPolls',
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: 'uint256',
-                  name: 'id',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string',
-                  name: 'name',
-                  type: 'string'
-                },
-                {
-                  internalType: 'string',
-                  name: 'metadata',
-                  type: 'string'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'startTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'endTime',
-                  type: 'uint256'
-                },
-                {
-                  internalType: 'string[]',
-                  name: 'options',
-                  type: 'string[]'
-                },
-                {
-                  internalType: 'bytes[]',
-                  name: 'optionInfo',
-                  type: 'bytes[]'
-                },
-                {
-                  components: [
-                    {
-                      internalType: 'uint256',
-                      name: 'x',
-                      type: 'uint256'
-                    },
-                    {
-                      internalType: 'uint256',
-                      name: 'y',
-                      type: 'uint256'
-                    }
-                  ],
-                  internalType: 'struct DomainObjs.PublicKey',
-                  name: 'coordinatorPubKey',
-                  type: 'tuple'
-                },
-                {
-                  internalType: 'address',
-                  name: 'pollDeployer',
-                  type: 'address'
-                },
-                {
-                  internalType: 'enum DomainObjs.Mode',
-                  name: 'mode',
-                  type: 'uint8'
-                },
-                {
-                  internalType: 'address',
-                  name: 'policy',
-                  type: 'address'
-                }
-              ],
-              internalType: 'struct Privote.PollData[]',
-              name: 'polls_',
-              type: 'tuple[]'
             }
           ],
           stateMutability: 'view',
@@ -5425,6 +5631,32 @@ const deployedContracts = {
             }
           ],
           stateMutability: 'pure',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'hatsCheckerFactory',
+          outputs: [
+            {
+              internalType: 'contract IHatsCheckerFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
+          type: 'function'
+        },
+        {
+          inputs: [],
+          name: 'hatsPolicyFactory',
+          outputs: [
+            {
+              internalType: 'contract IPolicyFactory',
+              name: '',
+              type: 'address'
+            }
+          ],
+          stateMutability: 'view',
           type: 'function'
         },
         {
@@ -5736,6 +5968,24 @@ const deployedContracts = {
               type: 'address'
             }
           ],
+          name: 'setERC20VotesFactories',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '_newCheckerFactory',
+              type: 'address'
+            },
+            {
+              internalType: 'address',
+              name: '_newPolicyFactory',
+              type: 'address'
+            }
+          ],
           name: 'setFreeForAllFactories',
           outputs: [],
           stateMutability: 'nonpayable',
@@ -5755,6 +6005,24 @@ const deployedContracts = {
             }
           ],
           name: 'setGitcoinFactories',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function'
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '_newCheckerFactory',
+              type: 'address'
+            },
+            {
+              internalType: 'address',
+              name: '_newPolicyFactory',
+              type: 'address'
+            }
+          ],
+          name: 'setHatsFactories',
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function'
