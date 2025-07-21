@@ -1,9 +1,9 @@
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { usePoll } from '@/hooks/usePoll';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, MACI_SUBGRAPH_ENDPOINT } from '@/utils/constants';
+import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
-import { getJoinedUserData } from '@/utils/subgraph';
+import { getJoinedUserData, getKeys } from '@/utils/subgraph';
 import {
   downloadPollJoiningArtifactsBrowser,
   generateSignUpTreeFromKeys,
@@ -11,10 +11,10 @@ import {
   joinPoll,
   Poll__factory as PollFactory
 } from '@maci-protocol/sdk/browser';
+import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSigContext } from './SigContext';
 import { type IPollContextType } from './types';
-import { getKeys } from '@/utils/subgraph';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 
@@ -23,7 +23,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const [error, setError] = useState<string>();
 
   // MACI contract
-  const [inclusionProof, setInclusionProof] = useState<any>(null);
+  const [inclusionProof, setInclusionProof] = useState<LeanIMTMerkleProof | null>(null);
 
   // Artifacts
   const [artifacts, setArtifacts] = useState<
@@ -144,7 +144,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         privateKey: maciKeypair.privateKey.serialize(),
         signer,
         pollId: BigInt(poll.pollId),
-        inclusionProof: inclusionProofDirect,
+        inclusionProof: inclusionProofDirect ?? undefined,
         pollJoiningZkey: artifacts.zKey as unknown as string,
         pollWasm: artifacts.wasm as unknown as string,
         sgDataArg: signupData,
@@ -186,7 +186,18 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         id: notificationId
       });
     },
-    [artifacts, hasJoinedPoll, inclusionProof, isRegistered, maciKeypair, signer, stateIndex, poll]
+    [
+      artifacts,
+      hasJoinedPoll,
+      inclusionProof,
+      isRegistered,
+      maciKeypair,
+      signer,
+      stateIndex,
+      poll,
+      getInclusionProof,
+      privoteContract
+    ]
   );
 
   const checkIsTallied = useCallback(async () => {
@@ -228,16 +239,16 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       }
 
       try {
-        const localInclusionProof = getInclusionProof();
+        const localInclusionProof = await getInclusionProof();
 
-        setInclusionProof(localInclusionProof);
+        setInclusionProof(localInclusionProof ?? null);
       } catch (error) {
         console.log(error);
         setError('Error generating MACI state tree');
         setInclusionProof(null);
       }
     })();
-  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex]);
+  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, getInclusionProof]);
 
   // check poll user data
   useEffect(() => {

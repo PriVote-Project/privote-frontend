@@ -3,8 +3,7 @@ import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import { GET_PRIVOTE_USER_QUERY } from '@/services/queries/privoteUser';
 import { GET_USER_QUERY } from '@/services/queries/user';
 import type { PollUser, User } from '@/types';
-import { type Keypair } from '@maci-protocol/domainobjs';
-import { PublicKey } from '@maci-protocol/domainobjs';
+import { PublicKey, type Keypair } from '@maci-protocol/domainobjs';
 
 export interface ISignedupUserData {
   isRegistered: boolean;
@@ -74,7 +73,6 @@ export const getJoinedUserData = async (pollAddress: string, keyPair?: Keypair) 
 
 export const getKeys = async () => {
   const data: { users: { id: string }[] } = await client.request(GET_USER_QUERY);
-  console.log(data);
 
   if (!data.users) {
     throw new Error('No users data in response');

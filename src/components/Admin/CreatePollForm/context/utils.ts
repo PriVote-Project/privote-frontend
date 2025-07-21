@@ -2,6 +2,7 @@
 import { EMode, PollPolicyType, PollType } from '@/types';
 import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
 import { PublicKey } from '@maci-protocol/domainobjs';
+import { parseEther } from 'viem';
 import type { IPollData } from '../types';
 
 /**
@@ -102,14 +103,14 @@ export function getPollArgs({
 
     case PollPolicyType.ERC20: {
       const tokenAddress = config.tokenAddress || ZERO_ADDRESS;
-      const threshold = config.threshold ? BigInt(config.threshold) : 1n;
+      const threshold = config.threshold ? parseEther(config.threshold) : parseEther('1');
 
       return [...baseArgs, tokenAddress, threshold, voiceCredits];
     }
 
     case PollPolicyType.ERC20Votes: {
       const tokenAddress = config.tokenAddress || ZERO_ADDRESS;
-      const threshold = config.threshold ? BigInt(config.threshold) : 1n;
+      const threshold = config.threshold ? parseEther(config.threshold) : parseEther('1');
       const snapshotBlock = config.snapshotBlock ? BigInt(config.snapshotBlock) : 0n;
 
       return [...baseArgs, tokenAddress, threshold, snapshotBlock, voiceCredits];

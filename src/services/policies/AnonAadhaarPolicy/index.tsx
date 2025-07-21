@@ -22,7 +22,7 @@ const AnonAadhaarPolicy = ({ policyData, signupState, setSignupState, onNext, on
 
   // Extract nullifierSeed from policyData or use default
   const decodedPolicyData = useDecodeService<AnonAadhaarPolicyData>(PollPolicyType.AnonAadhaar, policyData);
-  const nullifierSeed = decodedPolicyData?.nullifierSeed ? decodedPolicyData.nullifierSeed : 4534n;
+  const nullifierSeed = decodedPolicyData?.nullifierSeed ?? 4534n;
 
   const handleNext = () => {
     setIsLoading(true);
