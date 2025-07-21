@@ -1,5 +1,6 @@
 'use client';
 
+import passportDecoderAbi from '@/abi/gitcoinPassportDecoder';
 import useDecodeService from '@/hooks/useDecodeService';
 import { usePollContext } from '@/hooks/usePollContext';
 import { GitcoinPassportPolicyData } from '@/services/decode/types';
@@ -11,7 +12,6 @@ import { useAccount, useReadContract } from 'wagmi';
 import Common from '../Common';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
-import passportDecoderAbi from '@/abi/gitcoinPassportDecoder';
 
 const GitcoinPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
   const FACTOR = BigInt(100);

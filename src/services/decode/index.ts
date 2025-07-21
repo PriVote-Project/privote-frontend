@@ -8,11 +8,11 @@ import {
   GitcoinPassportPolicyData,
   HatsPolicyData,
   MerklePolicyData,
-  SemaphorePolicyData,
-  TokenPolicyData,
-  ZupassPolicyData,
   PolicyData,
-  Token
+  SemaphorePolicyData,
+  Token,
+  TokenPolicyData,
+  ZupassPolicyData
 } from './types';
 
 export class DecodeService {

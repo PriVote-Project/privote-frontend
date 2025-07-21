@@ -1,5 +1,6 @@
 'use client';
 
+import VotesAbi from '@/abi/votes';
 import useDecodeService from '@/hooks/useDecodeService';
 import { usePollContext } from '@/hooks/usePollContext';
 import { ERC20VotesPolicyData } from '@/services/decode/types';
@@ -11,7 +12,6 @@ import { useAccount, useReadContract } from 'wagmi';
 import Common from '../Common';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
-import VotesAbi from '@/abi/votes';
 
 const ERC20VotesPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
   const [isLoading, setIsLoading] = useState(false);

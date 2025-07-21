@@ -5,18 +5,18 @@ import { usePollContext } from '@/hooks/usePollContext';
 import { SemaphorePolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { useEffect, useState } from 'react';
+import { encodeAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
-import { encodeAbiParameters, parseAbiParameters, Hex } from 'viem';
 import Common from '../Common';
+import { SemaphoreNetworks } from '../constants';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
-import { SemaphoreNetworks } from '../constants';
 import { createScope } from '../utils';
 
 // Semaphore imports
-import { Identity, Group, generateProof, type SemaphoreProof, verifyProof } from '@semaphore-protocol/core';
-import { SemaphoreViem } from '@semaphore-protocol/data';
 import { notification } from '@/utils/notification';
+import { Group, Identity, generateProof, verifyProof, type SemaphoreProof } from '@semaphore-protocol/core';
+import { SemaphoreViem } from '@semaphore-protocol/data';
 
 type InputMode = 'proof' | 'privateKey';
 
@@ -182,29 +182,42 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
       }
 
       // Encode the SemaphoreProof struct for the signup data
-      const parsedAbi = parseAbiParameters([
-        'Proof SemaphoreProof',
-        'struct Proof { uint256 merkleTreeDepth; uint256 merkleTreeRoot; uint256 nullifier; uint256 message; uint256 scope; uint256[8] points; }'
-      ]);
-      const encodedData = encodeAbiParameters(parsedAbi, [
-        {
-          merkleTreeDepth: BigInt(proofData.merkleTreeDepth),
-          merkleTreeRoot: BigInt(proofData.merkleTreeRoot),
-          nullifier: BigInt(proofData.nullifier),
-          message: BigInt(proofData.message),
-          scope: BigInt(proofData.scope),
-          points: proofData.points.map(point => BigInt(point)) as [
-            bigint,
-            bigint,
-            bigint,
-            bigint,
-            bigint,
-            bigint,
-            bigint,
-            bigint
-          ]
-        }
-      ]);
+      const encodedData = encodeAbiParameters(
+        [
+          {
+            name: 'proof',
+            type: 'tuple',
+            internalType: 'struct ISemaphore.SemaphoreProof',
+            components: [
+              { name: 'merkleTreeDepth', type: 'uint256', internalType: 'uint256' },
+              { name: 'merkleTreeRoot', type: 'uint256', internalType: 'uint256' },
+              { name: 'nullifier', type: 'uint256', internalType: 'uint256' },
+              { name: 'message', type: 'uint256', internalType: 'uint256' },
+              { name: 'scope', type: 'uint256', internalType: 'uint256' },
+              { name: 'points', type: 'uint256[8]', internalType: 'uint256[8]' }
+            ]
+          }
+        ],
+        [
+          {
+            merkleTreeDepth: BigInt(proofData.merkleTreeDepth),
+            merkleTreeRoot: BigInt(proofData.merkleTreeRoot),
+            nullifier: BigInt(proofData.nullifier),
+            message: BigInt(proofData.message),
+            scope: BigInt(proofData.scope),
+            points: proofData.points.map(point => BigInt(point)) as [
+              bigint,
+              bigint,
+              bigint,
+              bigint,
+              bigint,
+              bigint,
+              bigint,
+              bigint
+            ]
+          }
+        ]
+      );
 
       setSignupState(prev => ({
         ...prev,

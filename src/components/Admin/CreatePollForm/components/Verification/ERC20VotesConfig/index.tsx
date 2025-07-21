@@ -1,7 +1,7 @@
-import styles from '../index.module.css';
-import { IPolicyConfigProps } from '../types';
 import { useTokenDetails } from '@/hooks/useTokenDetails';
+import styles from '../index.module.css';
 import TokenDetails from '../TokenDetails';
+import { IPolicyConfigProps } from '../types';
 
 const ERC20VotesConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { tokenDetails, isLoading, error } = useTokenDetails(config.tokenAddress, 'ERC20');

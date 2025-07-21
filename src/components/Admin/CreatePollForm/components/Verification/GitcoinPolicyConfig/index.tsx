@@ -1,9 +1,9 @@
+import { ESupportedNetworks } from '@/types/chains';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { GitcoinDecoderAddresses } from '../constants';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
-import { GitcoinDecoderAddresses } from '../constants';
-import { ESupportedNetworks } from '@/types/chains';
-import { useAccount } from 'wagmi';
-import { useEffect, useState } from 'react';
 
 const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { isConnected, chainId } = useAccount();
@@ -20,7 +20,7 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
     } else if (chainId) {
       // Check if the connected chain is supported by Privote
       const isChainSupported = chainId in ESupportedNetworks;
-      
+
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setIsManualInput(false);
@@ -55,7 +55,9 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
           placeholder='0x...'
           value={config.gitcoinDecoderAddress || ''}
           readOnly={!isManualInput && !!config.gitcoinDecoderAddress}
-          onChange={isManualInput ? (e) => onConfigChange({ ...config, gitcoinDecoderAddress: e.target.value }) : undefined}
+          onChange={
+            isManualInput ? e => onConfigChange({ ...config, gitcoinDecoderAddress: e.target.value }) : undefined
+          }
         />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>

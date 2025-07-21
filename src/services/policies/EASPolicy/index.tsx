@@ -1,18 +1,18 @@
 'use client';
-import Common from '../Common';
-import styles from '../styles.module.css';
-import { EASPolicyData } from '@/services/decode/types';
 import useDecodeService from '@/hooks/useDecodeService';
-import { PolicyProps } from '../types';
-import { PollPolicyType } from '@/types';
-import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
 import { usePollContext } from '@/hooks/usePollContext';
-import { EASNetworkSlugs, getGqlUrl } from '../constants';
+import { EASPolicyData } from '@/services/decode/types';
+import { GET_ATTESTATIONS_QUERY } from '@/services/queries/eas';
+import { PollPolicyType } from '@/types';
 import { TSupportedNetworks } from '@/types/chains';
 import { request } from 'graphql-request';
-import { GET_ATTESTATIONS_QUERY } from '@/services/queries/eas';
+import { useEffect, useState } from 'react';
 import { encodeAbiParameters, Hex, parseAbiParameters } from 'viem';
+import { useAccount } from 'wagmi';
+import Common from '../Common';
+import { EASNetworkSlugs, getGqlUrl } from '../constants';
+import styles from '../styles.module.css';
+import { PolicyProps } from '../types';
 
 /**
  * Component for handling EAS policy

@@ -1,13 +1,13 @@
 'use client';
 import {
   AnonAadhaarPolicy,
-  ERC20Policy,
   EASPolicy,
+  ERC20Policy,
+  ERC20VotesPolicy,
   FreeForAllPolicy,
-  TokenPolicy,
   GitcoinPolicy,
   SemaphorePolicy,
-  ERC20VotesPolicy
+  TokenPolicy
 } from '@/services/policies';
 import { PollPolicyType } from '@/types';
 import React from 'react';

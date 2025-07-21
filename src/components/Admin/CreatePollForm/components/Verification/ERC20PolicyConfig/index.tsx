@@ -1,6 +1,6 @@
-import TokenDetails from '../TokenDetails';
 import { useTokenDetails } from '@/hooks/useTokenDetails';
 import styles from '../index.module.css';
+import TokenDetails from '../TokenDetails';
 import { IPolicyConfigProps } from '../types';
 
 /**

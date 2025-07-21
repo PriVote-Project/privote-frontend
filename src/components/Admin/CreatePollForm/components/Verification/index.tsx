@@ -1,18 +1,15 @@
-import ERC20PolicyConfig from './ERC20PolicyConfig';
-import TokenPolicyConfig from './TokenPolicyConfig';
-import EASPolicyConfig from './EASPolicyConfig';
-import GitcoinPolicyConfig from './GitcoinPolicyConfig';
-import AnonAadhaarPolicyConfig from './AnonAadhaarPolicyConfig';
-import HatsPolicyConfig from './HatsPolicyConfig';
-import MerkleProofPolicyConfig from './MerkleProofPolicyConfig';
-import SemaphorePolicyConfig from './SemaphorePolicyConfig';
-import ZupassPolicyConfig from './ZupassPolicyConfig';
 import { PollPolicyType } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { MdPolicy } from 'react-icons/md';
 import type { PolicyConfigType, VerificationProps } from '../../types';
+import AnonAadhaarPolicyConfig from './AnonAadhaarPolicyConfig';
+import EASPolicyConfig from './EASPolicyConfig';
+import ERC20PolicyConfig from './ERC20PolicyConfig';
+import GitcoinPolicyConfig from './GitcoinPolicyConfig';
 import styles from './index.module.css';
+import SemaphorePolicyConfig from './SemaphorePolicyConfig';
+import TokenPolicyConfig from './TokenPolicyConfig';
 
 // Display names for each policy
 const POLICY_NAMES = {

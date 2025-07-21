@@ -1,8 +1,8 @@
-import styles from '../index.module.css';
+import { ESupportedNetworks } from '@/types/chains';
 import { useCallback, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { AnonAadhaarVerifierContracts } from '../constants';
-import { ESupportedNetworks } from '@/types/chains';
+import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
 /**

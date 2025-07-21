@@ -1,8 +1,8 @@
-import styles from '../index.module.css';
+import { ESupportedNetworks, TSupportedNetworks } from '@/types/chains';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { EASContractAddresses, EASNetworkSlugs } from '../constants';
-import { TSupportedNetworks, ESupportedNetworks } from '@/types/chains';
+import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
 /**
@@ -25,7 +25,7 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
     } else if (chainId) {
       // Check if the connected chain is supported by Privote
       const isChainSupported = chainId in ESupportedNetworks;
-      
+
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setExplorerUrl('');
@@ -68,7 +68,7 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
           placeholder='0x...'
           value={config.easContract || ''}
           readOnly={!isManualInput && !!config.easContract}
-          onChange={isManualInput ? (e) => onConfigChange({ ...config, easContract: e.target.value }) : undefined}
+          onChange={isManualInput ? e => onConfigChange({ ...config, easContract: e.target.value }) : undefined}
         />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>
