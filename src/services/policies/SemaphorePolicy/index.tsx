@@ -1,35 +1,25 @@
 'use client';
 
+import useAppConstants from '@/hooks/useAppConstants';
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { SemaphorePolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
+import { getInfuraHttpUrl } from '@/utils/networks';
+import { notification } from '@/utils/notification';
 import { useEffect, useState } from 'react';
 import { encodeAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
 import Common from '../Common';
-import { SemaphoreNetworks } from '../constants';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
 import { createScope } from '../utils';
 
 // Semaphore imports
-import { notification } from '@/utils/notification';
 import { Group, Identity, generateProof, verifyProof, type SemaphoreProof } from '@semaphore-protocol/core';
 import { SemaphoreViem } from '@semaphore-protocol/data';
 
 type InputMode = 'proof' | 'privateKey';
-
-// Helper function to get network name from chainId
-const getNetworkName = (chainId?: number): { name: string; address: string; rpc: string } => {
-  const network = SemaphoreNetworks[chainId as keyof typeof SemaphoreNetworks];
-
-  if (!network) {
-    throw new Error(`No network found for chainId: ${chainId}`);
-  }
-
-  return network;
-};
 
 const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: PolicyProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +33,7 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
 
   const { isConnected, address, chainId } = useAccount();
   const { hasJoinedPoll: isRegistered } = usePollContext();
+  const { contracts } = useAppConstants();
 
   // Extract semaphore policy data
   const decodedPolicyData = useDecodeService<SemaphorePolicyData>(PollPolicyType.Semaphore, policyData);
@@ -52,7 +43,7 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
 
   // Generate proof from private key
   const generateProofFromPrivateKey = async () => {
-    if (!address) {
+    if (!address || !chainId) {
       setError('Please Connect your wallet');
       notification.error('Please connect your wallet!');
       return;
@@ -71,15 +62,10 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
       const identity = Identity.import(privateKey);
       const identityCommitment = identity.commitment;
 
-      // Determine the network based on chainId or use a default
-      const network = getNetworkName(chainId);
-      const apiKey = process.env.NEXT_PUBLIC_INFURA_API_KEY;
-      if (!apiKey) throw new Error('Missing Infura API key');
-
       // Initialize Semaphore viem
-      const rpcUrl = network.rpc + apiKey;
+      const rpcUrl = getInfuraHttpUrl(chainId);
       const semaphoreViem = new SemaphoreViem(rpcUrl, {
-        address: network.address
+        address: contracts.semaphore
       });
 
       // Check if identity is a member of the group

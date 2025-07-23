@@ -1,5 +1,6 @@
 'use client';
-import { useEthersSigner } from '@/hooks/useEthersSigner';
+import useAppConstants from '@/hooks/useAppConstants';
+import useEthersSigner from '@/hooks/useEthersSigner';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
@@ -35,6 +36,7 @@ export default function SigContextProvider({ children }: { children: React.React
   const { signMessageAsync } = useSignMessage();
   const signer = useEthersSigner();
   const privoteContract = usePrivoteContract();
+  const { subgraphUrl } = useAppConstants();
 
   // Function to load keypair from localStorage
   const loadKeypairFromLocalStorage = useCallback(() => {
@@ -154,7 +156,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
     let isUserRegistered = false;
     try {
-      const { isRegistered: _isRegistered } = await getSignedupUserData(keypair);
+      const { isRegistered: _isRegistered } = await getSignedupUserData(subgraphUrl, keypair);
 
       isUserRegistered = _isRegistered;
       setIsRegistered(_isRegistered);
@@ -211,7 +213,7 @@ export default function SigContextProvider({ children }: { children: React.React
         id: notificationId
       });
     }
-  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair]);
+  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair, subgraphUrl]);
 
   useEffect(() => {
     // Reset keypair when wallet disconnects
@@ -249,7 +251,10 @@ export default function SigContextProvider({ children }: { children: React.React
       }
 
       try {
-        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(maciKeypair);
+        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+          subgraphUrl,
+          maciKeypair
+        );
 
         setIsRegistered(_isRegistered);
         setStateIndex(_stateIndex);
@@ -258,7 +263,7 @@ export default function SigContextProvider({ children }: { children: React.React
         setIsRegistered(false);
       }
     })();
-  }, [maciKeypair, isConnected]);
+  }, [maciKeypair, isConnected, subgraphUrl]);
 
   return (
     <SigContext.Provider

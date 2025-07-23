@@ -1,14 +1,13 @@
-import { usePollContext } from '@/hooks/usePollContext';
+import useAppConstants from '@/hooks/useAppConstants';
+import usePollContext from '@/hooks/usePollContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { EMode } from '@/types';
-import { ESupportedNetworks, TSupportedNetworks } from '@/types/chains';
 import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
 import EModeMapping from '@/utils/mode';
 import { handleNotice, notification } from '@/utils/notification';
 import { type ITallyData } from '@maci-protocol/sdk/browser';
 import { createContext, useCallback, useMemo, useState, type ReactNode } from 'react';
-import { useAccount } from 'wagmi';
-import { useEthersSigner } from '../hooks/useEthersSigner';
+import useEthersSigner from '../hooks/useEthersSigner';
 import {
   type ICoordinatorContextType,
   type IFinalizePollArgs,
@@ -50,11 +49,11 @@ async function makeCoordinatorServicePostRequest<T>(url: string, body: string): 
 export const CoordinatorProvider = ({ children }: { children: ReactNode }) => {
   const [privKey, setPrivKey] = useState<string>('');
   const { poll, checkMergeStatus, checkIsTallied } = usePollContext();
-  const { chainId } = useAccount();
   const signer = useEthersSigner();
   const privoteContract = usePrivoteContract();
+  const { slugs } = useAppConstants();
   const privoteContractAddress = privoteContract?.address;
-  const chain = ESupportedNetworks[chainId as TSupportedNetworks];
+  const chain = slugs.coordinator;
   const pollId = poll?.pollId;
   const pollEMode = poll?.mode || EMode.NON_QV;
 

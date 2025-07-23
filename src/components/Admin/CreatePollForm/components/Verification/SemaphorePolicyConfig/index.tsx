@@ -1,7 +1,6 @@
-import { ESupportedNetworks } from '@/types/chains';
+import useAppConstants from '@/hooks/useAppConstants';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { SemaphoreContracts } from '../constants';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
@@ -9,6 +8,8 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
   const [isManualInput, setIsManualInput] = useState(false);
+
+  const { isChainSupported, contracts } = useAppConstants();
 
   useEffect(() => {
     if (!isConnected) {
@@ -19,8 +20,6 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
       }
     } else if (chainId) {
       // Check if the connected chain is supported by Privote
-      const isChainSupported = chainId in ESupportedNetworks;
-
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setIsManualInput(false);
@@ -28,7 +27,7 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
         return;
       }
 
-      const semaphoreContract = SemaphoreContracts[chainId as keyof typeof SemaphoreContracts];
+      const semaphoreContract = contracts.semaphore;
 
       if (semaphoreContract) {
         setFeedback('');
@@ -43,7 +42,7 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
         }
       }
     }
-  }, [isConnected, chainId]);
+  }, [isConnected, chainId, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>

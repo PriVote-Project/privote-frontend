@@ -1,8 +1,9 @@
-import { client } from '@/lib/graphql';
 import { GET_POLLS_QUERY } from '@/services/queries/polls';
 import type { Poll, RawPoll } from '@/types';
 import { PollStatus } from '@/types';
+import { fetcher } from '@/utils/fetcher';
 import { useInfiniteQuery, type QueryFunctionContext } from '@tanstack/react-query';
+import useAppConstants from './useAppConstants';
 
 interface PollsData {
   polls: RawPoll[];
@@ -34,12 +35,20 @@ export function getPollStatus(poll: RawPoll): PollStatus {
 
 const fetchPolls = async (
   context: QueryFunctionContext<
-    readonly [string, string, string | undefined, string | undefined, 'asc' | 'desc' | undefined, number | undefined],
+    readonly [
+      string,
+      string,
+      string,
+      string | undefined,
+      string | undefined,
+      'asc' | 'desc' | undefined,
+      number | undefined
+    ],
     number
   >
 ): Promise<Poll[]> => {
   const { pageParam, queryKey } = context;
-  const [, searchTerm, ownerAddress, orderBy, orderDirection, limit] = queryKey;
+  const [, subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit] = queryKey;
 
   const where: { name_contains_nocase?: string; owner?: string } = {};
   if (searchTerm) {
@@ -57,13 +66,14 @@ const fetchPolls = async (
     orderDirection: orderDirection || 'desc'
   };
 
-  const data: PollsData = await client.request(GET_POLLS_QUERY, variables);
+  const data: PollsData = await fetcher([subgraphUrl, GET_POLLS_QUERY, variables]);
   return data.polls.map(poll => ({ ...poll, status: getPollStatus(poll) }));
 };
 
-export const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit }: UsePollsParams) => {
+const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit }: UsePollsParams) => {
+  const { subgraphUrl } = useAppConstants();
   return useInfiniteQuery({
-    queryKey: ['polls', searchTerm, ownerAddress, orderBy, orderDirection, limit] as const,
+    queryKey: ['polls', subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit] as const,
     queryFn: fetchPolls,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -72,3 +82,5 @@ export const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirectio
     }
   });
 };
+
+export default usePolls;

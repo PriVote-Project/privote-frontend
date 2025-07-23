@@ -1,7 +1,7 @@
+import { supportedChains, transports } from '@/config/chains';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
-import { createConfig, http } from 'wagmi';
-import { optimismSepolia } from 'wagmi/chains';
+import { createConfig } from 'wagmi';
 
 export const connectors = connectorsForWallets(
   [
@@ -22,8 +22,6 @@ export const connectors = connectorsForWallets(
 
 export const config = createConfig({
   connectors,
-  chains: [optimismSepolia],
-  transports: {
-    [optimismSepolia.id]: http()
-  }
+  chains: supportedChains,
+  transports: transports
 });

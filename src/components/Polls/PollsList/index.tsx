@@ -1,5 +1,5 @@
 import { Button, EmptyState, ErrorState } from '@/components/shared';
-import { usePolls } from '@/hooks/usePolls';
+import usePolls from '@/hooks/usePolls';
 import type { Poll } from '@/types';
 import React from 'react';
 import PollItem from '../PollItem';

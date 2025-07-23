@@ -2,7 +2,7 @@ import { CoordinatorContext } from '@/contexts/CoordinatorContext';
 import { type ICoordinatorContextType } from '@/contexts/types';
 import { useContext } from 'react';
 
-export const useCoordinatorContext = (): ICoordinatorContextType => {
+const useCoordinatorContext = (): ICoordinatorContextType => {
   const coordinatorContext = useContext(CoordinatorContext);
 
   if (!coordinatorContext) {
@@ -11,3 +11,5 @@ export const useCoordinatorContext = (): ICoordinatorContextType => {
 
   return coordinatorContext;
 };
+
+export default useCoordinatorContext;

@@ -1,5 +1,6 @@
-import { useEthersSigner } from '@/hooks/useEthersSigner';
-import { usePoll } from '@/hooks/usePoll';
+import useAppConstants from '@/hooks/useAppConstants';
+import useEthersSigner from '@/hooks/useEthersSigner';
+import usePoll from '@/hooks/usePoll';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
@@ -47,6 +48,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     refetch: refetchPoll
   } = usePoll({ pollAddress });
 
+  const { subgraphUrl } = useAppConstants();
   const { maciKeypair, isRegistered, stateIndex } = useSigContext();
   const privoteContract = usePrivoteContract();
 
@@ -59,7 +61,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
     try {
-      const keys = await getKeys();
+      const keys = await getKeys(subgraphUrl);
       const signupTree = generateSignUpTreeFromKeys(keys);
 
       // Find the leaf's index directly from the tree to compare
@@ -71,7 +73,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     } catch (error) {
       console.error('Error getting inclusion proof', error);
     }
-  }, [maciKeypair, stateIndex]);
+  }, [maciKeypair, stateIndex, subgraphUrl]);
 
   const onJoinPoll = useCallback(
     async (signupData: string = DEFAULT_SG_DATA) => {
@@ -275,7 +277,11 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       }
 
       try {
-        const { isJoined, voiceCredits, pollStateIndex } = await getJoinedUserData(pollAddress, maciKeypair);
+        const { isJoined, voiceCredits, pollStateIndex } = await getJoinedUserData(
+          subgraphUrl,
+          pollAddress,
+          maciKeypair
+        );
 
         setHasJoinedPoll(isJoined);
         setInitialVoiceCredits(Number(voiceCredits));
@@ -285,7 +291,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setError('Error checking if user has joined poll');
       }
     })();
-  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex]);
+  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, subgraphUrl]);
 
   // download poll joining artifacts and store them in state
   useEffect(() => {

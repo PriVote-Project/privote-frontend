@@ -1,6 +1,6 @@
 import PollItem from '@/components/Polls/PollItem';
 import { EmptyState, ErrorState } from '@/components/shared';
-import { usePolls } from '@/hooks/usePolls';
+import usePolls from '@/hooks/usePolls';
 import React from 'react';
 import styles from './index.module.css';
 

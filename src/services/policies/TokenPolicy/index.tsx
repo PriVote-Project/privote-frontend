@@ -1,7 +1,7 @@
 'use client';
 
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { TokenPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';

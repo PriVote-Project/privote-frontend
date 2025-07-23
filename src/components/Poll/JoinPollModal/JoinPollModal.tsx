@@ -1,7 +1,7 @@
 'use client';
 import { Modal } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
 import React, { useCallback, useState } from 'react';

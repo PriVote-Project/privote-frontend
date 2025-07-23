@@ -1,7 +1,7 @@
 import pollAbi from '@/abi/Poll';
 import { MarkdownRenderer } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import usePollResults from '@/hooks/usePollResults';
 import useVoting from '@/hooks/useVoting';
 import { PollStatus, PollType } from '@/types';

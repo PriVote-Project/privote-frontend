@@ -2,7 +2,7 @@
 
 import VotesAbi from '@/abi/votes';
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { ERC20VotesPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { DEFAULT_SG_DATA } from '@/utils/constants';

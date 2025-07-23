@@ -1,9 +1,9 @@
-import { client } from '@/lib/graphql';
 import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import { GET_PRIVOTE_USER_QUERY } from '@/services/queries/privoteUser';
 import { GET_USER_QUERY } from '@/services/queries/user';
 import type { PollUser, User } from '@/types';
 import { PublicKey, type Keypair } from '@maci-protocol/domainobjs';
+import { fetcher } from './fetcher';
 
 export interface ISignedupUserData {
   isRegistered: boolean;
@@ -16,11 +16,15 @@ export interface IJoinedUserData {
   pollStateIndex: string | undefined;
 }
 
-export const getSignedupUserData = async (keyPair: Keypair) => {
+export const getSignedupUserData = async (url: string, keyPair: Keypair) => {
   try {
-    const data: { user: User } = await client.request(GET_PRIVOTE_USER_QUERY, {
-      id: `${keyPair?.publicKey.asContractParam().x} ${keyPair?.publicKey.asContractParam().y}`
-    });
+    const data: { user: User } = await fetcher([
+      url,
+      GET_PRIVOTE_USER_QUERY,
+      {
+        id: `${keyPair?.publicKey.asContractParam().x} ${keyPair?.publicKey.asContractParam().y}`
+      }
+    ]);
 
     if (!data.user) {
       throw new Error('User not found');
@@ -41,11 +45,15 @@ export const getSignedupUserData = async (keyPair: Keypair) => {
   }
 };
 
-export const getJoinedUserData = async (pollAddress: string, keyPair?: Keypair) => {
+export const getJoinedUserData = async (url: string, pollAddress: string, keyPair?: Keypair) => {
   try {
-    const data: { pollUser: PollUser } = await client.request(GET_POLL_USER_QUERY, {
-      id: `${keyPair?.publicKey.asContractParam().x} ${keyPair?.publicKey.asContractParam().y} ${pollAddress}`
-    });
+    const data: { pollUser: PollUser } = await fetcher([
+      url,
+      GET_POLL_USER_QUERY,
+      {
+        id: `${keyPair?.publicKey.asContractParam().x} ${keyPair?.publicKey.asContractParam().y} ${pollAddress}`
+      }
+    ]);
 
     if (!data.pollUser) {
       throw new Error('Poll user not found');
@@ -71,8 +79,8 @@ export const getJoinedUserData = async (pollAddress: string, keyPair?: Keypair) 
   }
 };
 
-export const getKeys = async () => {
-  const data: { users: { id: string }[] } = await client.request(GET_USER_QUERY);
+export const getKeys = async (url: string) => {
+  const data: { users: { id: string }[] } = await fetcher([url, GET_USER_QUERY, {}]);
 
   if (!data.users) {
     throw new Error('No users data in response');

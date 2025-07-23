@@ -1,5 +1,5 @@
 import { FinalizeStatus } from '@/contexts/types';
-import { useCoordinatorContext } from '@/hooks/userCoordinatorContext';
+import useCoordinatorContext from '@/hooks/userCoordinatorContext';
 import styles from '@/styles/publish.module.css';
 import { useEffect, useState } from 'react';
 import { WithoutImageInput } from '../Admin/CreatePollForm/components';

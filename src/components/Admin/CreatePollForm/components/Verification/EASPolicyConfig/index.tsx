@@ -1,7 +1,6 @@
-import { ESupportedNetworks, TSupportedNetworks } from '@/types/chains';
+import useAppConstants from '@/hooks/useAppConstants';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { EASContractAddresses, EASNetworkSlugs } from '../constants';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
@@ -14,6 +13,8 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const [explorerUrl, setExplorerUrl] = useState('');
   const [isManualInput, setIsManualInput] = useState(false);
 
+  const { contracts, slugs, isChainSupported } = useAppConstants();
+
   useEffect(() => {
     if (!isConnected) {
       setFeedback('Connect to wallet to auto-select EAS contract.');
@@ -23,9 +24,6 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
         onConfigChange({ ...config, easContract: '' });
       }
     } else if (chainId) {
-      // Check if the connected chain is supported by Privote
-      const isChainSupported = chainId in ESupportedNetworks;
-
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setExplorerUrl('');
@@ -34,8 +32,8 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
         return;
       }
 
-      const easContractAddress = EASContractAddresses[chainId as TSupportedNetworks];
-      const chainSlug = EASNetworkSlugs[chainId as TSupportedNetworks];
+      const easContractAddress = contracts.eas;
+      const chainSlug = slugs.eas;
 
       if (chainSlug) {
         setExplorerUrl(`https://${chainSlug}.easscan.org/`);
@@ -56,7 +54,7 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
         }
       }
     }
-  }, [isConnected, chainId]);
+  }, [isConnected, chainId, contracts.eas, slugs.eas, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>

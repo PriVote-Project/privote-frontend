@@ -35,7 +35,7 @@ const useDebounce = (value: string | undefined, delay: number): string | undefin
   return debouncedValue;
 };
 
-export const useTokenDetails = (tokenAddress?: string, tokenType?: TokenType): UseTokenDetailsResult => {
+const useTokenDetails = (tokenAddress?: string, tokenType?: TokenType): UseTokenDetailsResult => {
   const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -242,3 +242,5 @@ export const useTokenDetails = (tokenAddress?: string, tokenType?: TokenType): U
     error
   };
 };
+
+export default useTokenDetails;

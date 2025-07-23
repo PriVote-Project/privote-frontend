@@ -1,8 +1,9 @@
-import { client } from '@/lib/graphql';
 import { GET_POLL_QUERY } from '@/services/queries/polls';
 import type { RawPoll, TransformedPoll } from '@/types';
 import { EMode, PollType } from '@/types';
+import { fetcher } from '@/utils/fetcher';
 import { useQuery } from '@tanstack/react-query';
+import useAppConstants from './useAppConstants';
 import { getPollStatus } from './usePolls';
 
 // Map numeric indices back to string types
@@ -38,16 +39,21 @@ interface UsePollParams {
   pollAddress: string | null | undefined;
 }
 
-export const usePoll = ({ pollAddress }: UsePollParams) => {
+const usePoll = ({ pollAddress }: UsePollParams) => {
+  const { subgraphUrl } = useAppConstants();
   return useQuery<TransformedPoll | null>({
     queryKey: ['poll', pollAddress],
     queryFn: async () => {
       if (!pollAddress) return null;
 
       try {
-        const data: PollData = await client.request(GET_POLL_QUERY, {
-          id: pollAddress
-        });
+        const data: PollData = await fetcher([
+          subgraphUrl,
+          GET_POLL_QUERY,
+          {
+            id: pollAddress
+          }
+        ]);
 
         if (!data.poll) return null;
 
@@ -75,3 +81,5 @@ export const usePoll = ({ pollAddress }: UsePollParams) => {
     staleTime: 1000 * 60 * 5 // 5 minutes
   });
 };
+
+export default usePoll;

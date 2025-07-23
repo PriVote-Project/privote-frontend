@@ -1,7 +1,6 @@
-import { ESupportedNetworks } from '@/types/chains';
+import useAppConstants from '@/hooks/useAppConstants';
 import { useCallback, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { AnonAadhaarVerifierContracts } from '../constants';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
@@ -12,6 +11,8 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
   const [isManualInput, setIsManualInput] = useState(false);
+
+  const { isChainSupported, contracts } = useAppConstants();
 
   const generateRandomValue = useCallback(() => {
     const array = new Uint8Array(16);
@@ -32,9 +33,6 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         onConfigChange({ ...config, verifierAddress: '' });
       }
     } else if (chainId) {
-      // Check if the connected chain is supported by Privote
-      const isChainSupported = chainId in ESupportedNetworks;
-
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setIsManualInput(false);
@@ -42,7 +40,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         return;
       }
 
-      const verifier = AnonAadhaarVerifierContracts[chainId as keyof typeof AnonAadhaarVerifierContracts];
+      const verifier = contracts.anonAadhaarVerifier;
 
       if (verifier) {
         setFeedback('');
@@ -57,7 +55,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         }
       }
     }
-  }, [isConnected, chainId]);
+  }, [isConnected, chainId, contracts.anonAadhaarVerifier, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>

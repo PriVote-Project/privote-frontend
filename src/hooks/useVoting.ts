@@ -2,8 +2,8 @@ import PollAbi from '@/abi/Poll';
 import { EMode, PollStatus, PollType } from '@/types';
 import { handleNotice, notification } from '@/utils/notification';
 import { Keypair, PublicKey, VoteCommand } from '@maci-protocol/domainobjs';
-import { useState, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useEffect, useState } from 'react';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 interface UseVotingProps {
   pollAddress?: string;
@@ -17,7 +17,7 @@ interface UseVotingProps {
   mode?: EMode;
 }
 
-export const useVoting = ({
+const useVoting = ({
   pollAddress,
   pollType,
   status,
@@ -51,7 +51,7 @@ export const useVoting = ({
     if (!txState?.hash) return;
     if (isConfirmed && receipt) {
       handleNotice({
-        message: 'Poll created successfully!',
+        message: 'Votes submitted successfully!',
         type: 'success',
         id: txState?.notificationId
       });
@@ -59,7 +59,7 @@ export const useVoting = ({
       setIsLoading(false);
     } else if (confirmError) {
       handleNotice({
-        message: 'Poll creation failed!',
+        message: 'Votes submission failed!',
         type: 'error',
         id: txState?.notificationId
       });
@@ -174,75 +174,41 @@ export const useVoting = ({
     try {
       let txHash: `0x${string}`;
       if (votesToMessage.length === 1) {
-        txHash = await writeContractAsync(
-          {
-            abi: PollAbi,
-            address: pollAddress as `0x${string}`,
-            functionName: 'publishMessage',
-            args: [
-              votesToMessage[0].message.asContractParam() as unknown as {
-                data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
-              },
-              votesToMessage[0].encKeyPair.publicKey.asContractParam() as unknown as {
-                x: bigint;
-                y: bigint;
-              }
-            ]
-          },
-          {
-            onSuccess: () => {
-              handleNotice({
-                message: 'Votes submitted successfully!',
-                type: 'success',
-                id: notificationId
-              });
+        txHash = await writeContractAsync({
+          abi: PollAbi,
+          address: pollAddress as `0x${string}`,
+          functionName: 'publishMessage',
+          args: [
+            votesToMessage[0].message.asContractParam() as unknown as {
+              data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
             },
-            onError: () =>
-              handleNotice({
-                message: 'Failed to submit votes, please try again',
-                type: 'error',
-                id: notificationId
-              })
-          }
-        );
+            votesToMessage[0].encKeyPair.publicKey.asContractParam() as unknown as {
+              x: bigint;
+              y: bigint;
+            }
+          ]
+        });
       } else {
-        txHash = await writeContractAsync(
-          {
-            abi: PollAbi,
-            address: pollAddress as `0x${string}`,
-            functionName: 'publishMessageBatch',
-            args: [
-              votesToMessage.map(
-                v =>
-                  v.message.asContractParam() as unknown as {
-                    data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
-                  }
-              ),
-              votesToMessage.map(
-                v =>
-                  v.encKeyPair.publicKey.asContractParam() as {
-                    x: bigint;
-                    y: bigint;
-                  }
-              )
-            ]
-          },
-          {
-            onSuccess: () => {
-              handleNotice({
-                message: 'Votes submitted successfully!',
-                type: 'success',
-                id: notificationId
-              });
-            },
-            onError: () =>
-              handleNotice({
-                message: 'Failed to submit votes, please try again',
-                type: 'error',
-                id: notificationId
-              })
-          }
-        );
+        txHash = await writeContractAsync({
+          abi: PollAbi,
+          address: pollAddress as `0x${string}`,
+          functionName: 'publishMessageBatch',
+          args: [
+            votesToMessage.map(
+              v =>
+                v.message.asContractParam() as unknown as {
+                  data: readonly [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint];
+                }
+            ),
+            votesToMessage.map(
+              v =>
+                v.encKeyPair.publicKey.asContractParam() as {
+                  x: bigint;
+                  y: bigint;
+                }
+            )
+          ]
+        });
       }
 
       notificationId = handleNotice({

@@ -2,7 +2,7 @@
 import { PollHeader, VotingSection } from '@/components/Poll';
 import { EmptyState, ErrorState } from '@/components/shared';
 import { PollProvider } from '@/contexts/PollContext';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import styles from '@/styles/poll.module.css';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

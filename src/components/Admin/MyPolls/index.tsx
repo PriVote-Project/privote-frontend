@@ -1,6 +1,6 @@
 import PollItem from '@/components/Polls/PollItem';
 import { Button, EmptyState, ErrorState } from '@/components/shared';
-import { usePolls } from '@/hooks/usePolls';
+import usePolls from '@/hooks/usePolls';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React from 'react';
 import { useAccount } from 'wagmi';

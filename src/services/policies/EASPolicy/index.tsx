@@ -1,16 +1,15 @@
 'use client';
+import useAppConstants from '@/hooks/useAppConstants';
 import useDecodeService from '@/hooks/useDecodeService';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { EASPolicyData } from '@/services/decode/types';
 import { GET_ATTESTATIONS_QUERY } from '@/services/queries/eas';
 import { PollPolicyType } from '@/types';
-import { TSupportedNetworks } from '@/types/chains';
 import { request } from 'graphql-request';
 import { useEffect, useState } from 'react';
 import { encodeAbiParameters, Hex, parseAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
 import Common from '../Common';
-import { EASNetworkSlugs, getGqlUrl } from '../constants';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
 
@@ -27,6 +26,7 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
 
   const { isConnected, address, chainId } = useAccount();
   const { hasJoinedPoll: isRegistered } = usePollContext();
+  const { slugs } = useAppConstants();
 
   // Extract EAS policy data
   const decodedPolicyData = useDecodeService<EASPolicyData>(PollPolicyType.EAS, policyData);
@@ -38,7 +38,7 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
   // Check if current network is supported
   useEffect(() => {
     if (chainId) {
-      const supported = chainId in EASNetworkSlugs;
+      const supported = !!slugs.eas;
       setNetworkSupported(supported);
       if (!supported) {
         setManualEntry(true);
@@ -47,7 +47,7 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
         );
       }
     }
-  }, [chainId]);
+  }, [chainId, slugs.eas]);
 
   // Auto-discover attestation ID
   const autoDiscoverAttestation = async () => {
@@ -57,7 +57,7 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
     setAutoDiscoveryError('');
 
     try {
-      const gqlUrl = getGqlUrl(chainId as TSupportedNetworks);
+      const gqlUrl = `https://${slugs.eas}.easscan.org/graphql`;
 
       const variables = {
         where: {
@@ -217,7 +217,8 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
         {!manualEntry && networkSupported && (
           <div className={styles.easHelpText}>
             <p>
-              Click "Auto-discover" to automatically find your latest attestation, or enter the attestation ID manually.
+              Click &quot;Auto-discover&quot; to automatically find your latest attestation, or enter the attestation ID
+              manually.
             </p>
           </div>
         )}

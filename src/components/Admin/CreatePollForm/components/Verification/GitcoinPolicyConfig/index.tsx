@@ -1,7 +1,6 @@
-import { ESupportedNetworks } from '@/types/chains';
+import useAppConstants from '@/hooks/useAppConstants';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { GitcoinDecoderAddresses } from '../constants';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
 
@@ -9,6 +8,8 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
   const [isManualInput, setIsManualInput] = useState(false);
+
+  const { contracts, isChainSupported } = useAppConstants();
 
   useEffect(() => {
     if (!isConnected) {
@@ -18,9 +19,6 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
         onConfigChange({ ...config, gitcoinDecoderAddress: '' });
       }
     } else if (chainId) {
-      // Check if the connected chain is supported by Privote
-      const isChainSupported = chainId in ESupportedNetworks;
-
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setIsManualInput(false);
@@ -28,9 +26,9 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
         return;
       }
 
-      const gitcoinDecoderAddress = GitcoinDecoderAddresses[chainId as keyof typeof GitcoinDecoderAddresses];
+      const gitcoinDecoderAddress = contracts.gitcoinPassportDecoder;
 
-      if (gitcoinDecoderAddress) {
+      if (gitcoinDecoderAddress !== '0x') {
         setFeedback('');
         setIsManualInput(false);
         onConfigChange({ ...config, gitcoinDecoderAddress });
@@ -43,7 +41,14 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
         }
       }
     }
-  }, [isConnected, chainId]);
+  }, [
+    isConnected,
+    chainId,
+    contracts.gitcoinPassportDecoder,
+    isChainSupported,
+    contracts.gitcoinPassportDecoder,
+    isChainSupported
+  ]);
 
   return (
     <div className={styles.policyConfig}>

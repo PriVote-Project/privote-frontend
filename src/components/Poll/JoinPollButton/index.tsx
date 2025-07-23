@@ -1,10 +1,10 @@
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React, { useState } from 'react';
 import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 import { JoinPollModal } from '../JoinPollModal';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import styles from './index.module.css';
 
 interface JoinPollButtonProps {

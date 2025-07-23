@@ -1,5 +1,5 @@
 import { Modal, ShareModal } from '@/components/shared';
-import { usePollContext } from '@/hooks/usePollContext';
+import usePollContext from '@/hooks/usePollContext';
 import { PollStatus } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';

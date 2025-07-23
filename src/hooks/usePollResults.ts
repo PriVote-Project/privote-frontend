@@ -1,10 +1,10 @@
 import { getResults, type IResult } from '@maci-protocol/sdk/browser';
 import { useQuery, type Query } from '@tanstack/react-query';
-import { useEthersSigner } from './useEthersSigner';
-import { usePollContext } from './usePollContext';
+import useEthersSigner from './useEthersSigner';
+import usePollContext from './usePollContext';
 import usePrivoteContract from './usePrivoteContract';
 
-export const usePollResults = () => {
+const usePollResults = () => {
   const { poll, checkIsTallied } = usePollContext();
   const signer = useEthersSigner();
   const privoteContractAddress = usePrivoteContract()?.address;
