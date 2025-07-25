@@ -90,8 +90,6 @@ export interface CandidateSelectionProps {
 export interface PollConfigurationProps {
   pollConfig: number;
   setPollConfig: React.Dispatch<React.SetStateAction<number>>;
-  generateKeyPair: () => void;
-  showKeys: { show: boolean; privateKey: string };
   publicKey: string;
   handlePubKeyChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }

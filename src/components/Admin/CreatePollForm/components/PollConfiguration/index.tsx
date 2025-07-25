@@ -3,14 +3,7 @@ import { type PollConfigurationProps } from '../../types';
 import WithoutImageInput from '../WithoutImageInput';
 import styles from './index.module.css';
 
-const PollConfiguration = ({
-  setPollConfig,
-  pollConfig,
-  publicKey,
-  handlePubKeyChange,
-  generateKeyPair,
-  showKeys
-}: PollConfigurationProps) => {
+const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyChange }: PollConfigurationProps) => {
   return (
     <div className={styles['poll-config-wrapper']}>
       <h1>Poll Configuration</h1>
@@ -47,30 +40,7 @@ const PollConfiguration = ({
           <div className={styles['config-option']} onClick={() => setPollConfig(2)}>
             <div className={`${styles.dot} ${pollConfig === 2 ? styles.selected : ''}`}></div>
             <div className={styles['gen-container']}>
-              <p className={styles.text}>Generate Public Key</p>
-              {pollConfig === 2 && (
-                <div className={styles['public-input-container']}>
-                  <button
-                    type='button'
-                    className={styles['gen-btn']}
-                    onClick={generateKeyPair}
-                    disabled={showKeys.show}
-                  >
-                    {showKeys.show ? 'Keys Generated!' : 'Generate Key'}
-                  </button>
-                  {showKeys.show && (
-                    <div className={styles['key-details']}>
-                      <div className={styles['key-container']}>
-                        <p>Public Key: {publicKey}</p>
-                        <p>Private Key: {showKeys.privateKey}</p>
-                      </div>
-                      <p className={styles['priv-warning']}>
-                        Please store the private key securely. It will not be stored here.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+              <p className={styles.text}>Use Privote&apos;s trusted Coordinator</p>
             </div>
           </div>
         </div>

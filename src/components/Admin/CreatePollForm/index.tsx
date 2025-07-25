@@ -6,6 +6,7 @@ import { PollSettings } from './components/PollSettings';
 import { usePollForm } from './context';
 import styles from './index.module.css';
 import { type CreatePollFormProps } from './types';
+import Image from 'next/image';
 
 const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
   const { isConnected } = useAccount();
@@ -14,10 +15,8 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
     setPollData,
     files,
     isLoading,
-    showKeys,
     setPollConfig,
     pollConfig,
-    generateKeyPair,
     candidateSelection,
     setCandidateSelection,
     handleOptionChange,
@@ -41,7 +40,7 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
   return (
     <div className={styles['create-form']}>
       <button className={styles.back} onClick={onClose}>
-        <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
+        <Image src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
       </button>
       <form onSubmit={handleSubmit} className={styles.form}>
         <h1 className={styles.heading}>Create a Poll</h1>
@@ -155,8 +154,6 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
           pollConfig={pollConfig}
           publicKey={pollData.publicKey}
           handlePubKeyChange={e => setPollData(prev => ({ ...prev, publicKey: e.target.value }))}
-          generateKeyPair={generateKeyPair}
-          showKeys={showKeys}
         />
 
         <div className={styles['actions']}>

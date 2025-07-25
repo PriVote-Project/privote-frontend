@@ -10,7 +10,11 @@ import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import type { IPollData, PolicyConfigType } from '../types';
-import { getPollArgs } from './utils';
+import { getCoordinatorPollArgs, getPollArgs } from './utils';
+import useAppConstants from '@/hooks/useAppConstants';
+import { Abi, Hex } from 'viem';
+import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
+import makeCoordinatorServicePostRequest from '@/utils/coordinator';
 
 const initialPollData: IPollData = {
   title: '',
@@ -47,11 +51,8 @@ interface PollFormContextType {
   setPollData: React.Dispatch<React.SetStateAction<IPollData>>;
   files: (File | null)[] | null;
   isLoading: boolean;
-  showKeys: { show: boolean; privateKey: string };
-  setShowKeys: React.Dispatch<React.SetStateAction<{ show: boolean; privateKey: string }>>;
   pollConfig: number;
   setPollConfig: React.Dispatch<React.SetStateAction<number>>;
-  generateKeyPair: () => void;
   candidateSelection: 'none' | 'withImage' | 'withoutImage';
   setCandidateSelection: React.Dispatch<React.SetStateAction<'none' | 'withImage' | 'withoutImage'>>;
   handleOptionChange: (index: number, value: string, field: 'value' | 'title' | 'description' | 'link') => void;
@@ -60,10 +61,9 @@ interface PollFormContextType {
   handleAddOption: () => void;
   handleRemoveOption: (index: number) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
-  handlePolicyTypeChange: (e: React.ChangeEvent<any>) => void;
   handlePolicyConfigChange: (config: PolicyConfigType) => void;
-  // showFaucetModal: boolean
-  // onCloseFaucetModal: () => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handlePolicyTypeChange: (e: React.ChangeEvent<any>) => void;
 }
 
 const PollFormContext = createContext<PollFormContextType | undefined>(undefined);
@@ -74,9 +74,9 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   const [files, setFiles] = useState<(File | null)[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [candidateSelection, setCandidateSelection] = useState<'none' | 'withImage' | 'withoutImage'>('none');
-  const [showKeys, setShowKeys] = useState({ show: false, privateKey: '' });
   const [pollConfig, setPollConfig] = useState(0);
 
+  const { slugs } = useAppConstants();
   const { writeContractAsync } = useWriteContract();
   const privoteContract = usePrivoteContract();
   const [txState, setTxState] = useState<{ hash: `0x${string}`; notificationId: string }>();
@@ -110,17 +110,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       });
       setIsLoading(false);
     }
-  }, [isConfirmed, confirmError, receipt, txState]);
-
-  const generateKeyPair = () => {
-    const keyPair = new Keypair();
-
-    setPollData(prev => ({
-      ...prev,
-      publicKey: keyPair.toJSON().publicKey
-    }));
-    setShowKeys({ show: true, privateKey: keyPair.toJSON().privateKey });
-  };
+  }, [isConfirmed, confirmError, receipt, txState, router]);
 
   const validateForm = (): boolean => {
     if (!pollData.title.trim()) {
@@ -164,7 +154,13 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
 
-    if (!PublicKey.isValidSerialized(pollData.publicKey)) {
+    if (pollConfig !== 1 && pollConfig !== 2) {
+      console.log('Please select a valid Poll Configuration');
+      notification.error('Please select a valid Poll Configuration');
+      return false;
+    }
+
+    if (pollConfig === 1 && !PublicKey.isValidSerialized(pollData.publicKey)) {
       console.log('Please enter a valid public key');
       notification.error('Please enter a valid public key');
       return false;
@@ -209,6 +205,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePolicyTypeChange = (e: React.ChangeEvent<any>) => {
     // When changing policy type, reset the policy config to prevent invalid configs
     setPollData(prev => ({
@@ -244,6 +241,95 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       if (!prev) return prev;
       return prev.filter((_, i) => i !== index);
     });
+  };
+
+  const handlePollCreationUsingWrapper = async (
+    finalPollData: IPollData,
+    encodedOptions: Hex[],
+    startTime: bigint,
+    endTime: bigint,
+    abi: Abi,
+    contractAddress: Hex,
+    notificationId?: string
+  ) => {
+    // Generate the arguments for the contract call using the utility function
+    const args = getPollArgs({
+      pollData: finalPollData,
+      encodedOptions,
+      startTime,
+      endTime
+    });
+
+    notificationId = handleNotice({
+      message: 'Submitting poll creation transaction...',
+      type: 'loading',
+      id: notificationId
+    });
+
+    const txHash = await writeContractAsync({
+      abi: abi,
+      address: contractAddress,
+      functionName: getWrapperFunctionName(finalPollData.policyType),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      args: args as any
+    });
+
+    notificationId = handleNotice({
+      message: 'Waiting for transaction confirmation...',
+      type: 'loading',
+      id: notificationId
+    });
+
+    setTxState({
+      hash: txHash,
+      notificationId
+    });
+  };
+
+  const handlePollCreationUsingCoordinator = async (
+    finalPollData: IPollData,
+    encodedOptions: Hex[],
+    startTime: bigint,
+    endTime: bigint,
+    privoteAddress: Hex,
+    notificationId?: string
+  ) => {
+    const pollCoordinatorArgs = getCoordinatorPollArgs({
+      pollData: finalPollData,
+      encodedOptions,
+      startTime,
+      endTime,
+      chain: slugs.coordinator,
+      privoteAddress
+    });
+
+    notificationId = handleNotice({
+      message: "Deploying poll using privote's coordinator...",
+      type: 'loading',
+      id: notificationId
+    });
+
+    const response = await makeCoordinatorServicePostRequest<{ pollId: string }>(
+      `${PUBLIC_COORDINATOR_SERVICE_URL}/v1/deploy/poll`,
+      JSON.stringify(pollCoordinatorArgs)
+    );
+
+    if (response.success) {
+      handleNotice({
+        message: `Poll with ID ${response.data.pollId} created successfully!`,
+        type: 'success',
+        id: notificationId
+      });
+      setIsLoading(false);
+      router.push('/polls');
+    } else {
+      handleNotice({
+        message: `Poll creation failed: ${response.error}`,
+        type: 'error',
+        id: notificationId
+      });
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -304,35 +390,28 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
         })
       );
 
-      // Generate the arguments for the contract call using the utility function
-      const args = getPollArgs({
-        pollData: finalPollData,
-        encodedOptions,
-        startTime,
-        endTime
-      });
-
-      notificationId = handleNotice({
-        message: 'Submitting poll creation transaction...',
-        type: 'loading',
-        id: notificationId
-      });
-
-      const txHash = await writeContractAsync({
-        abi: privoteContract.abi,
-        address: privoteContract.address,
-        functionName: getWrapperFunctionName(finalPollData.policyType),
-        args: args as any
-      });
-      notificationId = handleNotice({
-        message: 'Waiting for transaction confirmation...',
-        type: 'loading',
-        id: notificationId
-      });
-      setTxState({
-        hash: txHash,
-        notificationId
-      });
+      if (pollConfig === 1) {
+        await handlePollCreationUsingWrapper(
+          finalPollData,
+          encodedOptions,
+          startTime,
+          endTime,
+          privoteContract.abi,
+          privoteContract.address,
+          notificationId
+        );
+      } else if (pollConfig === 2) {
+        await handlePollCreationUsingCoordinator(
+          finalPollData,
+          encodedOptions,
+          startTime,
+          endTime,
+          privoteContract.address,
+          notificationId
+        );
+      } else {
+        notification.warning('Invalid poll configuration');
+      }
     } catch (error) {
       console.error('Error creating poll:', error);
       const errorMessage =
@@ -353,11 +432,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     setPollData,
     files,
     isLoading,
-    showKeys,
-    setShowKeys,
     pollConfig,
     setPollConfig,
-    generateKeyPair,
     candidateSelection,
     setCandidateSelection,
     handleOptionChange,
