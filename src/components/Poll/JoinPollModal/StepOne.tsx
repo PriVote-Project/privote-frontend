@@ -64,7 +64,7 @@ export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSig
             <ul style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', lineHeight: '1.6', paddingLeft: '20px' }}>
               <li>A unique cryptographic keypair is generated for you</li>
               <li>Your identity is registered on the blockchain anonymously</li>
-              <li>You'll be able to join and vote in polls privately</li>
+              <li>You&apos;ll be able to join and vote in polls privately</li>
               <li>Your voting history remains completely anonymous</li>
             </ul>
           </div>
@@ -84,7 +84,7 @@ export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSig
             Keypair Management
           </h4>
           <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px', marginBottom: '12px' }}>
-            If you're experiencing issues or want to generate a new keypair, you can delete your current one.
+            If you&apos;re experiencing issues or want to generate a new keypair, you can delete your current one.
           </p>
           <button
             onClick={deleteKeypair}

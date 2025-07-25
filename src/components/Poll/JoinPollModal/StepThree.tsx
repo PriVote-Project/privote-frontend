@@ -16,7 +16,7 @@ export const StepThree: React.FC<StepThreeProps> = ({ signupState, isLoading, on
       <div className={styles.stepHeader}>
         <h3 className={styles.stepTitle}>Ready to Join</h3>
         <p className={styles.stepDescription}>
-          You're all set! Click the button below to join this poll and start participating.
+          You&apos;re all set! Click the button below to join this poll and start participating.
         </p>
       </div>
 
@@ -37,40 +37,21 @@ export const StepThree: React.FC<StepThreeProps> = ({ signupState, isLoading, on
           </h4>
           <p className={styles.summaryText}>
             You have successfully registered with Privote and meet all the requirements for this poll. Once you join,
-            you'll be able to cast your vote anonymously.
+            you&apos;ll be able to cast your vote anonymously.
           </p>
         </div>
 
         {/* What happens next */}
-        <div
-          style={{
-            padding: '16px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(215, 232, 132, 0.1)',
-            border: '1px solid rgba(215, 232, 132, 0.2)'
-          }}
-        >
-          <h4
-            style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              color: '#d7e884',
-              marginBottom: '12px'
-            }}
-          >
+        <div className={styles.nextStepsSection}>
+          <h4 className={styles.nextStepsTitle}>
+            <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
+              <path d='M10 2L13 8L20 9L15 14L16 21L10 18L4 21L5 14L0 9L7 8L10 2Z' fill='currentColor' />
+            </svg>
             What happens when you join?
           </h4>
-          <ul
-            style={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontSize: '14px',
-              lineHeight: '1.6',
-              paddingLeft: '20px',
-              margin: 0
-            }}
-          >
+          <ul className={styles.nextStepsList}>
             <li>Your participation will be recorded anonymously</li>
-            <li>You'll gain voting rights for this specific poll</li>
+            <li>You&apos;ll gain voting rights for this specific poll</li>
             <li>Your vote will be completely private and verifiable</li>
             <li>You can cast your vote anytime before the poll ends</li>
           </ul>

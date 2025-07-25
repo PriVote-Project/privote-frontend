@@ -6,6 +6,7 @@ import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 import { JoinPollModal } from '../JoinPollModal';
 import styles from './index.module.css';
+import { TiPlus } from 'react-icons/ti';
 
 interface JoinPollButtonProps {
   policyType: PollPolicyType;
@@ -47,7 +48,7 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
   return (
     <div className={styles.joinButtonWrapper}>
       <button onClick={handleOpenModal} className={styles.joinButton}>
-        <img src='/icons/join-icon.svg' alt='Join' width='16' height='16' />
+        <TiPlus size={20} color='#fff' />
         <span>Join Poll</span>
       </button>
 

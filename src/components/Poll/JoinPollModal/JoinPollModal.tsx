@@ -5,6 +5,7 @@ import usePollContext from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
 import React, { useCallback, useState } from 'react';
+import { FaTimes } from 'react-icons/fa';
 import { Hex } from 'viem';
 import styles from './JoinPollModal.module.css';
 import { StepOne } from './StepOne';
@@ -79,8 +80,15 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title='Join Poll' maxWidth='600px' showCloseButton={true}>
+    <Modal padding={'0px'} isOpen={isOpen} onClose={onClose} maxWidth='600px' showCloseButton={false}>
       <div className={styles.modalContent}>
+        {/* Modal Header */}
+        <div className={styles.modalHeader}>
+          <h2>Join Poll</h2>
+          <button className={styles.closeButton} onClick={onClose}>
+            <FaTimes size={20} />
+          </button>
+        </div>
         {/* Step Progress Indicator */}
         <div className={styles.stepIndicator}>
           <div className={styles.stepProgress}>
