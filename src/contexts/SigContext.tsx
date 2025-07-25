@@ -19,7 +19,7 @@ interface ISigContext {
   error: string | undefined;
   generateKeypair: () => void;
   deleteKeypair: () => void;
-  onSignup: () => void;
+  onSignup: () => Promise<void>;
 }
 
 export const SigContext = createContext<ISigContext>({} as ISigContext);

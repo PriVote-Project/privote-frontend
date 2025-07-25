@@ -6,7 +6,7 @@ import styles from './JoinPollModal.module.css';
 interface StepOneProps {
   isRegistered: boolean;
   isLoading: boolean;
-  onSignup: () => void;
+  onSignup: () => Promise<void>;
   onNext: () => void;
 }
 
@@ -52,7 +52,7 @@ export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSig
             )}
           </div>
           <div className={styles.statusText}>
-            {isRegistered ? "You're already registered with Privote!" : 'Registration required to join polls'}
+            {isRegistered ? "You're registered on Privote!" : 'Registration required to join polls'}
           </div>
         </div>
 
