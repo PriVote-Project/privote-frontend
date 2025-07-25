@@ -15,14 +15,14 @@ import TokenPolicyConfig from './TokenPolicyConfig';
 const POLICY_NAMES = {
   [PollPolicyType.AnonAadhaar]: 'Anon Aadhaar',
   [PollPolicyType.EAS]: 'Ethereum Attestation Service',
-  [PollPolicyType.ERC20]: 'ERC20 Token',
+  [PollPolicyType.ERC20]: 'Token (ERC20)',
   [PollPolicyType.ERC20Votes]: 'ERC20 Votes',
   [PollPolicyType.FreeForAll]: 'None',
   [PollPolicyType.GitcoinPassport]: 'Gitcoin Passport',
   // [PollPolicyType.Hats]: 'Hats',
   // [PollPolicyType.Merkle]: 'Merkle Proof',
   [PollPolicyType.Semaphore]: 'Semaphore',
-  [PollPolicyType.Token]: 'Custom Token'
+  [PollPolicyType.Token]: 'NFT'
   // [PollPolicyType.Zupass]: 'Zupass'
 };
 
