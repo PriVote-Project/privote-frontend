@@ -2,7 +2,6 @@ import { FinalizeStatus } from '@/contexts/types';
 import useCoordinatorContext from '@/hooks/userCoordinatorContext';
 import styles from '@/styles/publish.module.css';
 import { useEffect, useState } from 'react';
-import { WithoutImageInput } from '../Admin/CreatePollForm/components';
 import FinalizeLoader, { btnTextMap } from './FinalizePollLoader';
 
 interface CoordinatorConfigProps {
@@ -12,7 +11,7 @@ interface CoordinatorConfigProps {
 
 const CoordinatorConfig = ({ isSelected, onClick }: CoordinatorConfigProps) => {
   const [finalizeStatus, setFinalizeStatus] = useState<FinalizeStatus>('notStarted');
-  const { privKey, setPrivKey, finalizePoll } = useCoordinatorContext();
+  const { finalizePoll } = useCoordinatorContext();
   const [isModalVisible, setIsModalVisible] = useState(true);
 
   const showLoader = isModalVisible && finalizeStatus !== 'notStarted';
@@ -35,15 +34,8 @@ const CoordinatorConfig = ({ isSelected, onClick }: CoordinatorConfigProps) => {
           {isSelected && (
             <div className={styles['public-input-container']}>
               <p className={`${styles['bg-card']} ${styles.text}`}>
-                Use Privote&apos;s backend services to publish results
+                Use Privote&apos;s trusted coordinator service to publish results
               </p>
-              <WithoutImageInput
-                placeholder='Enter Coordinator private key...'
-                value={privKey}
-                onChange={e => setPrivKey(e.target.value)}
-                name='privKey'
-                className={styles['public-input']}
-              />
               <button
                 className={styles['publish-btn']}
                 disabled={showLoader}

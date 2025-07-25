@@ -6,7 +6,7 @@ import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
 import EModeMapping from '@/utils/mode';
 import { handleNotice, notification } from '@/utils/notification';
 import { type ITallyData } from '@maci-protocol/sdk/browser';
-import { createContext, useCallback, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useMemo, type ReactNode } from 'react';
 import useEthersSigner from '../hooks/useEthersSigner';
 import makeCoordinatorServicePostRequest from '@/utils/coordinator';
 import {
@@ -19,7 +19,6 @@ import {
 export const CoordinatorContext = createContext<ICoordinatorContextType | undefined>(undefined);
 
 export const CoordinatorProvider = ({ children }: { children: ReactNode }) => {
-  const [privKey, setPrivKey] = useState<string>('');
   const { poll, checkMergeStatus, checkIsTallied } = usePollContext();
   const signer = useEthersSigner();
   const privoteContract = usePrivoteContract();
@@ -53,12 +52,11 @@ export const CoordinatorProvider = ({ children }: { children: ReactNode }) => {
           mode: EModeMapping[pollEMode],
           blocksPerBatch: 1000000,
           chain,
-          useWasm: true,
-          coordinatorPrivateKey: privKey
+          useWasm: true
         })
       );
     },
-    [privKey, privoteContractAddress, pollEMode, chain]
+    [privoteContractAddress, pollEMode, chain]
   );
 
   const submit = useCallback(
@@ -137,11 +135,9 @@ export const CoordinatorProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo<ICoordinatorContextType>(
     () => ({
-      privKey,
-      setPrivKey,
       finalizePoll
     }),
-    [finalizePoll, privKey, setPrivKey]
+    [finalizePoll]
   );
 
   return <CoordinatorContext.Provider value={value as ICoordinatorContextType}>{children}</CoordinatorContext.Provider>;

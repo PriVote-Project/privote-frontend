@@ -22,8 +22,6 @@ export interface IFinalizePollArgs {
 }
 
 export interface ICoordinatorContextType {
-  privKey: string;
-  setPrivKey: React.Dispatch<React.SetStateAction<string>>;
   finalizePoll: (args: IFinalizePollArgs) => Promise<void>;
 }
 
