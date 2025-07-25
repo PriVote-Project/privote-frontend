@@ -16,15 +16,15 @@ export const DEFAULT_SG_DATA = '0x';
 export const DEFAULT_IVCP_DATA = '0x';
 
 export const POLICY_ICONS = {
-  [PollPolicyType.AnonAadhaar]: '/anon-icon.svg',
-  [PollPolicyType.EAS]: '/eas-icon.png',
-  [PollPolicyType.ERC20]: null,
-  [PollPolicyType.ERC20Votes]: null,
-  [PollPolicyType.FreeForAll]: null,
-  [PollPolicyType.GitcoinPassport]: '/passport-icon.svg',
+  [PollPolicyType.AnonAadhaar]: '/icons/aadhaar-icon.svg',
+  [PollPolicyType.EAS]: '/icons/eas-icon.png',
+  [PollPolicyType.ERC20]: '/icons/token-icon.svg',
+  [PollPolicyType.ERC20Votes]: '/icons/erc20Votes-icon.svg',
+  [PollPolicyType.FreeForAll]: '/icons/free-icon.svg',
+  [PollPolicyType.GitcoinPassport]: '/icons/passport-icon.svg',
   // [PollPolicyType.Hats]: null,
   // [PollPolicyType.Merkle]: null,
-  [PollPolicyType.Semaphore]: '/semaphore-icon.svg',
-  [PollPolicyType.Token]: null
-  // [PollPolicyType.Zupass]: '/zupass-icon.png'
+  [PollPolicyType.Semaphore]: '/icons/semaphore-icon.svg',
+  [PollPolicyType.Token]: '/icons/nft-icon.svg'
+  // [PollPolicyType.Zupass]: '/icons/zupass-icon.png'
 };

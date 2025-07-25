@@ -1,5 +1,5 @@
 import Github from './github.svg'
-import AnonIcon from './anon-icon.svg'
+import AnonIcon from './icons/aadhaar-icon.svg'
 import ArrowLeft from './arrow-left.svg'
 import BottomLeftGrid from './bottom-left-grid.svg'
 import BottomRightGrid from './bottom-right-grid.svg'
