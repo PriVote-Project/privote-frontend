@@ -70,14 +70,14 @@ const fetchPolls = async (
   return data.polls.map(poll => ({ ...poll, status: getPollStatus(poll) }));
 };
 
-const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit }: UsePollsParams) => {
+const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit = 10 }: UsePollsParams) => {
   const { subgraphUrl } = useAppConstants();
   return useInfiniteQuery({
     queryKey: ['polls', subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit] as const,
     queryFn: fetchPolls,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length === 0) return undefined;
+      if (lastPage.length < limit) return undefined;
       return allPages.length;
     }
   });
