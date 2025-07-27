@@ -3,7 +3,7 @@ import { CoordinatorConfig, HardhatConfig } from '@/components/PollPublish';
 import { EmptyState } from '@/components/shared';
 import { CoordinatorProvider } from '@/contexts/CoordinatorContext';
 import { PollProvider } from '@/contexts/PollContext';
-import { usePoll } from '@/hooks/usePoll';
+import usePoll from '@/hooks/usePoll';
 import styles from '@/styles/publish.module.css';
 import Image from 'next/image';
 import Link from 'next/link';

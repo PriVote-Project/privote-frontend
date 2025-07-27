@@ -221,7 +221,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
                   votes: Number(votes.find(v => v.index === index)?.votes) || 0,
                   prevIndex: index
                 }))
-            ).map(({ option, votes, prevIndex }) => (
+            ).map(({ option, votes, prevIndex }, index) => (
               <VoteCard
                 key={prevIndex}
                 option={option}
@@ -234,7 +234,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
                 totalVotes={Number(totalVotes || 0)}
                 isUserRegistered={isUserJoined}
                 handleWeightedVoteChange={handleWeightedVoteChange}
-                isWinner={false} // TODO: Compute winner
+                isWinner={isTallied && index === 0}
                 pollType={PollType.SINGLE_VOTE}
                 isInvalid={Boolean(isVotesInvalid[prevIndex])}
                 onVoteChange={(index, votes) => {

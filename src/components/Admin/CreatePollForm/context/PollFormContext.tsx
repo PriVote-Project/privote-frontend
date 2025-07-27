@@ -2,7 +2,7 @@ import useAppConstants from '@/hooks/useAppConstants';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollPolicyType, PollType } from '@/types';
 import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
-import makeCoordinatorServicePostRequest from '@/utils/coordinator';
+import { makeCoordinatorServicePostRequest } from '@/utils/coordinator';
 import { getWrapperFunctionName } from '@/utils/getWrapperFunctionName';
 import { uploadFileToLighthouse } from '@/utils/lighthouse';
 import { handleNotice, notification } from '@/utils/notification';

@@ -82,13 +82,13 @@ const VoteCard = ({
     [index, pollType, onVoteChange, onInvalidStatusChange]
   );
 
-  const votePercentage = totalVotes > 0 && isTallied ? Math.round(Number(votes) * 100) : 0;
+  const votePercentage = totalVotes > 0 && isTallied ? Math.round((Number(votes) / totalVotes) * 100) : 0;
 
   return (
     <>
       <label
         htmlFor={`candidate-votes-${index}`}
-        className={`${styles.card} ${Number(votes) !== 0 ? styles.selected : ''} ${
+        className={`${styles.card} ${!isTallied && Number(votes) !== 0 ? styles.selected : ''} ${
           isWinner ? styles.winner : ''
         } ${!option.description && styles.noDescription}`}
       >

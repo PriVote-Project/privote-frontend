@@ -7,6 +7,7 @@ import styles from './index.module.css';
 
 export const btnTextMap: Record<FinalizeStatus, string> = {
   notStarted: 'Publish Result',
+  signing: 'Sign Message...',
   merging: 'Merging Signups...',
   proving: 'Generating Proofs...',
   submitting: 'Submitting onchain...',

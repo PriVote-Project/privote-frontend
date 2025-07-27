@@ -15,7 +15,7 @@ export interface IGenerateData {
 }
 export type TCoordinatorServiceResult<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
-export type FinalizeStatus = 'notStarted' | 'merging' | 'proving' | 'submitting' | 'submitted';
+export type FinalizeStatus = 'notStarted' | 'signing' | 'merging' | 'proving' | 'submitting' | 'submitted';
 
 export interface IFinalizePollArgs {
   setFinalizeStatus: (status: FinalizeStatus) => void;
