@@ -6,7 +6,7 @@ import {
   ERC20VotesPolicy,
   FreeForAllPolicy,
   GitcoinPolicy,
-  SemaphorePolicy,
+  // SemaphorePolicy,
   TokenPolicy
 } from '@/services/policies';
 import { PollPolicyType } from '@/types';
@@ -87,7 +87,7 @@ export const StepTwo: React.FC<StepTwoProps> = ({
           onBack={onBack}
         />
       )}
-      {policyType === PollPolicyType.Semaphore && (
+      {/* {policyType === PollPolicyType.Semaphore && (
         <SemaphorePolicy
           policyData={policyData}
           signupState={signupState}
@@ -95,7 +95,7 @@ export const StepTwo: React.FC<StepTwoProps> = ({
           onNext={onNext}
           onBack={onBack}
         />
-      )}
+      )} */}
       {policyType === PollPolicyType.Token && (
         <TokenPolicy
           policyData={policyData}

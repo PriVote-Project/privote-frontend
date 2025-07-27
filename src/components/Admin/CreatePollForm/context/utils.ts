@@ -165,12 +165,12 @@ export function getPollArgs({
     //   return [...baseArgs, merkleRoot, voiceCredits];
     // }
 
-    case PollPolicyType.Semaphore: {
-      const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
-      const groupId = config.groupId ? BigInt(config.groupId) : 0n;
+    // case PollPolicyType.Semaphore: {
+    //   const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
+    //   const groupId = config.groupId ? BigInt(config.groupId) : 0n;
 
-      return [...baseArgs, semaphoreContract, groupId, voiceCredits];
-    }
+    //   return [...baseArgs, semaphoreContract, groupId, voiceCredits];
+    // }
 
     // case PollPolicyType.Zupass: {
     //   const eventId = config.eventId || '';
@@ -335,19 +335,19 @@ export const getCoordinatorPollArgs = ({
     // break;
     // }
 
-    case PollPolicyType.Semaphore: {
-      const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
-      const groupId = config.groupId ? BigInt(config.groupId) : 0n;
+    // case PollPolicyType.Semaphore: {
+    //   const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
+    //   const groupId = config.groupId ? BigInt(config.groupId) : 0n;
 
-      policy = {
-        type: EPolicies.Semaphore,
-        args: {
-          semaphoreContract: semaphoreContract,
-          groupId: groupId.toString()
-        }
-      };
-      break;
-    }
+    //   policy = {
+    //     type: EPolicies.Semaphore,
+    //     args: {
+    //       semaphoreContract: semaphoreContract,
+    //       groupId: groupId.toString()
+    //     }
+    //   };
+    //   break;
+    // }
 
     // case PollPolicyType.Zupass: {
     //   const eventId = config.eventId || '';

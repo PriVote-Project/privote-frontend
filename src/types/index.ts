@@ -80,7 +80,7 @@ export const PollPolicyType = {
   GitcoinPassport: 'GitcoinPassport',
   // Hats: 'Hats',
   // Merkle: 'Merkle',
-  Semaphore: 'Semaphore',
+  // Semaphore: 'Semaphore',
   Token: 'Token'
   // Zupass: 'Zupass'
 } as const;

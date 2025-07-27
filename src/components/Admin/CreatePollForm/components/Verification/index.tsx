@@ -21,7 +21,7 @@ const POLICY_NAMES = {
   [PollPolicyType.GitcoinPassport]: 'Gitcoin Passport',
   // [PollPolicyType.Hats]: 'Hats',
   // [PollPolicyType.Merkle]: 'Merkle Proof',
-  [PollPolicyType.Semaphore]: 'Semaphore',
+  // [PollPolicyType.Semaphore]: 'Semaphore',
   [PollPolicyType.Token]: 'NFT'
   // [PollPolicyType.Zupass]: 'Zupass'
 };
@@ -34,10 +34,10 @@ const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.ERC20Votes]: true,
   [PollPolicyType.Token]: true,
   [PollPolicyType.EAS]: true,
-  [PollPolicyType.GitcoinPassport]: true,
+  [PollPolicyType.GitcoinPassport]: true
   // [PollPolicyType.Hats]: true,
   // [PollPolicyType.Merkle]: true,
-  [PollPolicyType.Semaphore]: true
+  // [PollPolicyType.Semaphore]: true
   // [PollPolicyType.Zupass]: true
 };
 
@@ -64,8 +64,8 @@ const getPolicyConfigComponent = (
     //   return <HatsPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Merkle:
     //   return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />;
-    case PollPolicyType.Semaphore:
-      return <SemaphorePolicyConfig config={config} onConfigChange={onConfigChange} />;
+    // case PollPolicyType.Semaphore:
+    //   return <SemaphorePolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Zupass:
     //   return <ZupassPolicyConfig config={config} onConfigChange={onConfigChange} />;
     default:
