@@ -2,7 +2,7 @@ import { GET_POLL_USER_QUERY } from '@/services/queries/pollUser';
 import { GET_PRIVOTE_USER_QUERY } from '@/services/queries/privoteUser';
 import { GET_USER_QUERY } from '@/services/queries/user';
 import type { PollUser, User } from '@/types';
-import { PublicKey, type Keypair } from '@maci-protocol/domainobjs';
+import { padKey, PublicKey, type Keypair } from '@maci-protocol/domainobjs';
 import { fetcher } from './fetcher';
 
 export interface ISignedupUserData {
@@ -86,9 +86,11 @@ export const getKeys = async (url: string) => {
     throw new Error('No users data in response');
   }
 
-  return data.users.map(user => {
+  const userKeys = data.users.map(user => {
     // Split the id into x and y coordinates and convert to BigInt
     const [x, y] = user.id.split(' ');
     return new PublicKey([BigInt(x), BigInt(y)]);
   });
+
+  return [padKey, ...userKeys];
 };
