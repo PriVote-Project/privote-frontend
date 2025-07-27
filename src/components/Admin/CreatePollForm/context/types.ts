@@ -104,6 +104,11 @@ export enum EPolicies {
   ERC20 = '@excubiae/contracts/contracts/extensions/erc20/ERC20Policy.sol:ERC20Policy'
 }
 
+export enum EInitialVoiceCreditProxiesFactories {
+  Constant = 'ConstantInitialVoiceCreditProxyFactory',
+  ERC20Votes = 'ERC20VotesInitialVoiceCreditProxyFactory'
+}
+
 export enum EInitialVoiceCreditProxies {
   Constant = 'ConstantInitialVoiceCreditProxy',
   ERC20Votes = 'ERC20VotesInitialVoiceCreditProxy'
@@ -126,6 +131,7 @@ export interface IDeployPollConfig {
   mode: EMode;
   policy: IDeployPolicyConfig;
   initialVoiceCreditsProxy: {
+    factoryType: EInitialVoiceCreditProxiesFactories;
     type: EInitialVoiceCreditProxies;
     args: IInitialVoiceCreditProxyArgs;
     address?: Hex;

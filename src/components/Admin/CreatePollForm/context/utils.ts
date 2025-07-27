@@ -6,6 +6,7 @@ import { Hex, parseEther } from 'viem';
 import type { IPollData } from '../types';
 import {
   EInitialVoiceCreditProxies,
+  EInitialVoiceCreditProxiesFactories,
   EPolicies,
   IDeployPolicyConfig,
   IDeployPollArgs,
@@ -211,6 +212,7 @@ export const getCoordinatorPollArgs = ({
     endDate: Number(endTime),
     mode: getEModeIndex(pollData.mode),
     initialVoiceCreditsProxy: {
+      factoryType: EInitialVoiceCreditProxiesFactories.Constant,
       type: EInitialVoiceCreditProxies.Constant,
       args: {
         amount: Number(voiceCredits)

@@ -1,5 +1,8 @@
+import useAppConstants from '@/hooks/useAppConstants';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollPolicyType, PollType } from '@/types';
+import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
+import makeCoordinatorServicePostRequest from '@/utils/coordinator';
 import { getWrapperFunctionName } from '@/utils/getWrapperFunctionName';
 import { uploadFileToLighthouse } from '@/utils/lighthouse';
 import { handleNotice, notification } from '@/utils/notification';
@@ -8,13 +11,10 @@ import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
 import { CID } from 'multiformats';
 import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Abi, Hex } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import type { IPollData, PolicyConfigType } from '../types';
 import { getCoordinatorPollArgs, getPollArgs } from './utils';
-import useAppConstants from '@/hooks/useAppConstants';
-import { Abi, Hex } from 'viem';
-import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
-import makeCoordinatorServicePostRequest from '@/utils/coordinator';
 
 const initialPollData: IPollData = {
   title: '',
