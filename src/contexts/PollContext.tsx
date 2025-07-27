@@ -1,12 +1,12 @@
 import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import usePoll from '@/hooks/usePoll';
+import usePollArtifacts from '@/hooks/usePollArtifacts';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { getJoinedUserData, getKeys } from '@/utils/subgraph';
 import {
-  downloadPollJoiningArtifactsBrowser,
   generateSignUpTreeFromKeys,
   isTallied,
   joinPoll,
@@ -21,20 +21,23 @@ export const PollContext = createContext<IPollContextType | undefined>(undefined
 
 export const PollProvider = ({ pollAddress, children }: { pollAddress: string; children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | null>();
 
   // MACI contract
   const [inclusionProof, setInclusionProof] = useState<LeanIMTMerkleProof | null>(null);
-
-  // Artifacts
-  const [artifacts, setArtifacts] = useState<
-    Awaited<ReturnType<typeof downloadPollJoiningArtifactsBrowser>> | undefined
-  >();
 
   // Poll contract
   const [hasJoinedPoll, setHasJoinedPoll] = useState<boolean>(false);
   const [initialVoiceCredits, setInitialVoiceCredits] = useState<number>(0);
   const [pollStateIndex, setPollStateIndex] = useState<string | undefined>(undefined);
+
+  // Artifacts from custom hook (lazy loading - only load when user hasn't joined the poll)
+  const {
+    artifacts,
+    isLoading: artifactsLoading,
+    error: artifactsError,
+    loadArtifacts
+  } = usePollArtifacts(!hasJoinedPoll);
 
   // Wallet variables
   const signer = useEthersSigner();
@@ -115,19 +118,14 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         notification.error('Privote contract not found! Connect to a supported chain');
         return;
       }
-      if (!artifacts) {
-        setError('Artifacts not downloaded');
-        setIsLoading(false);
 
-        notification.error('Artifacts not downloaded');
-        return;
-      }
       if (!poll || !poll.pollId) {
         setIsLoading(false);
 
         notification.error('Poll not found');
         return;
       }
+
       if (hasJoinedPoll) {
         setError('Already joined poll');
         setIsLoading(false);
@@ -136,7 +134,27 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         return;
       }
 
-      const notificationId = notification.loading('Joining poll...');
+      let notificationId = notification.loading('Loading Artifacts...');
+
+      const artifactsInternal = artifacts ?? (await loadArtifacts());
+
+      if (!artifactsInternal) {
+        const errorMsg = artifactsError || 'Failed to load artifacts';
+        setError(errorMsg);
+        setIsLoading(false);
+        handleNotice({
+          message: errorMsg,
+          type: 'error',
+          id: notificationId
+        });
+        return;
+      }
+
+      notificationId = handleNotice({
+        message: 'Joining poll...',
+        type: 'loading',
+        id: notificationId
+      });
 
       const inclusionProofDirect = inclusionProof ?? (await getInclusionProof());
 
@@ -147,8 +165,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         signer,
         pollId: BigInt(poll.pollId),
         inclusionProof: inclusionProofDirect ?? undefined,
-        pollJoiningZkey: artifacts.zKey as unknown as string,
-        pollWasm: artifacts.wasm as unknown as string,
+        pollJoiningZkey: artifactsInternal.zKey as unknown as string,
+        pollWasm: artifactsInternal.wasm as unknown as string,
         sgDataArg: signupData,
         ivcpDataArg: DEFAULT_IVCP_DATA,
         blocksPerBatch: 1000000,
@@ -198,7 +216,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       stateIndex,
       poll,
       getInclusionProof,
-      privoteContract
+      privoteContract,
+      loadArtifacts,
+      artifactsError
     ]
   );
 
@@ -293,21 +313,10 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     })();
   }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, subgraphUrl]);
 
-  // download poll joining artifacts and store them in state
-  useEffect(() => {
-    (async () => {
-      const downloadedArtifacts = await downloadPollJoiningArtifactsBrowser({
-        testing: true,
-        stateTreeDepth: 10
-      });
-      setArtifacts(downloadedArtifacts);
-    })();
-  }, []);
-
   const value = useMemo<IPollContextType>(
     () => ({
-      isLoading,
-      error,
+      isLoading: isLoading || artifactsLoading,
+      error: error || artifactsError,
       poll,
       pollLoading,
       isPollError,
@@ -323,7 +332,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     }),
     [
       isLoading,
+      artifactsLoading,
       error,
+      artifactsError,
       poll,
       pollLoading,
       isPollError,

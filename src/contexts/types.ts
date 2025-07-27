@@ -27,7 +27,7 @@ export interface ICoordinatorContextType {
 
 export interface IPollContextType {
   isLoading: boolean;
-  error?: string;
+  error?: string | null;
   poll?: TransformedPoll | null;
   pollLoading: boolean;
   isPollError: boolean;
