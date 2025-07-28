@@ -1,11 +1,12 @@
 import pollAbi from '@/abi/Poll';
-import { MarkdownRenderer } from '@/components/shared';
+import { LoadingPulse, MarkdownRenderer } from '@/components/shared';
 import { useSigContext } from '@/contexts/SigContext';
 import usePollContext from '@/hooks/usePollContext';
 import usePollResults from '@/hooks/usePollResults';
 import useVoting from '@/hooks/useVoting';
 import { PollStatus, PollType } from '@/types';
 import { notification } from '@/utils/notification';
+import { canPerformAction } from '@/utils/pollStatus';
 import { PublicKey } from '@maci-protocol/domainobjs';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,9 +29,9 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const descriptionRef = useRef<HTMLParagraphElement>(null);
 
   const { isConnected, address: userAddress } = useAccount();
-  const { poll, pollStateIndex, hasJoinedPoll: isUserJoined } = usePollContext();
+  const { poll, pollStateIndex, hasJoinedPoll: isUserJoined, dynamicPollStatus } = usePollContext();
   const { maciKeypair } = useSigContext();
-  const { data: resultData } = usePollResults();
+  const { data: resultData, isLoading: loadingPollResults } = usePollResults();
   const {
     mode,
     pollType,
@@ -38,12 +39,19 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     description: pollDescription,
     maxVotePerPerson,
     options,
-    status: pollStatus,
+    status: originalPollStatus,
     owner: pollDeployer
   } = poll!;
+
+  // Use dynamic status if available, otherwise fall back to original status
+  const pollStatus = dynamicPollStatus || originalPollStatus;
   const isTallied = resultData?.tallied || false;
   const totalVotes = resultData?.total || BigInt(0);
   const pollResults = resultData?.results;
+
+  // Check if user can perform various actions
+  const canVote = canPerformAction('vote', pollStatus, userAddress, pollDeployer, isUserJoined);
+  const canPublish = canPerformAction('publish', pollStatus, userAddress, pollDeployer, undefined, isTallied);
 
   const { data: coordinatorPubKeyResult } = useReadContract({
     abi: pollAbi,
@@ -57,7 +65,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     setIsVotesInvalid,
     voteUpdated: onVoteUpdate,
     castVote: onVote,
-    isPending
+    isPending: isSubmittingVotes
   } = useVoting({
     coordinatorPubKey,
     pollAddress: poll?.id,
@@ -203,7 +211,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
         currentTotalVotes={votes.reduce((acc, v) => acc + Number(v.votes), 0)}
         onVoteChange={handleVoteChange}
         onVote={onVote}
-        isLoading={isPending}
+        isLoading={isSubmittingVotes}
         handleWeightedVoteChange={handleWeightedVoteChange}
         canVote={isUserJoined}
       >
@@ -243,28 +251,47 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
                 }}
                 onInvalidStatusChange={status => handleInvalidStatusChange(prevIndex, status)}
                 onVote={onVote}
-                isLoading={isPending}
+                isLoading={isSubmittingVotes}
               />
             ))}
         </ul>
       </VoteSummarySection>
-      {isUserJoined && pollStatus === PollStatus.OPEN && (
+      {canVote && (
         <div className={styles.col}>
           {pollType !== PollType.WEIGHTED_MULTIPLE_VOTE && (
             <button
               className={styles['poll-btn']}
               onClick={onVote}
-              disabled={isPending || Object.values(isVotesInvalid).some(v => v)}
+              disabled={isSubmittingVotes || Object.values(isVotesInvalid).some(v => v)}
             >
-              {isPending ? <span className={`${styles.spinner} spinner`}></span> : <p>Vote Now</p>}
+              {isSubmittingVotes ? (
+                <span className={styles.loadingContainer}>
+                  <LoadingPulse size='small' variant='primary' text='Submitting...' />
+                </span>
+              ) : (
+                <p>Vote Now</p>
+              )}
             </button>
           )}
         </div>
       )}
-      {pollStatus === PollStatus.CLOSED && !isTallied && pollDeployer === userAddress?.toLowerCase() && (
-        <Link href={`/polls/${pollAddress}/publish`} className={styles['poll-btn']}>
-          {isPending ? <span className={`${styles.spinner} spinner`}></span> : <p>Publish Results</p>}
-        </Link>
+      {canPublish && (
+        <div className={styles.publishSection}>
+          <Link
+            href={`/polls/${pollAddress}/publish`}
+            className={`${styles.elegantPublishBtn} ${loadingPollResults ? styles.checking : ''}`}
+          >
+            {loadingPollResults ? (
+              <LoadingPulse size='medium' variant='check' text='Checking results...' />
+            ) : (
+              <div className={styles.publishContent}>
+                <span className={styles.publishIcon}>🚀</span>
+                <span className={styles.publishText}>Publish Results</span>
+                <span className={styles.sparkle}>✨</span>
+              </div>
+            )}
+          </Link>
+        </div>
       )}
     </div>
   );

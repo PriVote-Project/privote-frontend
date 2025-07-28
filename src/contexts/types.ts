@@ -1,4 +1,4 @@
-import { TransformedPoll } from '@/types';
+import { PollStatus, TransformedPoll } from '@/types';
 import { type Keypair } from '@maci-protocol/domainobjs';
 import { type IProof, type ITallyData } from '@maci-protocol/sdk/browser';
 import { type QueryObserverResult, type RefetchOptions } from '@tanstack/react-query';
@@ -26,7 +26,6 @@ export interface ICoordinatorContextType {
 }
 
 export interface IPollContextType {
-  isLoading: boolean;
   error?: string | null;
   poll?: TransformedPoll | null;
   pollLoading: boolean;
@@ -42,6 +41,10 @@ export interface IPollContextType {
   checkIsTallied: () => Promise<boolean>;
   checkMergeStatus: () => Promise<boolean>;
   refetchPoll: (options?: RefetchOptions) => Promise<QueryObserverResult<TransformedPoll | null, Error>>;
+  dynamicPollStatus: PollStatus | null;
+  isJoiningPoll: boolean;
+  isCheckingTallied: boolean;
+  isCheckingUserJoinedPoll: boolean;
 }
 
 export const VoteOption = {

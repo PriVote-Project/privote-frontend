@@ -8,7 +8,6 @@ interface OptionInfo {
 }
 
 export function encodeOptionInfo(info: OptionInfo): Hex {
-  console.log(info.cid);
   // Create an object with version for future compatibility
   const data = {
     version: 2,

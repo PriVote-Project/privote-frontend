@@ -24,7 +24,7 @@ export class IndexedDBStore {
 
   private initDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-      if (!('indexedDB' in window)) {
+      if (typeof window !== 'undefined' && !('indexedDB' in window)) {
         reject(new Error('IndexedDB is not supported'));
         return;
       }
@@ -53,7 +53,7 @@ export class IndexedDBStore {
         resolve(db);
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
 
         // Create object store if it doesn't exist
@@ -279,7 +279,7 @@ export class IndexedDBStore {
    * Check if IndexedDB is supported
    */
   static isSupported(): boolean {
-    return 'indexedDB' in window;
+    return typeof window !== 'undefined' && 'indexedDB' in window;
   }
 }
 

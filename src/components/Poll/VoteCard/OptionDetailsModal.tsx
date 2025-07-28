@@ -1,4 +1,4 @@
-import { Button, MarkdownRenderer, Modal } from '@/components/shared';
+import { Button, LoadingPulse, MarkdownRenderer, Modal } from '@/components/shared';
 import { PollType } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -63,7 +63,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
               disabled={isLoading || pollType !== PollType.SINGLE_VOTE}
               className={styles.voteButton}
             >
-              {isLoading ? <span className={`${styles.spinner} spinner`}></span> : <p>Vote Now</p>}
+              {isLoading ? <LoadingPulse size='small' variant='primary' text='Submitting...' /> : <p>Vote Now</p>}
             </Button>
           </div>
         )}

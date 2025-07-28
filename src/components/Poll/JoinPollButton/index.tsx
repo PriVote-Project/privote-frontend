@@ -1,12 +1,13 @@
+import { LoadingPulse } from '@/components/shared';
 import usePollContext from '@/hooks/usePollContext';
 import { PollPolicyType } from '@/types';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React, { useState } from 'react';
+import { TiPlus } from 'react-icons/ti';
 import { Hex } from 'viem';
 import { useAccount } from 'wagmi';
 import { JoinPollModal } from '../JoinPollModal';
 import styles from './index.module.css';
-import { TiPlus } from 'react-icons/ti';
 
 interface JoinPollButtonProps {
   policyType: PollPolicyType;
@@ -18,7 +19,7 @@ interface JoinPollButtonProps {
  */
 export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, policyData }) => {
   const { isConnected } = useAccount();
-  const { hasJoinedPoll } = usePollContext();
+  const { hasJoinedPoll, isCheckingUserJoinedPoll, isJoiningPoll: isLoading } = usePollContext();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,9 +48,21 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
   // Main join button - opens the step modal
   return (
     <div className={styles.joinButtonWrapper}>
-      <button onClick={handleOpenModal} className={styles.joinButton}>
-        <TiPlus size={20} color='#fff' />
-        <span>Join Poll</span>
+      <button
+        onClick={handleOpenModal}
+        className={`${styles.joinButton} ${isCheckingUserJoinedPoll ? styles.checking : ''}`}
+        disabled={isLoading}
+      >
+        {isCheckingUserJoinedPoll ? (
+          <LoadingPulse size='small' variant='check' text='Checking...' />
+        ) : isLoading ? (
+          <LoadingPulse size='small' variant='primary' text='Joining...' />
+        ) : (
+          <>
+            <TiPlus size={20} color='#fff' />
+            <span>Join Poll</span>
+          </>
+        )}
       </button>
 
       {/* Step-by-step modal */}

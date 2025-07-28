@@ -1,5 +1,5 @@
 import PollItem from '@/components/Polls/PollItem';
-import { Button, EmptyState, ErrorState } from '@/components/shared';
+import { Button, EmptyState, ErrorState, LoadingPulse } from '@/components/shared';
 import usePolls from '@/hooks/usePolls';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React from 'react';
@@ -59,7 +59,7 @@ const UserPolls: React.FC = () => {
       </ul>
       {hasNextPage && (
         <Button action={() => fetchNextPage()} disabled={isFetchingNextPage} className={styles.loadMoreButton}>
-          {isFetchingNextPage ? 'Loading...' : 'Load More'}
+          {isFetchingNextPage ? <LoadingPulse size='small' text='Loading...' variant='check' /> : 'Load More'}
         </Button>
       )}
     </div>

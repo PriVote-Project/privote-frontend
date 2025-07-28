@@ -1,6 +1,7 @@
 import { Modal, ShareModal } from '@/components/shared';
 import usePollContext from '@/hooks/usePollContext';
 import { PollStatus } from '@/types';
+import { formatTimeRemaining, getNextTransitionTime } from '@/utils/pollStatus';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -8,22 +9,10 @@ import { FaShare } from 'react-icons/fa';
 import { JoinPollButton } from '../JoinPollButton';
 import styles from './index.module.css';
 
-function formatTimeRemaining(time: number) {
-  if (time <= 0) return '00:00:00';
-
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time % 3600) / 60);
-  const seconds = Math.floor(time % 60);
-
-  return time > 86400
-    ? `${Math.floor(time / 86400)} days`
-    : `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
 export const PollHeader = () => {
-  const { poll } = usePollContext();
+  const { poll, dynamicPollStatus } = usePollContext();
   const {
-    status,
+    status: originalStatus,
     policyTrait: pollPolicyType,
     policyData,
     description: pollDescription,
@@ -32,15 +21,12 @@ export const PollHeader = () => {
     endDate: pollEndTime
   } = poll!;
 
+  // Use dynamic status if available, otherwise fall back to original status
+  const status = dynamicPollStatus || originalStatus;
+
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isInstructionsModalOpen, setIsInstructionsModalOpen] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(
-    status === PollStatus.OPEN
-      ? Number(pollEndTime) - Date.now() / 1000
-      : status === PollStatus.NOT_STARTED
-        ? Number(pollStartTime) - Date.now() / 1000
-        : 0
-  );
+  const [timeRemaining, setTimeRemaining] = useState<number>(getNextTransitionTime(status, pollStartTime, pollEndTime));
 
   const handleOpenShareModal = () => {
     setIsShareModalOpen(true);
@@ -57,10 +43,7 @@ export const PollHeader = () => {
   useEffect(() => {
     if (status !== PollStatus.CLOSED && status !== PollStatus.RESULT_COMPUTED) {
       const timer = setInterval(() => {
-        const newTime =
-          status === PollStatus.OPEN
-            ? Number(pollEndTime) - Date.now() / 1000
-            : Number(pollStartTime) - Date.now() / 1000;
+        const newTime = getNextTransitionTime(status, pollStartTime, pollEndTime);
         setTimeRemaining(newTime);
 
         if (newTime <= 0) {
@@ -107,16 +90,13 @@ export const PollHeader = () => {
 
           <div className={styles.status}>
             <Image src='/clock.svg' alt='clock' width={24} height={24} />
-            {(status === PollStatus.CLOSED || status === PollStatus.RESULT_COMPUTED) && 'Poll ended'}
-            {status === PollStatus.OPEN &&
-              (timeRemaining <= 0 ? (
-                'Poll ended'
-              ) : (
-                <span className={styles.timeInfo}>Time left: {formatTimeRemaining(timeRemaining)}</span>
-              ))}
             {status === PollStatus.NOT_STARTED && (
               <span className={styles.timeInfo}>Starts in: {formatTimeRemaining(timeRemaining)}</span>
             )}
+            {status === PollStatus.OPEN && (
+              <span className={styles.timeInfo}>Time left: {formatTimeRemaining(timeRemaining)}</span>
+            )}
+            {(status === PollStatus.CLOSED || status === PollStatus.RESULT_COMPUTED) && 'Poll ended'}
           </div>
         </div>
       </div>

@@ -265,24 +265,30 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       id: notificationId
     });
 
-    const txHash = await writeContractAsync({
-      abi: abi,
-      address: contractAddress,
-      functionName: getWrapperFunctionName(finalPollData.policyType),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      args: args as any
-    });
+    try {
+      const txHash = await writeContractAsync({
+        abi: abi,
+        address: contractAddress,
+        functionName: getWrapperFunctionName(finalPollData.policyType),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        args: args as any
+      });
 
-    notificationId = handleNotice({
-      message: 'Waiting for transaction confirmation...',
-      type: 'loading',
-      id: notificationId
-    });
+      notificationId = handleNotice({
+        message: 'Waiting for transaction confirmation...',
+        type: 'loading',
+        id: notificationId
+      });
 
-    setTxState({
-      hash: txHash,
-      notificationId
-    });
+      setTxState({
+        hash: txHash,
+        notificationId
+      });
+    } catch (error) {
+      console.error('Error submitting poll creation transaction:', error);
+      notification.remove(notificationId);
+      throw error;
+    }
   };
 
   const handlePollCreationUsingCoordinator = async (
@@ -307,27 +313,31 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
       type: 'loading',
       id: notificationId
     });
+    try {
+      const response = await makeCoordinatorServicePostRequest<{ pollId: string }>(
+        `${PUBLIC_COORDINATOR_SERVICE_URL}/v1/deploy/poll`,
+        JSON.stringify(pollCoordinatorArgs)
+      );
 
-    const response = await makeCoordinatorServicePostRequest<{ pollId: string }>(
-      `${PUBLIC_COORDINATOR_SERVICE_URL}/v1/deploy/poll`,
-      JSON.stringify(pollCoordinatorArgs)
-    );
-
-    if (response.success) {
-      handleNotice({
-        message: `Poll with ID ${response.data.pollId} created successfully!`,
-        type: 'success',
-        id: notificationId
-      });
-      setIsLoading(false);
-      router.push('/polls');
-    } else {
-      handleNotice({
-        message: `Poll creation failed: ${response.error}`,
-        type: 'error',
-        id: notificationId
-      });
-      setIsLoading(false);
+      if (response.success) {
+        handleNotice({
+          message: `Poll with ID ${response.data.pollId} created successfully!`,
+          type: 'success',
+          id: notificationId
+        });
+        setIsLoading(false);
+        router.push('/polls');
+      } else {
+        handleNotice({
+          message: `Poll creation failed: ${response.error}`,
+          type: 'error',
+          id: notificationId
+        });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      notification.remove(notificationId);
+      throw error;
     }
   };
 

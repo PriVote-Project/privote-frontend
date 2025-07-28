@@ -1,3 +1,4 @@
+import { LoadingPulse } from '@/components/shared';
 import { EMode, PollType, type PollOption } from '@/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { WeightInput } from '../VoteCard/components';
@@ -95,7 +96,7 @@ const VoteSummarySection = ({
             <div className={styles.bottom}>
               <div className={styles.divider}></div>
               <button className={styles.voteButton} onClick={onVote} disabled={!canVote || isLoading}>
-                {isLoading ? <span className={`${styles.spinner} spinner`}></span> : <p>Vote Now</p>}
+                {isLoading ? <LoadingPulse size='small' variant='primary' text='Submitting...' /> : <p>Vote Now</p>}
               </button>
             </div>
           </div>

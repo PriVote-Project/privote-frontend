@@ -150,8 +150,11 @@
 .submit-btn {
   align-self: center;
 }
+
 .submit-btn.loading {
-  padding-inline: 59px;
+  opacity: 0.8;
+  background: #f6e6f6;
+  cursor: not-allowed;
 }
 
 .spinner {

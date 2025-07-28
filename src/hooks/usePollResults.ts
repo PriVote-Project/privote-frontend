@@ -5,13 +5,14 @@ import usePollContext from './usePollContext';
 import usePrivoteContract from './usePrivoteContract';
 
 const usePollResults = () => {
-  const { poll, checkIsTallied } = usePollContext();
+  const { poll, checkIsTallied, dynamicPollStatus } = usePollContext();
   const signer = useEthersSigner();
   const privoteContractAddress = usePrivoteContract()?.address;
   const pollId = poll?.pollId;
+  const status = dynamicPollStatus || poll?.status;
 
   return useQuery({
-    enabled: !!signer && !!poll && !!privoteContractAddress,
+    enabled: !!signer && !!poll && !!privoteContractAddress && status === 'Closed',
     queryKey: [
       'get-poll-results',
       {

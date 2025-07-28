@@ -1,12 +1,12 @@
-import { Button } from '@/components/shared';
+import { Button, LoadingPulse } from '@/components/shared';
 import type { EMode, PollType } from '@/types';
+import Image from 'next/image';
 import { useAccount } from 'wagmi';
 import { CandidateSelection, Divider, PollConfiguration, Verification } from './components';
 import { PollSettings } from './components/PollSettings';
 import { usePollForm } from './context';
 import styles from './index.module.css';
 import { type CreatePollFormProps } from './types';
-import Image from 'next/image';
 
 const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
   const { isConnected } = useAccount();
@@ -166,7 +166,7 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
             className={`${styles['submit-btn']} ${isLoading ? styles.loading : ''}`}
             disabled={isLoading}
           >
-            {isLoading ? <span className={styles.spinner}></span> : 'Create Poll'}
+            {isLoading ? <LoadingPulse size='small' text='Creating poll...' /> : 'Create Poll'}
           </Button>
         </div>
       </form>

@@ -3,17 +3,16 @@ import useEthersSigner from '@/hooks/useEthersSigner';
 import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
+import { PollStatus } from '@/types';
 import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
+import { computePollStatus, notifyStatusChange, shouldNotifyStatusChange } from '@/utils/pollStatus';
 import { getJoinedUserData, getKeys } from '@/utils/subgraph';
-import {
-  generateSignUpTreeFromKeys,
-  isTallied,
-  joinPoll,
-  Poll__factory as PollFactory
-} from '@maci-protocol/sdk/browser';
+import { generateSignUpTreeFromKeys, isTallied, joinPoll } from '@maci-protocol/sdk/browser';
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { Hex, parseAbi } from 'viem';
+import { usePublicClient } from 'wagmi';
 import { useSigContext } from './SigContext';
 import { type IPollContextType } from './types';
 
@@ -31,16 +30,17 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const [initialVoiceCredits, setInitialVoiceCredits] = useState<number>(0);
   const [pollStateIndex, setPollStateIndex] = useState<string | undefined>(undefined);
 
+  // Dynamic poll status and loading states
+  const [dynamicPollStatus, setDynamicPollStatus] = useState<PollStatus | null>(null);
+  const [isCheckingTallied, setIsCheckingTallied] = useState<boolean>(false);
+  const [isCheckingUserJoinedPoll, setIsCheckingUserJoinedPoll] = useState<boolean>(false);
+
   // Artifacts from custom hook (lazy loading - only load when user hasn't joined the poll)
-  const {
-    artifacts,
-    isLoading: artifactsLoading,
-    error: artifactsError,
-    loadArtifacts
-  } = usePollArtifacts(!hasJoinedPoll);
+  const { artifacts, error: artifactsError, loadArtifacts } = usePollArtifacts(!hasJoinedPoll);
 
   // Wallet variables
   const signer = useEthersSigner();
+  const client = usePublicClient();
 
   // Poll
   const {
@@ -54,6 +54,44 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { subgraphUrl } = useAppConstants();
   const { maciKeypair, isRegistered, stateIndex } = useSigContext();
   const privoteContract = usePrivoteContract();
+
+  // Compute dynamic poll status based on current time
+  const computeDynamicPollStatus = useCallback(() => {
+    if (!poll) return null;
+    return computePollStatus(poll.startDate, poll.endDate);
+  }, [poll]);
+
+  // Update dynamic status periodically and notify on changes
+  useEffect(() => {
+    if (!poll) return;
+
+    const updateStatus = (interval?: NodeJS.Timeout) => {
+      const newStatus = computeDynamicPollStatus();
+      const previousStatus = dynamicPollStatus;
+
+      setDynamicPollStatus(newStatus);
+
+      // Show notification if status changed
+      if (shouldNotifyStatusChange(previousStatus, newStatus) && previousStatus && newStatus) {
+        notifyStatusChange(previousStatus, newStatus);
+      }
+
+      // Clear interval if poll is over
+      if (newStatus === PollStatus.CLOSED) {
+        clearInterval(interval);
+      }
+    };
+
+    // Update immediately
+    updateStatus();
+
+    // Set up interval to update every second
+    const interval = setInterval(() => {
+      updateStatus(interval);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [poll, computeDynamicPollStatus, dynamicPollStatus]);
 
   // Functions
   const getInclusionProof = useCallback(async () => {
@@ -227,20 +265,34 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return false;
     }
 
-    const isPollTallied = await isTallied({
-      maciAddress: privoteContract.address,
-      pollId: poll.pollId.toString(),
-      signer
-    });
-    return isPollTallied;
+    setIsCheckingTallied(true);
+    try {
+      const isPollTallied = await isTallied({
+        maciAddress: privoteContract.address,
+        pollId: poll.pollId.toString(),
+        signer
+      });
+      return isPollTallied;
+    } finally {
+      setIsCheckingTallied(false);
+    }
   }, [privoteContract, signer, poll]);
 
   const checkMergeStatus = useCallback(async () => {
-    const poll = PollFactory.connect(pollAddress, signer);
+    if (!client) return false;
 
-    const hasMerged = await poll.stateMerged();
-    return hasMerged;
-  }, [signer, pollAddress]);
+    try {
+      const hasMerged = await client.readContract({
+        address: pollAddress as Hex,
+        abi: parseAbi(['function stateMerged() view returns (bool)']),
+        functionName: 'stateMerged'
+      });
+      return hasMerged;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }, [client, pollAddress]);
 
   // // generate maci state tree locally
   useEffect(() => {
@@ -275,6 +327,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   // check poll user data
   useEffect(() => {
     (async () => {
+      setIsCheckingUserJoinedPoll(true);
       setHasJoinedPoll(false);
       setInitialVoiceCredits(0);
       setPollStateIndex(undefined);
@@ -309,15 +362,17 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       } catch (error) {
         console.log(error);
         setError('Error checking if user has joined poll');
+      } finally {
+        setIsCheckingUserJoinedPoll(false);
       }
     })();
   }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, subgraphUrl]);
 
   const value = useMemo<IPollContextType>(
     () => ({
-      isLoading: isLoading || artifactsLoading,
-      error: error || artifactsError,
-      poll,
+      isJoiningPoll: isLoading,
+      error: error,
+      poll: poll ? { ...poll, status: dynamicPollStatus || poll.status } : poll,
       pollLoading,
       isPollError,
       pollError,
@@ -328,14 +383,16 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       onJoinPoll,
       refetchPoll,
       checkMergeStatus,
-      checkIsTallied
+      checkIsTallied,
+      dynamicPollStatus,
+      isCheckingTallied,
+      isCheckingUserJoinedPoll
     }),
     [
       isLoading,
-      artifactsLoading,
       error,
-      artifactsError,
       poll,
+      dynamicPollStatus,
       pollLoading,
       isPollError,
       pollError,
@@ -346,7 +403,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       onJoinPoll,
       refetchPoll,
       checkMergeStatus,
-      checkIsTallied
+      checkIsTallied,
+      isCheckingTallied,
+      isCheckingUserJoinedPoll
     ]
   );
 
