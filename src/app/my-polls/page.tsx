@@ -1,12 +1,12 @@
 'use client';
-import { CreatePollForm, MyPolls } from '@/components/Admin';
-import { PollFormProvider } from '@/components/Admin/CreatePollForm/context';
+import { CreatePollForm, UserPolls } from '@/components/MyPolls';
+import { PollFormProvider } from '@/components/MyPolls/CreatePollForm/context';
 import { Button } from '@/components/shared';
 import styles from '@/styles/admin.module.css';
 import React from 'react';
 import { useAccount } from 'wagmi';
 
-const Admin: React.FC = () => {
+const MyPollsPage: React.FC = () => {
   const [showCreatePoll, setShowCreatePoll] = React.useState(false);
   const { isConnected } = useAccount();
   return (
@@ -20,7 +20,7 @@ const Admin: React.FC = () => {
               </Button>
             )}
           </div>
-          {!showCreatePoll && <MyPolls />}
+          {!showCreatePoll && <UserPolls />}
           {showCreatePoll && isConnected && <CreatePollForm onClose={() => setShowCreatePoll(false)} />}
         </div>
       </div>
@@ -28,4 +28,4 @@ const Admin: React.FC = () => {
   );
 };
 
-export default Admin;
+export default MyPollsPage;

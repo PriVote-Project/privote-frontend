@@ -6,7 +6,7 @@ import React from 'react';
 import { useAccount } from 'wagmi';
 import styles from './index.module.css';
 
-const MyPolls: React.FC = () => {
+const UserPolls: React.FC = () => {
   const { address, isConnected } = useAccount();
   const {
     data,
@@ -66,4 +66,4 @@ const MyPolls: React.FC = () => {
   );
 };
 
-export default MyPolls;
+export default UserPolls;
