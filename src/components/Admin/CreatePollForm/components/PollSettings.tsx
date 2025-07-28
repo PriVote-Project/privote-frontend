@@ -1,4 +1,5 @@
 import { EMode, PollType } from '@/types';
+import Image from 'next/image';
 import styles from '../index.module.css';
 import type { PollSettingsProps } from '../types';
 
@@ -27,7 +28,7 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
                 }
               }}
             >
-              <img src='/minus.svg' alt='minus' width={20} height={20} />
+              <Image src='/minus.svg' alt='minus' width={20} height={20} />
             </button>
             <input type='number' value={pollData.maxVotePerPerson} onChange={onMaxVoteChange} min={1} max={100} />
             <button
@@ -38,7 +39,7 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
                 }
               }}
             >
-              <img src='/plus.svg' alt='plus' width={20} height={20} />
+              <Image src='/plus.svg' alt='plus' width={20} height={20} />
             </button>
           </div>
         </div>

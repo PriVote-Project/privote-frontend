@@ -1,5 +1,6 @@
 'use client';
 import { EMode } from '@/types';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styles from './index.module.css';
 
@@ -39,7 +40,7 @@ const WeightInput = ({
             }
           }}
         >
-          <img src='/minus.svg' alt='minus' width={16} height={16} />
+          <Image src='/minus.svg' alt='minus' width={16} height={16} />
         </button>
         <input
           type='text'
@@ -66,7 +67,7 @@ const WeightInput = ({
             }
           }}
         >
-          <img src='/plus.svg' alt='plus' width={16} height={16} />
+          <Image src='/plus.svg' alt='plus' width={16} height={16} />
         </button>
       </div>
       {isQv === EMode.QV && (

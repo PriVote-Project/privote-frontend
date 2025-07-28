@@ -6,6 +6,7 @@ import { EASPolicyData } from '@/services/decode/types';
 import { GET_ATTESTATIONS_QUERY } from '@/services/queries/eas';
 import { PollPolicyType } from '@/types';
 import { request } from 'graphql-request';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { encodeAbiParameters, Hex, parseAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
@@ -139,7 +140,7 @@ const EASPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }: 
     >
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/eas-icon.png' alt='EAS' className={styles.policyIcon} />
+          <Image src='/icons/eas-icon.png' width={28} height={28} alt='EAS' className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>EAS Attestation Required</h4>

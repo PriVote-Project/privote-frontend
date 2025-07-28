@@ -79,7 +79,7 @@ const VoteCard = ({
         onInvalidStatusChange(false);
       }
     },
-    [index, pollType, onVoteChange, onInvalidStatusChange]
+    [index, pollType, onVoteChange, onInvalidStatusChange, isConnected, isUserRegistered]
   );
 
   const votePercentage = totalVotes > 0 && isTallied ? Math.round((Number(votes) / totalVotes) * 100) : 0;
@@ -94,6 +94,7 @@ const VoteCard = ({
       >
         {option.cid && option.cid !== '0x' && option.cid.length > 2 && (
           <div className={styles.image}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`${process.env.NEXT_PUBLIC_LH_GATEWAY}/ipfs/${CID.decode(
                 fromHex(option.cid.startsWith('0x') ? option.cid.slice(2) : option.cid)

@@ -6,6 +6,7 @@ import usePollContext from '@/hooks/usePollContext';
 import { GitcoinPassportPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
@@ -86,7 +87,7 @@ const GitcoinPolicy = ({ policyData, signupState, setSignupState, onNext, onBack
     >
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/passport-icon.svg' alt='ERC20' className={styles.policyIcon} />
+          <Image src='/passport-icon.svg' width={24} height={24} alt='ERC20' className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>Gitcoin Passport Access</h4>

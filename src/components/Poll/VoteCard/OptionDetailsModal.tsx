@@ -1,5 +1,6 @@
 import { Button, MarkdownRenderer, Modal } from '@/components/shared';
 import { PollType } from '@/types';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { GoLink } from 'react-icons/go';
@@ -36,7 +37,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
         <div className={styles.header}>
           {imageUrl && (
             <div className={styles.imageContainer}>
-              <img src={imageUrl} alt={title} width={100} height={100} />
+              <Image src={imageUrl} alt={title} width={100} height={100} />
             </div>
           )}
           <h2 className={styles.title}>{title}</h2>
@@ -50,7 +51,7 @@ const OptionDetailsModal: React.FC<OptionDetailsModalProps> = ({
             <MarkdownRenderer content={description} className={styles.description} />
           </div>
           {link && (
-            <Link className={styles.link} to={link} target='_blank' rel='noopener noreferrer'>
+            <Link className={styles.link} href={link} target='_blank' rel='noopener noreferrer'>
               <GoLink fill='#7F58B7' size={18} /> <span className={styles['link-text']}>Link</span>
             </Link>
           )}

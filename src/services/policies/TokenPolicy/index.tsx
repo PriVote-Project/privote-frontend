@@ -5,6 +5,7 @@ import usePollContext from '@/hooks/usePollContext';
 import { TokenPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { encodeAbiParameters, erc721Abi, parseAbiParameters } from 'viem';
 import { useAccount, useReadContract, useReadContracts } from 'wagmi';
@@ -278,7 +279,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
         <>
           <div className={styles.policyHeader}>
             <div className={styles.policyIconWrapper}>
-              <img src='/icons/nft-icon.svg' alt='NFT' className={styles.policyIcon} />
+              <Image src='/icons/nft-icon.svg' width={24} height={24} alt='NFT' className={styles.policyIcon} />
             </div>
             <div className={styles.policyTitle}>
               <h4>NFT-Based Access</h4>
@@ -309,7 +310,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
           </div>
           <div className={styles.noTokensMessage}>
             <div className={styles.noTokensIcon}>
-              <img src='/icons/nft-icon.svg' alt='No tokens' />
+              <Image src='/icons/nft-icon.svg' width={24} height={24} alt='No tokens' />
             </div>
             <p>You don&apos;t own any tokens from this collection.</p>
             <p>You need to own at least one token to participate in this poll.</p>
@@ -319,7 +320,7 @@ const TokenPolicy = ({ policyData, signupState, setSignupState, onNext, onBack }
         <>
           <div className={styles.policyHeader}>
             <div className={styles.policyIconWrapper}>
-              <img src='/icons/nft-icon.svg' alt='NFT' className={styles.policyIcon} />
+              <Image src='/icons/nft-icon.svg' width={24} height={24} alt='NFT' className={styles.policyIcon} />
             </div>
             <div className={styles.policyTitle}>
               <h4>NFT-Based Access</h4>

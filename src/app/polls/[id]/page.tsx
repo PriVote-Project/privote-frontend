@@ -4,6 +4,7 @@ import { EmptyState, ErrorState } from '@/components/shared';
 import { PollProvider } from '@/contexts/PollContext';
 import usePollContext from '@/hooks/usePollContext';
 import styles from '@/styles/poll.module.css';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React from 'react';
@@ -30,7 +31,7 @@ const UserPoll = () => {
     return (
       <div className={styles.container}>
         <Link href={'/'} className={styles.back}>
-          <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
+          <Image src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
         </Link>
         <div className={styles['loading-state']}>
           <div className='spinner large'></div>
@@ -43,7 +44,7 @@ const UserPoll = () => {
     return (
       <div className={styles.container}>
         <Link href={'/polls'} className={styles.back}>
-          <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
+          <Image src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
         </Link>
         <ErrorState title='Failed to Load Poll' error={pollError} retryAction={() => window.location.reload()} />
       </div>
@@ -54,7 +55,7 @@ const UserPoll = () => {
     return (
       <div className={styles.container}>
         <Link href={'/polls'} className={styles.back}>
-          <img src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
+          <Image src='/arrow-left.svg' alt='arrow left' width={27} height={27} />
         </Link>
         <ErrorState
           title='Failed to Load Poll'

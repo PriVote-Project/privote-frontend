@@ -1,5 +1,6 @@
 'use client';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
+import Image from 'next/image';
 import { useEffect } from 'react';
 import Common from '../Common';
 import styles from '../styles.module.css';
@@ -13,7 +14,7 @@ const FreeForAllComponent: React.FC = () => {
     <>
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/icons/free-icon.svg' alt='Free' className={styles.policyIcon} />
+          <Image src='/icons/free-icon.svg' width={24} height={24} alt='Free' className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>Open Access Poll</h4>

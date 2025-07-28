@@ -7,6 +7,7 @@ import useVoting from '@/hooks/useVoting';
 import { PollStatus, PollType } from '@/types';
 import { notification } from '@/utils/notification';
 import { PublicKey } from '@maci-protocol/domainobjs';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
@@ -140,7 +141,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
       }
       handleVoteChange(index, votes);
     },
-    [maxVotePerPerson, handleVoteChange, isConnected, isUserJoined]
+    [maxVotePerPerson, handleVoteChange, isConnected, isUserJoined, currentTotalVotes]
   );
 
   useEffect(() => {
@@ -185,7 +186,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
       </div>
       {pollStatus === PollStatus.OPEN && (
         <div className={styles.info}>
-          <img src={'/info.svg'} alt='info' width={24} height={24} />
+          <Image src={'/info.svg'} alt='info' width={24} height={24} />
           <p>
             As no one knows whom you voted for, you can change your vote at any time before the poll ends. Only the last
             vote counts.

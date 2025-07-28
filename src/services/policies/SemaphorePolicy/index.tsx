@@ -7,6 +7,7 @@ import { SemaphorePolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { getInfuraHttpUrl } from '@/utils/networks';
 import { notification } from '@/utils/notification';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { encodeAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
@@ -234,7 +235,7 @@ const SemaphorePolicy = ({ policyData, signupState, setSignupState, onNext, onBa
     >
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/semaphore-icon.svg' alt='Semaphore' className={styles.policyIcon} />
+          <Image src='/semaphore-icon.svg' width={24} height={24} alt='Semaphore' className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>Semaphore Group Access</h4>

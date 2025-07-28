@@ -6,6 +6,7 @@ import { AnonAadhaarPolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { notification } from '@/utils/notification';
 import { LogInWithAnonAadhaar, useAnonAadhaar } from '@anon-aadhaar/react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { encodeAbiParameters, parseAbiParameters } from 'viem';
 import { useAccount } from 'wagmi';
@@ -99,7 +100,7 @@ const AnonAadhaarPolicy = ({ policyData, signupState, setSignupState, onNext, on
     >
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/icons/aadhaar-icon.svg' alt='Aadhaar' className={styles.policyIcon} />
+          <Image src='/icons/aadhaar-icon.svg' alt='Aadhaar' width={28} height={28} className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>AnonAadhaar Verification</h4>

@@ -5,6 +5,7 @@ import usePollContext from '@/hooks/usePollContext';
 import { ERC20PolicyData } from '@/services/decode/types';
 import { PollPolicyType } from '@/types';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { formatEther } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
@@ -80,7 +81,7 @@ const ERC20Policy = ({ policyData, signupState, setSignupState, onNext, onBack }
     >
       <div className={styles.policyHeader}>
         <div className={styles.policyIconWrapper}>
-          <img src='/icons/token-icon.svg' alt='ERC20' className={styles.policyIcon} />
+          <Image src='/icons/token-icon.svg' width={24} height={24} alt='ERC20' className={styles.policyIcon} />
         </div>
         <div className={styles.policyTitle}>
           <h4>Token-Based Access</h4>
