@@ -63,7 +63,9 @@
 }
 
 .row:hover > svg path,
-.row.active > svg path {
+.row.active > svg path,
+.adminRow:hover > svg *,
+.adminRow.active > svg * {
   stroke: #c45ec6;
 }
 

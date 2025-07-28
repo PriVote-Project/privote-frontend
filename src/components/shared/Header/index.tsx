@@ -3,7 +3,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CiMenuFries } from 'react-icons/ci';
 import { MdClose } from 'react-icons/md';
 import { Logo } from '../../../../public';
@@ -13,6 +13,14 @@ import styles from './index.module.css';
 export default function Header() {
   const [isChecked, setIsChecked] = useState(false);
   const pathname = usePathname();
+
+  const isPath = useCallback(
+    (match: string) => {
+      const splitPath = pathname.split('/');
+      return splitPath.includes(match);
+    },
+    [pathname]
+  );
 
   return (
     <>
@@ -45,14 +53,17 @@ export default function Header() {
                 </Link>
                 <Link
                   href='/polls'
-                  className={`${styles.row} ${styles.pollRow} ${pathname === '/polls' ? styles.active : ''}`}
+                  className={`${styles.row} ${styles.pollRow} ${isPath('polls') ? styles.active : ''}`}
                 >
                   <PollIcon />
                   Polls
                 </Link>
-                <Link href='/admin' className={`${styles.row} ${pathname === '/admin' ? styles.active : ''}`}>
+                <Link
+                  href='/my-polls'
+                  className={`${styles.row} ${styles.adminRow} ${isPath('my-polls') ? styles.active : ''}`}
+                >
                   <UserIcon />
-                  Admin
+                  My Polls
                 </Link>
               </ul>
             </nav>
