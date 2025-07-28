@@ -48,6 +48,10 @@
   border-radius: 60px;
 }
 
+.dot.first {
+  margin-top: 4px;
+}
+
 .dot.selected {
   border-color: #c65ec6;
   background-color: #c65ec6;

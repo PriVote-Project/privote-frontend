@@ -10,7 +10,7 @@ const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyC
       <div className={styles['poll-config']}>
         <div className={styles['config-wrapper']}>
           <div className={styles['config-option']} onClick={() => setPollConfig(1)}>
-            <div className={`${styles.dot} ${pollConfig === 1 ? styles.selected : ''}`}></div>
+            <div className={`${styles.dot} ${styles.first} ${pollConfig === 1 ? styles.selected : ''}`}></div>
             <div className={styles['gen-container']}>
               <p className={styles.text}>We dont trust you 🤨, we have coordinator public key</p>
               {pollConfig === 1 && (

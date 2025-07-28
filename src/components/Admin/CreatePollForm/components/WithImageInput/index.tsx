@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import type { PollOption } from '../../types';
 import styles from '../index.module.css';
+import Image from 'next/image';
 
 interface WithImageInputProps {
   onChange: (
@@ -54,7 +55,7 @@ const WithImageInput = ({
             <div className={styles['selected-file']}>
               {preview ? (
                 <div className={styles['file-preview']}>
-                  <img src={preview} alt='Preview' className={styles['image-preview']} />
+                  <Image src={preview} alt='Preview' className={styles['image-preview']} />
                   <button onClick={onFileRemove} className={styles['remove-file-btn']} type='button'>
                     <IoMdClose size={16} />
                   </button>
@@ -68,13 +69,14 @@ const WithImageInput = ({
           ) : (
             <label className={styles['file-input-label']}>
               <input type='file' onChange={onFileChange} accept='image/*' className={styles['hidden-file-input']} />
-              <img src={'/img-square.svg'} alt='Preview' width={92} height={92} />
+              <Image src={'/img-square.svg'} alt='Preview' width={92} height={92} />
             </label>
           )}
         </div>
       </div>
       <div className={styles['text-fields']}>
         <input
+          id={`candidate-${index}-title`}
           type={type}
           onChange={e => onChange(e, 'title')}
           placeholder={placeholder}
@@ -83,12 +85,14 @@ const WithImageInput = ({
           {...rest}
         />
         <textarea
+          id={`candidate-${index}-description`}
           placeholder={`Description...`}
           value={option.description || ''}
           onChange={e => onChange(e, 'description')}
-          rows={3}
+          rows={5}
         />
         <input
+          id={`candidate-${index}-link`}
           type={'text'}
           onChange={e => onChange(e, 'link')}
           placeholder={`Link...`}
