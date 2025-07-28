@@ -69,7 +69,7 @@ export interface PolicyConfigType {
 }
 
 export interface VerificationProps {
-  handlePolicyTypeChange: (e: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<any>) => void;
+  handlePolicyTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   policyType: PollPolicyType;
   policyConfig?: PolicyConfigType;
   onPolicyConfigChange?: (config: PolicyConfigType) => void;

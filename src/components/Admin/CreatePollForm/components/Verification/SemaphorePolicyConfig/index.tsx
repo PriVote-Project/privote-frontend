@@ -42,7 +42,7 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
         }
       }
     }
-  }, [isConnected, chainId, isChainSupported]);
+  }, [isConnected, chainId, isChainSupported, contracts.semaphore, config, onConfigChange]);
 
   return (
     <div className={styles.policyConfig}>

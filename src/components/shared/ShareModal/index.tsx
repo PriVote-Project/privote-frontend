@@ -12,7 +12,7 @@ interface ShareModalProps {
   description?: string;
 }
 
-const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, url, title, description }) => {
+const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, url, description }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -28,7 +28,6 @@ const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, url, title, de
   const shareToSocial = (platform: string) => {
     const encodedUrl = encodeURIComponent(url);
     const encodedText = encodeURIComponent(description || 'Check out this poll!');
-    const encodedTitle = encodeURIComponent(title);
 
     let shareUrl = '';
     switch (platform) {

@@ -41,14 +41,7 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
         }
       }
     }
-  }, [
-    isConnected,
-    chainId,
-    contracts.gitcoinPassportDecoder,
-    isChainSupported,
-    contracts.gitcoinPassportDecoder,
-    isChainSupported
-  ]);
+  }, [isConnected, chainId, contracts.gitcoinPassportDecoder, isChainSupported, config, onConfigChange]);
 
   return (
     <div className={styles.policyConfig}>

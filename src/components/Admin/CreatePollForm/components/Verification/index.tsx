@@ -8,7 +8,8 @@ import EASPolicyConfig from './EASPolicyConfig';
 import ERC20PolicyConfig from './ERC20PolicyConfig';
 import GitcoinPolicyConfig from './GitcoinPolicyConfig';
 import styles from './index.module.css';
-import SemaphorePolicyConfig from './SemaphorePolicyConfig';
+// import SemaphorePolicyConfig from './SemaphorePolicyConfig';
+import Image from 'next/image';
 import TokenPolicyConfig from './TokenPolicyConfig';
 
 // Display names for each policy
@@ -119,7 +120,7 @@ const Verification = ({
             aria-label={`Select ${POLICY_NAMES[policy]} verification method`}
           >
             {POLICY_ICONS[policy] ? (
-              <img
+              <Image
                 width={31}
                 height={31}
                 alt={`${POLICY_NAMES[policy]} icon`}

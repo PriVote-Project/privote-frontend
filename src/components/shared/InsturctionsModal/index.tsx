@@ -23,15 +23,15 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
             ).
           </li>
           <li>Login to the mAadhaar app with your Aadhaar credentials and generate a QR code. Save it.</li>
-          <li>Click on the Aadhaar login button on the Privote's poll page and upload your QR code.</li>
+          <li>Click on the Aadhaar login button on the Privote&apos;s poll page and upload your QR code.</li>
           <li>Wait for proofs to be generated (this may take a few minutes).</li>
           <li>Register with your Aadhaar proof using your wallet.</li>
           <li>
-            Distribute your votes to the projects you like (remember, it's quadratic voting, so spreading votes wisely
-            is key!).
+            Distribute your votes to the projects you like (remember, it&apos;s quadratic voting, so spreading votes
+            wisely is key!).
           </li>
-          <li>Click "Vote" to submit your votes.</li>
-          <li>You're done! 🎉 You can change your votes anytime before the poll ends.</li>
+          <li>Click &quot;Vote&quot; to submit your votes.</li>
+          <li>You&apos;re done! 🎉 You can change your votes anytime before the poll ends.</li>
         </ol>
         <div className={styles.note}>
           <p>

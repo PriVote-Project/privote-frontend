@@ -205,12 +205,11 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlePolicyTypeChange = (e: React.ChangeEvent<any>) => {
+  const handlePolicyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     // When changing policy type, reset the policy config to prevent invalid configs
     setPollData(prev => ({
       ...prev,
-      policyType: e.target.value,
+      policyType: e.target.value as PollPolicyType,
       policyConfig: {} // Reset policy config when changing policy type
     }));
   };

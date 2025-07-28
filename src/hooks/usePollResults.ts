@@ -58,6 +58,7 @@ const usePollResults = () => {
       };
     },
     // refetch every 10 seconds if the vote is not ended
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     refetchInterval: ({ state }: Query<any, any, any, any>) => {
       return state?.data?.voteEnded ? false : 10000;
     },

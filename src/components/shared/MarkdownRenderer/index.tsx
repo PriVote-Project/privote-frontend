@@ -11,6 +11,7 @@ const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         a: ({ node, ...props }) => <a target='_blank' rel='noopener noreferrer' {...props} />
       }}
     >

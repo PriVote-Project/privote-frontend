@@ -54,7 +54,7 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
         }
       }
     }
-  }, [isConnected, chainId, contracts.eas, slugs.eas, isChainSupported]);
+  }, [isConnected, chainId, contracts.eas, slugs.eas, isChainSupported, config, onConfigChange]);
 
   return (
     <div className={styles.policyConfig}>

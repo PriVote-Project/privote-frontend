@@ -23,7 +23,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
 
   useEffect(() => {
     generateRandomValue();
-  }, []);
+  }, [generateRandomValue]);
 
   useEffect(() => {
     if (!isConnected) {
@@ -55,7 +55,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         }
       }
     }
-  }, [isConnected, chainId, contracts.anonAadhaarVerifier, isChainSupported]);
+  }, [isConnected, chainId, contracts.anonAadhaarVerifier, isChainSupported, config, onConfigChange]);
 
   return (
     <div className={styles.policyConfig}>
