@@ -77,12 +77,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-.error-message {
-  color: red;
-  font-size: 12px;
-  padding-block: 8px;
-}
-
 @media (max-width: 1000px) {
   .main-page {
     padding-inline: 16px;

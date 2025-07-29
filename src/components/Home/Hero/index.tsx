@@ -1,5 +1,3 @@
-import { Button } from '@/components/shared';
-import { useSigContext } from '@/contexts/SigContext';
 import Link from 'next/link';
 import styles from './index.module.css';
 
@@ -14,8 +12,6 @@ export const Hero = ({
   description = 'Create polls, participate in elections, and make your voice heard in a Private and Decentralized way.',
   status = 'Privote: The all new way of voting through'
 }: HeroProps) => {
-  const { isRegistered, onSignup, isLoading, error } = useSigContext();
-
   return (
     <div className={styles.hero}>
       <div className={styles.status}>
@@ -27,16 +23,10 @@ export const Hero = ({
       <h1 className={styles.heading}>{title}</h1>
       <p className={styles.description}>{description}</p>
       <div className={styles.actions}>
-        {!isRegistered && (
-          <Button action={onSignup} disabled={isLoading}>
-            <p>Register</p>
-          </Button>
-        )}
-        <Link className={styles['create-poll']} href='/admin/?action=create'>
+        <Link className={styles['create-poll']} href='/my-polls'>
           <p>Create Poll</p>
         </Link>
       </div>
-      <div className={styles['error-message']}>{error ? error : ''}</div>
     </div>
   );
 };
