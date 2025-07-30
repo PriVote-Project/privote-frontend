@@ -291,6 +291,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handlePollCreationUsingCoordinator = async (
     finalPollData: IPollData,
     encodedOptions: Hex[],
@@ -379,6 +380,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
       const finalPollData = {
         ...pollData,
+        publicKey: pollConfig === 2 ? process.env.NEXT_PUBLIC_COORDINATOR_PUBLIC_KEY! : pollData.publicKey,
         options: pollData.options.map((option, i) => ({
           ...option,
           cid: cids[i] || '0x',
@@ -399,28 +401,17 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
         })
       );
 
-      if (pollConfig === 1) {
-        await handlePollCreationUsingWrapper(
-          finalPollData,
-          encodedOptions,
-          startTime,
-          endTime,
-          privoteContract.abi,
-          privoteContract.address,
-          notificationId
-        );
-      } else if (pollConfig === 2) {
-        await handlePollCreationUsingCoordinator(
-          finalPollData,
-          encodedOptions,
-          startTime,
-          endTime,
-          privoteContract.address,
-          notificationId
-        );
-      } else {
-        notification.warning('Invalid poll configuration');
-      }
+      finalPollData.publicKey =
+        pollConfig === 2 ? process.env.NEXT_PUBLIC_COORDINATOR_PUBLIC_KEY! : finalPollData.publicKey;
+      await handlePollCreationUsingWrapper(
+        finalPollData,
+        encodedOptions,
+        startTime,
+        endTime,
+        privoteContract.abi,
+        privoteContract.address,
+        notificationId
+      );
     } catch (error) {
       console.error('Error creating poll:', error);
       const errorMessage =
