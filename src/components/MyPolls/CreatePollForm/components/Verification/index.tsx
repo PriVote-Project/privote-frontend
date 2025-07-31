@@ -11,6 +11,7 @@ import styles from './index.module.css';
 // import SemaphorePolicyConfig from './SemaphorePolicyConfig';
 import Image from 'next/image';
 import TokenPolicyConfig from './TokenPolicyConfig';
+import ERC20VotesConfig from './ERC20VotesConfig';
 
 // Display names for each policy
 const POLICY_NAMES = {
@@ -61,6 +62,8 @@ const getPolicyConfigComponent = (
       return <EASPolicyConfig config={config} onConfigChange={onConfigChange} />;
     case PollPolicyType.GitcoinPassport:
       return <GitcoinPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.ERC20Votes:
+      return <ERC20VotesConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Hats:
     //   return <HatsPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Merkle:

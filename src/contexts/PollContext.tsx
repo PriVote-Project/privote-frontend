@@ -333,19 +333,23 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setPollStateIndex(undefined);
 
       if (!signer) {
+        setIsCheckingUserJoinedPoll(false);
         return;
       }
 
       if (!maciKeypair) {
+        setIsCheckingUserJoinedPoll(false);
         return;
       }
 
       if (!isRegistered) {
+        setIsCheckingUserJoinedPoll(false);
         return;
       }
 
-      // if it is the first poll then !pollId = false because !0n = false
+      // if it is the first poll then !pollAddress = false because !0n = false
       if (!pollAddress) {
+        setIsCheckingUserJoinedPoll(false);
         return;
       }
 
