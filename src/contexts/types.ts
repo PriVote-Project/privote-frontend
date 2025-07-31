@@ -10,8 +10,15 @@ export interface IVoteArgs {
 
 export interface IGenerateData {
   processProofs: IProof[];
-  tallyProofs: IProof[];
   tallyData: ITallyData;
+}
+
+export interface IProofGenerationProgress {
+  batchIndex: number;
+  totalBatches: number;
+  processedCount: number;
+  totalCount: number;
+  proofs: IProof[];
 }
 export type TCoordinatorServiceResult<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
