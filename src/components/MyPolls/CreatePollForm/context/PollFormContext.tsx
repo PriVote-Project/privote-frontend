@@ -10,7 +10,7 @@ import { encodeOptionInfo } from '@/utils/optionInfo';
 import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
 import { CID } from 'multiformats';
 import { useRouter } from 'next/navigation';
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { Abi, Hex } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import type { IPollData, PolicyConfigType } from '../types';
@@ -214,15 +214,18 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const handlePolicyConfigChange = (config: PolicyConfigType) => {
-    setPollData(prev => ({
-      ...prev,
-      policyConfig: {
-        ...prev.policyConfig,
-        ...config
-      }
-    }));
-  };
+  const handlePolicyConfigChange = useCallback(
+    (config: PolicyConfigType) => {
+      setPollData(prev => ({
+        ...prev,
+        policyConfig: {
+          ...prev.policyConfig,
+          ...config
+        }
+      }));
+    },
+    [setPollData]
+  );
 
   const handleAddOption = () => {
     setPollData(prev => ({

@@ -3,6 +3,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import 'react-tooltip/dist/react-tooltip.css';
 
 const satoshiRegular = localFont({
   src: './fonts/Satoshi-Regular.woff',

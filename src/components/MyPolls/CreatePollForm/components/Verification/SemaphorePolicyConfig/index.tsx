@@ -7,14 +7,12 @@ import { IPolicyConfigProps } from '../types';
 const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
-  const [isManualInput, setIsManualInput] = useState(false);
 
   const { isChainSupported, contracts } = useAppConstants();
 
   useEffect(() => {
     if (!isConnected) {
       setFeedback('Connect to wallet to auto-select Semaphore contract.');
-      setIsManualInput(false);
       if (!config.semaphoreContract) {
         onConfigChange({ ...config, semaphoreContract: '' });
       }
@@ -22,7 +20,6 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
       // Check if the connected chain is supported by Privote
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
-        setIsManualInput(false);
         onConfigChange({ ...config, semaphoreContract: '' });
         return;
       }
@@ -31,31 +28,21 @@ const SemaphorePolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) =
 
       if (semaphoreContract) {
         setFeedback('');
-        setIsManualInput(false);
         onConfigChange({ ...config, semaphoreContract });
       } else {
-        setFeedback('Semaphore contract not found for this network. Please enter the contract address manually.');
-        setIsManualInput(true);
-        // Don't clear existing manual input
+        setFeedback('Semaphore contract not found for this network.');
         if (!config.semaphoreContract) {
           onConfigChange({ ...config, semaphoreContract: '' });
         }
       }
     }
-  }, [isConnected, chainId, isChainSupported, contracts.semaphore, config, onConfigChange]);
+  }, [isConnected, chainId, isChainSupported, contracts.semaphore]);
 
   return (
     <div className={styles.policyConfig}>
       <div className={styles.configField}>
         <label htmlFor='semaphoreContract'>Semaphore Contract Address</label>
-        <input
-          type='text'
-          id='semaphoreContract'
-          placeholder='0x...'
-          value={config.semaphoreContract || ''}
-          readOnly={!isManualInput && !!config.semaphoreContract}
-          onChange={isManualInput ? e => onConfigChange({ ...config, semaphoreContract: e.target.value }) : undefined}
-        />
+        <input type='text' id='semaphoreContract' placeholder='0x...' value={config.semaphoreContract || ''} readOnly />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>
       <div className={styles.configField}>

@@ -7,21 +7,18 @@ import { IPolicyConfigProps } from '../types';
 const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
-  const [isManualInput, setIsManualInput] = useState(false);
 
   const { contracts, isChainSupported } = useAppConstants();
 
   useEffect(() => {
     if (!isConnected) {
       setFeedback('Connect to wallet to auto-select Gitcoin decoder contract.');
-      setIsManualInput(false);
       if (!config.gitcoinDecoderAddress) {
         onConfigChange({ ...config, gitcoinDecoderAddress: '' });
       }
     } else if (chainId) {
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
-        setIsManualInput(false);
         onConfigChange({ ...config, gitcoinDecoderAddress: '' });
         return;
       }
@@ -30,18 +27,15 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
 
       if (gitcoinDecoderAddress !== '0x') {
         setFeedback('');
-        setIsManualInput(false);
         onConfigChange({ ...config, gitcoinDecoderAddress });
       } else {
         setFeedback('Gitcoin decoder contract not found for this network. Please enter the contract address manually.');
-        setIsManualInput(true);
-        // Don't clear existing manual input
         if (!config.gitcoinDecoderAddress) {
           onConfigChange({ ...config, gitcoinDecoderAddress: '' });
         }
       }
     }
-  }, [isConnected, chainId, contracts.gitcoinPassportDecoder, isChainSupported, config, onConfigChange]);
+  }, [isConnected, chainId, contracts.gitcoinPassportDecoder, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>
@@ -52,10 +46,7 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
           id='gitcoinDecoderAddress'
           placeholder='0x...'
           value={config.gitcoinDecoderAddress || ''}
-          readOnly={!isManualInput && !!config.gitcoinDecoderAddress}
-          onChange={
-            isManualInput ? e => onConfigChange({ ...config, gitcoinDecoderAddress: e.target.value }) : undefined
-          }
+          readOnly
         />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>

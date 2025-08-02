@@ -11,7 +11,6 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const { isConnected, chainId } = useAccount();
   const [feedback, setFeedback] = useState('');
   const [explorerUrl, setExplorerUrl] = useState('');
-  const [isManualInput, setIsManualInput] = useState(false);
 
   const { contracts, slugs, isChainSupported } = useAppConstants();
 
@@ -19,7 +18,6 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
     if (!isConnected) {
       setFeedback('Connect to wallet to auto-select EAS contract.');
       setExplorerUrl('');
-      setIsManualInput(false);
       if (!config.easContract) {
         onConfigChange({ ...config, easContract: '' });
       }
@@ -27,7 +25,6 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
       if (!isChainSupported) {
         setFeedback('Connected chain is not supported by Privote. Please switch to a supported network.');
         setExplorerUrl('');
-        setIsManualInput(false);
         onConfigChange({ ...config, easContract: '' });
         return;
       }
@@ -43,31 +40,22 @@ const EASPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
 
       if (easContractAddress) {
         setFeedback('');
-        setIsManualInput(false);
         onConfigChange({ ...config, easContract: easContractAddress });
       } else {
         setFeedback('EAS contract not found for this network. Please enter the contract address manually.');
-        setIsManualInput(true);
         // Don't clear existing manual input
         if (!config.easContract) {
           onConfigChange({ ...config, easContract: '' });
         }
       }
     }
-  }, [isConnected, chainId, contracts.eas, slugs.eas, isChainSupported, config, onConfigChange]);
+  }, [isConnected, chainId, contracts.eas, slugs.eas, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>
       <div className={styles.configField}>
         <label htmlFor='easContract'>EAS Contract</label>
-        <input
-          type='text'
-          id='easContract'
-          placeholder='0x...'
-          value={config.easContract || ''}
-          readOnly={!isManualInput && !!config.easContract}
-          onChange={isManualInput ? e => onConfigChange({ ...config, easContract: e.target.value }) : undefined}
-        />
+        <input type='text' id='easContract' placeholder='0x...' value={config.easContract || ''} readOnly />
         {feedback && <p className={styles.feedback}>{feedback}</p>}
       </div>
       <div className={styles.configField}>

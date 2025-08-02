@@ -1,4 +1,5 @@
 import { supportedChains } from '@/config/chains';
+import { PollPolicyType } from '@/types';
 import { Hex } from 'viem';
 import { baseSepolia, optimismSepolia, scrollSepolia } from 'viem/chains';
 
@@ -16,6 +17,7 @@ export type ChainConstants = {
     infura: string;
     subgraph: string;
   };
+  supportedPolicies: PollPolicyType[];
 };
 
 export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainConstants> = {
@@ -32,7 +34,17 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       coordinator: 'optimism-sepolia',
       infura: 'optimism-sepolia',
       subgraph: 'optimism-sepolia'
-    }
+    },
+    supportedPolicies: [
+      PollPolicyType.FreeForAll,
+      PollPolicyType.AnonAadhaar,
+      PollPolicyType.EAS,
+      PollPolicyType.ERC20,
+      PollPolicyType.ERC20Votes,
+      PollPolicyType.GitcoinPassport,
+      PollPolicyType.Merkle,
+      PollPolicyType.Token
+    ]
   },
   [baseSepolia.id]: {
     chain: baseSepolia,
@@ -47,7 +59,16 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       coordinator: 'base-sepolia',
       infura: 'base-sepolia',
       subgraph: 'base-sepolia'
-    }
+    },
+    supportedPolicies: [
+      PollPolicyType.FreeForAll,
+      PollPolicyType.AnonAadhaar,
+      PollPolicyType.EAS,
+      PollPolicyType.ERC20,
+      PollPolicyType.ERC20Votes,
+      PollPolicyType.Merkle,
+      PollPolicyType.Token
+    ]
   },
   [scrollSepolia.id]: {
     chain: scrollSepolia,
@@ -62,6 +83,16 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       coordinator: 'scroll-sepolia',
       infura: 'scroll-sepolia',
       subgraph: 'scroll-sepolia'
-    }
+    },
+    supportedPolicies: [
+      PollPolicyType.FreeForAll,
+      PollPolicyType.AnonAadhaar,
+      PollPolicyType.EAS,
+      PollPolicyType.ERC20,
+      PollPolicyType.ERC20Votes,
+      PollPolicyType.GitcoinPassport,
+      PollPolicyType.Merkle,
+      PollPolicyType.Token
+    ]
   }
 } as const;

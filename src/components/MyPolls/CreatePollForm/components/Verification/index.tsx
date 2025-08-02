@@ -12,6 +12,8 @@ import styles from './index.module.css';
 import Image from 'next/image';
 import TokenPolicyConfig from './TokenPolicyConfig';
 import ERC20VotesConfig from './ERC20VotesConfig';
+import useAppConstants from '@/hooks/useAppConstants';
+import { Tooltip } from 'react-tooltip';
 
 // Display names for each policy
 const POLICY_NAMES = {
@@ -87,6 +89,10 @@ const Verification = ({
   onPolicyConfigChange
 }: VerificationProps) => {
   const [selectedPolicy, setSelectedPolicy] = useState<PollPolicyType>(policyType);
+  const constants = useAppConstants();
+  
+  // Get supported policies for current chain
+  const supportedPolicies = constants.supportedPolicies || [];
 
   // Update selected policy when policyType changes externally
   useEffect(() => {
@@ -95,6 +101,11 @@ const Verification = ({
 
   // Handle policy selection
   const handlePolicySelect = (policy: PollPolicyType) => {
+    // Only allow selection if policy is supported
+    if (!supportedPolicies.includes(policy)) {
+      return;
+    }
+    
     setSelectedPolicy(policy);
 
     // Create a custom event to pass to the handler
@@ -103,6 +114,17 @@ const Verification = ({
     } as React.ChangeEvent<HTMLSelectElement>;
 
     handlePolicyTypeChange(event);
+  };
+  
+  // Check if a policy is supported on current chain
+  const isPolicySupported = (policy: PollPolicyType) => {
+    return supportedPolicies.includes(policy);
+  };
+  
+  // Get tooltip message for unsupported policy
+  const getUnsupportedTooltip = (policy: PollPolicyType) => {
+    const chainName = constants.chain.name || 'this network';
+    return `${POLICY_NAMES[policy]} is not supported on ${chainName}`;
   };
 
   return (
@@ -114,28 +136,58 @@ const Verification = ({
 
       {/* Policy selection grid */}
       <div className={styles.policyGrid}>
-        {Object.values(PollPolicyType).map(policy => (
-          <button
-            key={policy}
-            type='button'
-            className={`${styles.policyCard} ${selectedPolicy === policy ? styles.selected : ''}`}
-            onClick={() => handlePolicySelect(policy)}
-            aria-label={`Select ${POLICY_NAMES[policy]} verification method`}
-          >
-            {POLICY_ICONS[policy] ? (
-              <Image
-                width={31}
-                height={31}
-                alt={`${POLICY_NAMES[policy]} icon`}
-                src={POLICY_ICONS[policy]}
-                className={styles.policyIcon}
-              />
-            ) : (
-              <MdPolicy size={31} fill='#fff' />
-            )}
-            <span className={styles.policyName}>{POLICY_NAMES[policy]}</span>
-          </button>
-        ))}
+        {Object.values(PollPolicyType).map(policy => {
+          const isSupported = isPolicySupported(policy);
+          const tooltipId = `policy-tooltip-${policy}`;
+          
+          return (
+            <div key={policy} className={styles.policyCardWrapper}>
+              <button
+                type='button'
+                className={`${styles.policyCard} ${
+                  selectedPolicy === policy ? styles.selected : ''
+                } ${!isSupported ? styles.disabled : ''}`}
+                onClick={() => handlePolicySelect(policy)}
+                disabled={!isSupported}
+                aria-label={`Select ${POLICY_NAMES[policy]} verification method`}
+                data-tooltip-id={!isSupported ? tooltipId : undefined}
+                data-tooltip-content={!isSupported ? getUnsupportedTooltip(policy) : undefined}
+              >
+                {POLICY_ICONS[policy] ? (
+                  <Image
+                    width={31}
+                    height={31}
+                    alt={`${POLICY_NAMES[policy]} icon`}
+                    src={POLICY_ICONS[policy]}
+                    className={styles.policyIcon}
+                  />
+                ) : (
+                  <MdPolicy size={31} fill='#fff' />
+                )}
+                <span className={styles.policyName}>{POLICY_NAMES[policy]}</span>
+              </button>
+              
+              {/* Tooltip for unsupported policies */}
+              {!isSupported && (
+                <Tooltip
+                  id={tooltipId}
+                  place="top"
+                  variant="error"
+                  style={{
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    padding: '8px 12px',
+                    maxWidth: '200px',
+                    textAlign: 'center',
+                    zIndex: 1000
+                  }}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Additional configuration for selected policy */}

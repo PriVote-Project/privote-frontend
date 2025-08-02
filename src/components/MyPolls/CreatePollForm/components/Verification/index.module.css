@@ -28,6 +28,11 @@
   margin-top: 8px;
 }
 
+.policyCardWrapper {
+  position: relative;
+  display: flex;
+}
+
 .policyCard {
   cursor: pointer;
   display: flex;
@@ -53,6 +58,20 @@
 .policyCard.selected {
   border-color: #fff;
   color: #fff;
+}
+
+.policyCard.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: #0a0a0a;
+  border-color: #3a3a3a;
+  color: #666;
+}
+
+.policyCard.disabled:hover {
+  border-color: #3a3a3a;
+  color: #666;
+  background: #0a0a0a;
 }
 
 .policyIcon {
@@ -141,6 +160,10 @@
 @media (max-width: 620px) {
   .policyGrid {
     flex-direction: column;
+  }
+
+  .policyCardWrapper {
+    width: 100%;
   }
 
   .policyCard {

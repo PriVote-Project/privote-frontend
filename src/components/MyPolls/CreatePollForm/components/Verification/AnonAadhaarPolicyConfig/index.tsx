@@ -55,7 +55,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         }
       }
     }
-  }, [isConnected, chainId, contracts.anonAadhaarVerifier, isChainSupported, config, onConfigChange]);
+  }, [isConnected, chainId, contracts.anonAadhaarVerifier, isChainSupported]);
 
   return (
     <div className={styles.policyConfig}>
