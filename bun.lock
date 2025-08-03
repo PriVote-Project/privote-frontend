@@ -10,6 +10,7 @@
         "@maci-protocol/crypto": "0.0.0-ci.ebb44e9",
         "@maci-protocol/domainobjs": "0.0.0-ci.ebb44e9",
         "@maci-protocol/sdk": "0.0.0-ci.ebb44e9",
+        "@openzeppelin/merkle-tree": "^1.0.8",
         "@rainbow-me/rainbowkit": "^2.2.8",
         "@semaphore-protocol/core": "^4.12.0",
         "@semaphore-protocol/data": "^4.12.0",
@@ -19,6 +20,7 @@
         "lodash.merge": "^4.6.2",
         "multiformats": "^13.3.7",
         "next": "15.3.4",
+        "pinata": "^2.4.9",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-hot-toast": "^2.5.2",
@@ -1828,6 +1830,8 @@
     "picomatch": ["picomatch@4.0.2", "", {}, "sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg=="],
 
     "pify": ["pify@3.0.0", "", {}, "sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg=="],
+
+    "pinata": ["pinata@2.4.9", "", { "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-94fMvBJXnFgDyZkYRd7SCaXsHZERtDAjIcPIpYlUXAorv77xav3UMU0fipX/EKZwl3Uv8P7Mbul12KdbqpLRdA=="],
 
     "pino": ["pino@7.11.0", "", { "dependencies": { "atomic-sleep": "^1.0.0", "fast-redact": "^3.0.0", "on-exit-leak-free": "^0.2.0", "pino-abstract-transport": "v0.5.0", "pino-std-serializers": "^4.0.0", "process-warning": "^1.0.0", "quick-format-unescaped": "^4.0.3", "real-require": "^0.1.0", "safe-stable-stringify": "^2.1.0", "sonic-boom": "^2.2.1", "thread-stream": "^0.15.1" }, "bin": { "pino": "bin.js" } }, "sha512-dMACeu63HtRLmCG8VKdy4cShCPKaYDR4youZqoSWLxl5Gu99HUw8bw75thbPv9Nip+H+QYX8o3ZJbTdVZZ2TVg=="],
 

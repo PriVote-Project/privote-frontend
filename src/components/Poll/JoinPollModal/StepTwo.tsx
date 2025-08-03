@@ -7,7 +7,8 @@ import {
   FreeForAllPolicy,
   GitcoinPolicy,
   // SemaphorePolicy,
-  TokenPolicy
+  TokenPolicy,
+  MerkleProofPolicy
 } from '@/services/policies';
 import { PollPolicyType } from '@/types';
 import React from 'react';
@@ -80,6 +81,15 @@ export const StepTwo: React.FC<StepTwoProps> = ({
       )}
       {policyType === PollPolicyType.FreeForAll && (
         <FreeForAllPolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.MerkleProof && (
+        <MerkleProofPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}

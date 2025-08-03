@@ -42,7 +42,7 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.ERC20,
       PollPolicyType.ERC20Votes,
       PollPolicyType.GitcoinPassport,
-      PollPolicyType.Merkle,
+      PollPolicyType.MerkleProof,
       PollPolicyType.Token
     ]
   },
@@ -66,7 +66,7 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.EAS,
       PollPolicyType.ERC20,
       PollPolicyType.ERC20Votes,
-      PollPolicyType.Merkle,
+      PollPolicyType.MerkleProof,
       PollPolicyType.Token
     ]
   },
@@ -91,7 +91,7 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.ERC20,
       PollPolicyType.ERC20Votes,
       PollPolicyType.GitcoinPassport,
-      PollPolicyType.Merkle,
+      PollPolicyType.MerkleProof,
       PollPolicyType.Token
     ]
   }

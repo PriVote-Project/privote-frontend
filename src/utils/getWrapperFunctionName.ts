@@ -17,5 +17,9 @@ export const getWrapperFunctionName = (policy: PollPolicyType) => {
     return 'createPollWithGitcoin';
   }
 
+  if (policy === PollPolicyType.MerkleProof) {
+    return 'createPollWithMerkle';
+  }
+
   return `createPollWith${policy}` as IPollCreationFunction;
 };

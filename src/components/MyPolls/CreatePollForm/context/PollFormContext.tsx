@@ -252,14 +252,16 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
     endTime: bigint,
     abi: Abi,
     contractAddress: Hex,
-    notificationId?: string
+    notificationId?: string,
+    merkleTreeUrl?: string
   ) => {
     // Generate the arguments for the contract call using the utility function
     const args = getPollArgs({
       pollData: finalPollData,
       encodedOptions,
       startTime,
-      endTime
+      endTime,
+      merkleTreeUrl
     });
 
     notificationId = handleNotice({
@@ -368,9 +370,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
             continue;
           }
           const data = await uploadFileToLighthouse([file]);
-          console.log(data);
           const cid = CID.parse(data.Hash);
-          console.log(cid);
           cids[i] = `0x${Buffer.from(cid.bytes).toString('hex')}`;
         }
       }
@@ -390,6 +390,15 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
           isUploadedToIPFS: !!cids[i]
         }))
       };
+
+      let merkleTreeUrl: string = '';
+      if (pollData.policyType === PollPolicyType.MerkleProof) {
+        const merkleTreeUrlResponse = await fetch('/api/json', {
+          method: 'POST',
+          body: pollData.policyConfig.merkleTreeData
+        });
+        merkleTreeUrl = await merkleTreeUrlResponse.json();
+      }
 
       const startTime = BigInt(Math.floor(finalPollData.startTime.getTime() / 1000));
       const endTime = finalPollData.endTime ? BigInt(Math.floor(finalPollData.endTime.getTime() / 1000)) : 0n;
@@ -413,7 +422,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
         endTime,
         privoteContract.abi,
         privoteContract.address,
-        notificationId
+        notificationId,
+        merkleTreeUrl
       );
     } catch (error) {
       console.error('Error creating poll:', error);

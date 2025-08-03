@@ -40,6 +40,7 @@ export interface PolicyConfigType {
 
   // Merkle proof policy
   merkleRoot?: string;
+  merkleTreeData?: string;
 
   // EAS policy
   easContract?: string;

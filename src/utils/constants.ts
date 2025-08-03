@@ -23,7 +23,7 @@ export const POLICY_ICONS = {
   [PollPolicyType.FreeForAll]: '/icons/free-icon.svg',
   [PollPolicyType.GitcoinPassport]: '/icons/passport-icon.svg',
   // [PollPolicyType.Hats]: null,
-  // [PollPolicyType.Merkle]: null,
+  [PollPolicyType.MerkleProof]: '/icons/merkle-icon.svg',
   // [PollPolicyType.Semaphore]: '/icons/semaphore-icon.svg',
   [PollPolicyType.Token]: '/icons/nft-icon.svg'
   // [PollPolicyType.Zupass]: '/icons/zupass-icon.png'

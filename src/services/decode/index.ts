@@ -36,8 +36,8 @@ export class DecodeService {
         return 'address passportDecoder, uint256 thresholdScore';
       case PollPolicyType.Hats:
         return 'address hats, uint256[] criterionHats';
-      case PollPolicyType.Merkle:
-        return 'bytes32 merkleRoot';
+      case PollPolicyType.MerkleProof:
+        return '(bytes32 merkleRoot, string merkleTreeVersion, string merkleTreeUrl)';
       case PollPolicyType.Semaphore:
         return 'address semaphore, uint256 groupId';
       case PollPolicyType.Token:
@@ -143,10 +143,12 @@ export class DecodeService {
           } as HatsPolicyData;
         }
 
-        case PollPolicyType.Merkle: {
-          const [merkleRoot] = decodedValues as [Hex];
+        case PollPolicyType.MerkleProof: {
+          const [merkleData] = decodedValues as [{ merkleRoot: Hex; merkleTreeVersion: string; merkleTreeUrl: string }];
           return {
-            merkleRoot
+            merkleRoot: merkleData.merkleRoot,
+            merkleTreeVersion: merkleData.merkleTreeVersion,
+            merkleTreeUrl: merkleData.merkleTreeUrl
           } as MerklePolicyData;
         }
 

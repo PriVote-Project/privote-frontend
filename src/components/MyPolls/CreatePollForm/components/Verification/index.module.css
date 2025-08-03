@@ -157,6 +157,216 @@
   display: none;
 }
 
+/* Merkle Proof Policy Specific Styles */
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #b4b7bd;
+  font-size: 14px;
+}
+
+.radioOption input[type='radio'] {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.radioOption:hover {
+  color: #fff;
+}
+
+.textarea {
+  background: #0b0c0f;
+  padding: 12px;
+  color: #fff;
+  border-radius: 8px;
+  border: 1px solid #535861;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  width: 100%;
+  resize: vertical;
+  min-height: 120px;
+  transition: border 0.2s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border: 1px solid #fff;
+}
+
+.textarea::placeholder {
+  color: #535861;
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.helpText {
+  display: block;
+  color: #888;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.fileUploadContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fileInput {
+  background: #0b0c0f;
+  padding: 8px 12px;
+  color: #fff;
+  border-radius: 8px;
+  border: 1px solid #535861;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+
+.fileInput:hover {
+  border-color: #888;
+}
+
+.clearButton {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.clearButton:hover {
+  background: #dc2626;
+}
+
+.readOnlyInput {
+  background: #1a1a1a !important;
+  color: #888 !important;
+  cursor: not-allowed !important;
+}
+
+.loadingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.success {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.infoBox {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.infoBox h4 {
+  color: #3b82f6;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.infoBox ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #b4b7bd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.infoBox li {
+  margin-bottom: 8px;
+}
+
+.infoBox code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #fff;
+}
+
+.metadataBox {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.metadataBox h4 {
+  color: #22c55e;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metadataGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.metadataItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(34, 197, 94, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.metadataLabel {
+  color: #b4b7bd;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.metadataValue {
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
 @media (max-width: 620px) {
   .policyGrid {
     flex-direction: column;

@@ -59,6 +59,7 @@ interface GetPollArgsParams {
   startTime: bigint;
   endTime: bigint;
   voiceCredits?: bigint;
+  merkleTreeUrl?: string;
 }
 
 /**
@@ -81,15 +82,19 @@ export function getPollArgs({
   encodedOptions,
   startTime,
   endTime,
-  voiceCredits = 100n
+  voiceCredits = 100n,
+  merkleTreeUrl
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: GetPollArgsParams): readonly any[] {
   // Create poll metadata
-  const metadata = JSON.stringify({
+  const metadataOb = {
     pollType: getPollTypeIndex(pollData.pollType),
     maxVotePerPerson: pollData.maxVotePerPerson,
     description: pollData.description
-  });
+  };
+  const metadata = merkleTreeUrl
+    ? JSON.stringify({ ...metadataOb, treeUrlVersion: '0.0.0', merkleTreeUrl })
+    : JSON.stringify(metadataOb);
 
   // Common base arguments used by all policy types
   const baseArgs = [
@@ -159,11 +164,11 @@ export function getPollArgs({
     //   return [...baseArgs, hatsContract, hatsCriterions, voiceCredits];
     // }
 
-    // case PollPolicyType.Merkle: {
-    //   const merkleRoot = config.merkleRoot || ZERO_BYTES32;
+    case PollPolicyType.MerkleProof: {
+      const merkleRoot = config.merkleRoot || ZERO_BYTES32;
 
-    //   return [...baseArgs, merkleRoot, voiceCredits];
-    // }
+      return [...baseArgs, merkleRoot, voiceCredits];
+    }
 
     // case PollPolicyType.Semaphore: {
     //   const semaphoreContract = config.semaphoreContract || ZERO_ADDRESS;
@@ -323,7 +328,7 @@ export const getCoordinatorPollArgs = ({
     //   return [...baseArgs, hatsContract, hatsCriterions, voiceCredits];
     // }
 
-    // case PollPolicyType.Merkle: {
+    // case PollPolicyType.MerkleProof: {
     //   const merkleRoot = config.merkleRoot || ZERO_BYTES32;
     //
     // policy = {

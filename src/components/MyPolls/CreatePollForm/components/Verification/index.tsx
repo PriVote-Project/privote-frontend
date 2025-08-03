@@ -12,6 +12,7 @@ import styles from './index.module.css';
 import Image from 'next/image';
 import TokenPolicyConfig from './TokenPolicyConfig';
 import ERC20VotesConfig from './ERC20VotesConfig';
+import MerkleProofPolicyConfig from './MerkleProofPolicyConfig';
 import useAppConstants from '@/hooks/useAppConstants';
 import { Tooltip } from 'react-tooltip';
 
@@ -24,7 +25,7 @@ const POLICY_NAMES = {
   [PollPolicyType.FreeForAll]: 'None',
   [PollPolicyType.GitcoinPassport]: 'Gitcoin Passport',
   // [PollPolicyType.Hats]: 'Hats',
-  // [PollPolicyType.Merkle]: 'Merkle Proof',
+  [PollPolicyType.MerkleProof]: 'Merkle Proof',
   // [PollPolicyType.Semaphore]: 'Semaphore',
   [PollPolicyType.Token]: 'NFT'
   // [PollPolicyType.Zupass]: 'Zupass'
@@ -38,9 +39,9 @@ const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.ERC20Votes]: true,
   [PollPolicyType.Token]: true,
   [PollPolicyType.EAS]: true,
-  [PollPolicyType.GitcoinPassport]: true
+  [PollPolicyType.GitcoinPassport]: true,
   // [PollPolicyType.Hats]: true,
-  // [PollPolicyType.Merkle]: true,
+  [PollPolicyType.MerkleProof]: true
   // [PollPolicyType.Semaphore]: true
   // [PollPolicyType.Zupass]: true
 };
@@ -68,8 +69,8 @@ const getPolicyConfigComponent = (
       return <ERC20VotesConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Hats:
     //   return <HatsPolicyConfig config={config} onConfigChange={onConfigChange} />;
-    // case PollPolicyType.Merkle:
-    //   return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.MerkleProof:
+      return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Semaphore:
     //   return <SemaphorePolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Zupass:
@@ -90,7 +91,7 @@ const Verification = ({
 }: VerificationProps) => {
   const [selectedPolicy, setSelectedPolicy] = useState<PollPolicyType>(policyType);
   const constants = useAppConstants();
-  
+
   // Get supported policies for current chain
   const supportedPolicies = constants.supportedPolicies || [];
 
@@ -105,7 +106,7 @@ const Verification = ({
     if (!supportedPolicies.includes(policy)) {
       return;
     }
-    
+
     setSelectedPolicy(policy);
 
     // Create a custom event to pass to the handler
@@ -115,12 +116,12 @@ const Verification = ({
 
     handlePolicyTypeChange(event);
   };
-  
+
   // Check if a policy is supported on current chain
   const isPolicySupported = (policy: PollPolicyType) => {
     return supportedPolicies.includes(policy);
   };
-  
+
   // Get tooltip message for unsupported policy
   const getUnsupportedTooltip = (policy: PollPolicyType) => {
     const chainName = constants.chain.name || 'this network';
@@ -139,7 +140,7 @@ const Verification = ({
         {Object.values(PollPolicyType).map(policy => {
           const isSupported = isPolicySupported(policy);
           const tooltipId = `policy-tooltip-${policy}`;
-          
+
           return (
             <div key={policy} className={styles.policyCardWrapper}>
               <button
@@ -166,13 +167,13 @@ const Verification = ({
                 )}
                 <span className={styles.policyName}>{POLICY_NAMES[policy]}</span>
               </button>
-              
+
               {/* Tooltip for unsupported policies */}
               {!isSupported && (
                 <Tooltip
                   id={tooltipId}
-                  place="top"
-                  variant="error"
+                  place='top'
+                  variant='error'
                   style={{
                     backgroundColor: '#ef4444',
                     color: 'white',

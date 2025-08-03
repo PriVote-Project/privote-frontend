@@ -6,6 +6,7 @@ import FreeForAllPolicy from './FreeForAllPolicy';
 import GitcoinPolicy from './GitcoinPolicy';
 import SemaphorePolicy from './SemaphorePolicy';
 import TokenPolicy from './TokenPolicy';
+import MerkleProofPolicy from './MerkleProofPolicy';
 
 export {
   AnonAadhaarPolicy,
@@ -15,5 +16,6 @@ export {
   FreeForAllPolicy,
   GitcoinPolicy,
   SemaphorePolicy,
-  TokenPolicy
+  TokenPolicy,
+  MerkleProofPolicy
 };

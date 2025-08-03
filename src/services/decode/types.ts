@@ -41,6 +41,8 @@ export type HatsPolicyData = {
 
 export type MerklePolicyData = {
   merkleRoot: Hex;
+  merkleTreeVersion: string;
+  merkleTreeUrl: string;
 };
 
 export type SemaphorePolicyData = {

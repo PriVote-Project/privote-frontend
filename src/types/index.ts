@@ -79,7 +79,7 @@ export const PollPolicyType = {
   ERC20Votes: 'ERC20Votes',
   GitcoinPassport: 'GitcoinPassport',
   // Hats: 'Hats',
-  // Merkle: 'Merkle',
+  MerkleProof: 'MerkleProof',
   // Semaphore: 'Semaphore',
   Token: 'Token'
   // Zupass: 'Zupass'

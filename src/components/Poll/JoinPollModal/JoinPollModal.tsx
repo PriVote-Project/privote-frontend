@@ -30,7 +30,7 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
     data: '0x'
   });
   const { isRegistered, isLoading: isRegistering, onSignup } = useSigContext();
-  const { onJoinPoll, isLoading: isJoining } = usePollContext();
+  const { onJoinPoll, isJoiningPoll: isJoining } = usePollContext();
 
   const [currentStep, setCurrentStep] = useState(1);
 
