@@ -15,6 +15,7 @@ import { Abi, Hex } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import type { IPollData, PolicyConfigType } from '../types';
 import { getCoordinatorPollArgs, getPollArgs } from './utils';
+import { validatePollForm, getFirstErrorMessage } from '@/utils/pollValidation';
 
 const initialPollData: IPollData = {
   title: '',
@@ -113,70 +114,13 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   }, [isConfirmed, confirmError, receipt, txState, router]);
 
   const validateForm = (): boolean => {
-    if (!pollData.title.trim()) {
-      notification.error('Please enter a title');
+    const validationResult = validatePollForm(pollData, pollConfig);
+    
+    if (!validationResult.isValid) {
+      const errorMessage = getFirstErrorMessage(validationResult.errors);
+      console.log('Validation failed:', errorMessage);
+      notification.error(errorMessage);
       return false;
-    }
-
-    // Removed description validation
-    if (!pollData.description.trim()) {
-      notification.error('Please enter a description');
-      return false;
-    }
-
-    if (pollData.startTime.getTime() > pollData.endTime.getTime()) {
-      console.log('Start time should be less than end time');
-      notification.error('Start time should be less than end time');
-      return false;
-    }
-
-    if (pollData.startTime.getTime() < Date.now()) {
-      console.log('Start time should be greater than current time');
-      notification.error('Start time should be greater than current time');
-      return false;
-    }
-
-    if (pollData.pollType === null) {
-      console.log('Please select a poll type');
-      notification.error('Please select a poll type');
-      return false;
-    }
-
-    if (pollData.mode === null) {
-      console.log('Please select a voting mode');
-      notification.error('Please select a voting mode');
-      return false;
-    }
-
-    if (pollData.options.filter(opt => !opt.title?.trim()).length > 0) {
-      console.log('Please add at least 1 option');
-      notification.error('Please add at least 1 option');
-      return false;
-    }
-
-    if (pollConfig !== 1 && pollConfig !== 2) {
-      console.log('Please select a valid Poll Configuration');
-      notification.error('Please select a valid Poll Configuration');
-      return false;
-    }
-
-    if (pollConfig === 1 && !PublicKey.isValidSerialized(pollData.publicKey)) {
-      console.log('Please enter a valid public key');
-      notification.error('Please enter a valid public key');
-      return false;
-    }
-
-    // If link is present on option then it should be a valid url
-    const validUrlReges = new RegExp(
-      '((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)'
-    );
-
-    for (const option of pollData.options) {
-      if (option.link && !validUrlReges.test(option.link)) {
-        console.log('Please enter a valid URL for Candidate : ' + option.title);
-        notification.error('Please enter a valid URL for Candidate : ' + option.title);
-        return false;
-      }
     }
 
     return true;
@@ -393,6 +337,10 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
       let merkleTreeUrl: string = '';
       if (pollData.policyType === PollPolicyType.MerkleProof) {
+        if (!pollData.policyConfig.merkleTreeData) {
+          notification.error('Merkle tree data is required');
+          return;
+        }
         const merkleTreeUrlResponse = await fetch('/api/json', {
           method: 'POST',
           body: pollData.policyConfig.merkleTreeData

@@ -55,7 +55,7 @@ const GitcoinPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => 
         <input
           type='text'
           id='passingScore'
-          placeholder='0x...'
+          placeholder='Enter passing score'
           value={config.passingScore || ''}
           onChange={e => onConfigChange({ ...config, passingScore: e.target.value })}
         />

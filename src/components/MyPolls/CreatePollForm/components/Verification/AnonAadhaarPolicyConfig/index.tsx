@@ -19,7 +19,7 @@ const AnonAadhaarPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
     window.crypto.getRandomValues(array);
     const value = BigInt(array.join('')).toString();
     onConfigChange({ ...config, nullifierSeed: value });
-  }, [config, onConfigChange]);
+  }, []);
 
   useEffect(() => {
     generateRandomValue();
