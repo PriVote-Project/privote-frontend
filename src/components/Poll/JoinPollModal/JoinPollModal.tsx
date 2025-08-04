@@ -29,7 +29,7 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
     canJoin: false,
     data: '0x'
   });
-  const { isRegistered, isLoading: isRegistering, onSignup } = useSigContext();
+  const { isRegistered } = useSigContext();
   const { onJoinPoll, isJoiningPoll: isJoining } = usePollContext();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -123,7 +123,7 @@ export const JoinPollModal: React.FC<JoinPollModalProps> = ({ isOpen, onClose, p
         {/* Step Content */}
         <div className={styles.stepContent}>
           {currentStep === 1 ? (
-            <StepOne isRegistered={isRegistered} isLoading={isRegistering} onSignup={onSignup} onNext={handleNext} />
+            <StepOne onNext={handleNext} />
           ) : currentStep === 2 ? (
             <StepTwo
               policyType={policyType}

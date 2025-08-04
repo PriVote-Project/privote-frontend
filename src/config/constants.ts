@@ -3,6 +3,11 @@ import { PollPolicyType } from '@/types';
 import { Hex } from 'viem';
 import { baseSepolia, optimismSepolia, scrollSepolia } from 'viem/chains';
 
+export interface FaucetProvider {
+  name: string;
+  url: string;
+}
+
 export type ChainConstants = {
   chain: (typeof supportedChains)[number];
   contracts: {
@@ -18,6 +23,7 @@ export type ChainConstants = {
     subgraph: string;
   };
   supportedPolicies: PollPolicyType[];
+  faucets: FaucetProvider[];
 };
 
 export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainConstants> = {
@@ -44,6 +50,16 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.GitcoinPassport,
       PollPolicyType.MerkleProof,
       PollPolicyType.Token
+    ],
+    faucets: [
+      {
+        name: 'Alchemy Faucet',
+        url: 'https://www.alchemy.com/faucets/optimism-sepolia'
+      },
+      {
+        name: 'Quicknode Faucet',
+        url: 'https://faucet.quicknode.com/optimism/sepolia'
+      }
     ]
   },
   // [baseSepolia.id]: {
@@ -68,6 +84,16 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
   //     PollPolicyType.ERC20Votes,
   //     PollPolicyType.MerkleProof,
   //     PollPolicyType.Token
+  //   ],
+  //   faucets: [
+  //     {
+  //       name: 'Alchemy Faucet',
+  //       url: 'https://www.alchemy.com/faucets/base-sepolia'
+  //     },
+  //     {
+  //       name: 'Quicknode Faucet',
+  //       url: 'https://faucet.quicknode.com/base/sepolia'
+  //     }
   //   ]
   // },
   [scrollSepolia.id]: {
@@ -93,6 +119,16 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.GitcoinPassport,
       PollPolicyType.MerkleProof,
       PollPolicyType.Token
+    ],
+    faucets: [
+      {
+        name: 'Scroll Sepolia Faucet',
+        url: 'https://sepolia.scroll.io/faucet'
+      },
+      {
+        name: 'Quicknode Faucet',
+        url: 'https://faucet.quicknode.com/scroll/sepolia'
+      }
     ]
   }
 } as const;

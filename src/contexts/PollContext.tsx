@@ -15,6 +15,7 @@ import { Hex, parseAbi } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { useSigContext } from './SigContext';
 import { type IPollContextType } from './types';
+import useFaucetContext from '@/hooks/useFaucetContext';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 
@@ -54,6 +55,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { subgraphUrl } = useAppConstants();
   const { maciKeypair, isRegistered, stateIndex } = useSigContext();
   const privoteContract = usePrivoteContract();
+  const { checkBalance } = useFaucetContext();
 
   // Compute dynamic poll status based on current time
   const computeDynamicPollStatus = useCallback(() => {
@@ -169,6 +171,11 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setIsLoading(false);
 
         notification.error('Already joined poll');
+        return;
+      }
+
+      if (checkBalance()) {
+        setIsLoading(false);
         return;
       }
 

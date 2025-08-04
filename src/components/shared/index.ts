@@ -12,7 +12,7 @@ import Modal from './Modal';
 import Notification from './Notification';
 import Providers from './Providers';
 import ShareModal from './ShareModal';
-import StatusIndicator from './StatusIndicator';
+import FaucetModal from './FaucetModal';
 
 export {
   Background,
@@ -29,5 +29,5 @@ export {
   Notification,
   Providers,
   ShareModal,
-  StatusIndicator
+  FaucetModal
 };

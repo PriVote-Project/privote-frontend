@@ -4,6 +4,7 @@ import { handleNotice, notification } from '@/utils/notification';
 import { Keypair, PublicKey, VoteCommand } from '@maci-protocol/domainobjs';
 import { useEffect, useState } from 'react';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import useFaucetContext from './useFaucetContext';
 
 interface UseVotingProps {
   pollAddress?: string;
@@ -35,6 +36,8 @@ const useVoting = ({
   const { writeContractAsync } = useWriteContract();
 
   const [txState, setTxState] = useState<{ hash: `0x${string}`; notificationId: string }>();
+
+  const { checkBalance } = useFaucetContext();
 
   const {
     isSuccess: isConfirmed,
@@ -128,6 +131,8 @@ const useVoting = ({
       notification.error('Voting is closed for this poll');
       return;
     }
+
+    if (checkBalance()) return;
 
     setIsLoading(true);
 

@@ -54,6 +54,10 @@ export interface IPollContextType {
   isCheckingUserJoinedPoll: boolean;
 }
 
+export interface IFaucetContext {
+  checkBalance: () => boolean;
+}
+
 export const VoteOption = {
   Yes: 0,
   No: 1,

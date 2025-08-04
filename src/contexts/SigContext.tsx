@@ -1,6 +1,7 @@
 'use client';
 import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
+import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { DEFAULT_SG_DATA } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
@@ -36,6 +37,7 @@ export default function SigContextProvider({ children }: { children: React.React
   const signer = useEthersSigner();
   const privoteContract = usePrivoteContract();
   const { subgraphUrl } = useAppConstants();
+  const { checkBalance } = useFaucetContext();
 
   // constants
   const CACHE_EXPIRY_HOURS = 72;
@@ -163,6 +165,11 @@ export default function SigContextProvider({ children }: { children: React.React
       setIsLoading(false);
 
       notification.error('Signer not found');
+      return;
+    }
+
+    if (checkBalance()) {
+      setIsLoading(false);
       return;
     }
 

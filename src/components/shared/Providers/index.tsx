@@ -1,5 +1,6 @@
 'use client';
 import AppConstantsProvider from '@/contexts/AppConstantsContext';
+import FaucetContextProvider from '@/contexts/FaucetContext';
 import SigContextProvider from '@/contexts/SigContext';
 import { AnonAadhaarProvider } from '@anon-aadhaar/react';
 import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainbowkit';
@@ -33,10 +34,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <RainbowKitProvider theme={customTheme} avatar={BlockieAvatar}>
           <AnonAadhaarProvider _useTestAadhaar>
             <AppConstantsProvider>
-              <SigContextProvider>
-                {children}
-                <Toaster />
-              </SigContextProvider>
+              <FaucetContextProvider>
+                <SigContextProvider>
+                  {children}
+                  <Toaster />
+                </SigContextProvider>
+              </FaucetContextProvider>
             </AppConstantsProvider>
           </AnonAadhaarProvider>
         </RainbowKitProvider>

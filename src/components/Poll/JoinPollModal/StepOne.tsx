@@ -4,14 +4,11 @@ import React from 'react';
 import styles from './JoinPollModal.module.css';
 
 interface StepOneProps {
-  isRegistered: boolean;
-  isLoading: boolean;
-  onSignup: () => Promise<void>;
   onNext: () => void;
 }
 
-export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSignup, onNext }) => {
-  const { maciKeypair, deleteKeypair } = useSigContext();
+export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
+  const { isRegistered, isLoading, onSignup, maciKeypair, deleteKeypair } = useSigContext();
   const handleSignup = async () => {
     try {
       await onSignup();

@@ -1,4 +1,5 @@
 import useAppConstants from '@/hooks/useAppConstants';
+import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollPolicyType, PollType } from '@/types';
 import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
@@ -78,6 +79,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   const [pollConfig, setPollConfig] = useState(0);
 
   const { slugs } = useAppConstants();
+  const { checkBalance } = useFaucetContext();
   const { writeContractAsync } = useWriteContract();
   const privoteContract = usePrivoteContract();
   const [txState, setTxState] = useState<{ hash: `0x${string}`; notificationId: string }>();
@@ -115,7 +117,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
 
   const validateForm = (): boolean => {
     const validationResult = validatePollForm(pollData, pollConfig);
-    
+
     if (!validationResult.isValid) {
       const errorMessage = getFirstErrorMessage(validationResult.errors);
       console.log('Validation failed:', errorMessage);
@@ -294,6 +296,8 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    if (checkBalance()) return;
 
     if (!privoteContract) {
       notification.error('Please connect to supported chains!');
