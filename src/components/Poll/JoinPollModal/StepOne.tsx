@@ -11,7 +11,7 @@ interface StepOneProps {
 }
 
 export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSignup, onNext }) => {
-  const { deleteKeypair } = useSigContext();
+  const { maciKeypair, deleteKeypair } = useSigContext();
   const handleSignup = async () => {
     try {
       await onSignup();
@@ -71,43 +71,45 @@ export const StepOne: React.FC<StepOneProps> = ({ isRegistered, isLoading, onSig
         )}
 
         {/* Keypair management section */}
-        <div
-          style={{
-            padding: '16px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            marginTop: '16px'
-          }}
-        >
-          <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-            Keypair Management
-          </h4>
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px', marginBottom: '12px' }}>
-            If you&apos;re experiencing issues or want to generate a new keypair, you can delete your current one.
-          </p>
-          <button
-            onClick={deleteKeypair}
+        {maciKeypair && (
+          <div
             style={{
-              padding: '8px 16px',
-              fontSize: '13px',
-              border: '1px solid rgba(235, 87, 87, 0.3)',
-              backgroundColor: 'rgba(235, 87, 87, 0.1)',
-              color: '#eb5757',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseOver={e => {
-              e.currentTarget.style.backgroundColor = 'rgba(235, 87, 87, 0.2)';
-            }}
-            onMouseOut={e => {
-              e.currentTarget.style.backgroundColor = 'rgba(235, 87, 87, 0.1)';
+              padding: '16px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              marginTop: '16px'
             }}
           >
-            Delete Keypair
-          </button>
-        </div>
+            <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
+              Keypair Management
+            </h4>
+            <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '13px', marginBottom: '12px' }}>
+              If you&apos;re experiencing issues or want to generate a new keypair, you can delete your current one.
+            </p>
+            <button
+              onClick={deleteKeypair}
+              style={{
+                padding: '8px 16px',
+                fontSize: '13px',
+                border: '1px solid rgba(235, 87, 87, 0.3)',
+                backgroundColor: 'rgba(235, 87, 87, 0.1)',
+                color: '#eb5757',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(235, 87, 87, 0.2)';
+              }}
+              onMouseOut={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(235, 87, 87, 0.1)';
+              }}
+            >
+              Delete Keypair
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={styles.stepFooter}>
