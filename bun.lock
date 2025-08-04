@@ -7,9 +7,9 @@
         "@anon-aadhaar/core": "2.4.0",
         "@anon-aadhaar/react": "^2.4.3",
         "@lighthouse-web3/sdk": "^0.4.0",
-        "@maci-protocol/crypto": "0.0.0-ci.ebb44e9",
-        "@maci-protocol/domainobjs": "0.0.0-ci.ebb44e9",
-        "@maci-protocol/sdk": "0.0.0-ci.ebb44e9",
+        "@maci-protocol/crypto": "0.0.0-ci.de6bbd5",
+        "@maci-protocol/domainobjs": "0.0.0-ci.de6bbd5",
+        "@maci-protocol/sdk": "0.0.0-ci.de6bbd5",
         "@openzeppelin/merkle-tree": "^1.0.8",
         "@rainbow-me/rainbowkit": "^2.2.8",
         "@semaphore-protocol/core": "^4.12.0",
@@ -253,15 +253,15 @@
 
     "@lit/reactive-element": ["@lit/reactive-element@2.1.1", "", { "dependencies": { "@lit-labs/ssr-dom-shim": "^1.4.0" } }, "sha512-N+dm5PAYdQ8e6UlywyyrgI2t++wFGXfHx+dSJ1oBrg6FAxUj40jId++EaRm80MKX5JnlH1sBsyZ5h0bcZKemCg=="],
 
-    "@maci-protocol/contracts": ["@maci-protocol/contracts@0.0.0-ci.ebb44e9", "", { "dependencies": { "@excubiae/contracts": "^0.11.0", "@maci-protocol/core": "0.0.0-ci.ebb44e9", "@maci-protocol/crypto": "0.0.0-ci.ebb44e9", "@maci-protocol/domainobjs": "0.0.0-ci.ebb44e9", "@nomicfoundation/hardhat-ethers": "^3.0.9", "@nomicfoundation/hardhat-toolbox": "^5.0.0", "@nomicfoundation/hardhat-verify": "^2.0.14", "@openzeppelin/contracts": "^5.3.0", "@openzeppelin/merkle-tree": "^1.0.8", "@pcd/util": "^0.9.0", "@zk-kit/imt.sol": "2.0.0-beta.12", "@zk-kit/lean-imt": "^2.2.3", "circomlibjs": "^0.1.7", "ethers": "^6.14.4", "hardhat": "^2.24.3", "lowdb": "^1.0.0", "snarkjs": "^0.7.5", "solady": "^0.1.19", "solidity-docgen": "^0.6.0-beta.36", "uuid": "^11.1.0" }, "bin": { "maci-contracts": "./build/ts/index.js" } }, "sha512-4WibEsG/7FhVabpTnwl0c0t5aZ/iHcaZC3cZH1Q1HvhzAPRaqF0RpL7o0JEnvnpUuCtya+EvmA1tFmSsHZhMfw=="],
+    "@maci-protocol/contracts": ["@maci-protocol/contracts@0.0.0-ci.de6bbd5", "", { "dependencies": { "@excubiae/contracts": "^0.11.0", "@maci-protocol/core": "0.0.0-ci.de6bbd5", "@maci-protocol/crypto": "0.0.0-ci.de6bbd5", "@maci-protocol/domainobjs": "0.0.0-ci.de6bbd5", "@nomicfoundation/hardhat-ethers": "^3.0.9", "@nomicfoundation/hardhat-toolbox": "^6.0.0", "@nomicfoundation/hardhat-verify": "^2.1.0", "@openzeppelin/contracts": "^5.3.0", "@openzeppelin/merkle-tree": "^1.0.8", "@pcd/util": "^0.9.0", "@zk-kit/imt.sol": "2.0.0-beta.12", "@zk-kit/lean-imt": "^2.2.3", "circomlibjs": "^0.1.7", "ethers": "^6.15.0", "hardhat": "^2.25.0", "lowdb": "^1.0.0", "snarkjs": "^0.7.5", "solady": "^0.1.24", "solidity-docgen": "^0.6.0-beta.36", "uuid": "^11.1.0" }, "bin": { "maci-contracts": "./build/ts/index.js" } }, "sha512-WRt445TyfVM19cASxqkeSWEpXYKapLdxZxhN/k2L0X0dEz9WIBUwefJLotV+mWOF7COQiqbamJfhEjCj50bjwA=="],
 
-    "@maci-protocol/core": ["@maci-protocol/core@0.0.0-ci.ebb44e9", "", { "dependencies": { "@maci-protocol/crypto": "0.0.0-ci.ebb44e9", "@maci-protocol/domainobjs": "0.0.0-ci.ebb44e9", "@zk-kit/lean-imt": "^2.2.3", "lodash": "^4.17.21" } }, "sha512-a4s+xeN/CaDZ0Ai8yX6mYPK0uzlxFrFWFq7GkhGV2oyOUv1j4RiXFd2CEK0V6ddlRliYCcFp509e5fB8QnXVZw=="],
+    "@maci-protocol/core": ["@maci-protocol/core@0.0.0-ci.de6bbd5", "", { "dependencies": { "@maci-protocol/crypto": "0.0.0-ci.de6bbd5", "@maci-protocol/domainobjs": "0.0.0-ci.de6bbd5", "@zk-kit/lean-imt": "^2.2.3", "lodash": "^4.17.21" } }, "sha512-DxTCKLtU9EpC6QhQnsHJFFRQd9AvBwudnPpVz1hqX25whTmZEDAMgTBgkJwXkarYN/b19EIkiucL+5F6ANaNcQ=="],
 
-    "@maci-protocol/crypto": ["@maci-protocol/crypto@0.0.0-ci.ebb44e9", "", { "dependencies": { "@zk-kit/baby-jubjub": "^1.0.3", "@zk-kit/eddsa-poseidon": "^1.1.0", "@zk-kit/poseidon-cipher": "^0.3.2", "ethers": "^6.14.4" } }, "sha512-A7j8grjaw2jeCOdoQ3wWWsZhH5FjfJ8tQQjcURYbYOm+SL8WPzKncT5aWfAbv6HO7yAeMmhkQYhG3dYUnIH3Fg=="],
+    "@maci-protocol/crypto": ["@maci-protocol/crypto@0.0.0-ci.de6bbd5", "", { "dependencies": { "@zk-kit/baby-jubjub": "^1.0.3", "@zk-kit/eddsa-poseidon": "^1.1.0", "@zk-kit/poseidon-cipher": "^0.3.2", "ethers": "^6.15.0" } }, "sha512-ZTAqGxq9ph5GrW4Fo/j3AL0/rQGhAhQ7oe6CbRRDKA5Jav3KHxV23rl+8orcRn0WFl6G36KJZSZLjcG00Oddcg=="],
 
-    "@maci-protocol/domainobjs": ["@maci-protocol/domainobjs@0.0.0-ci.ebb44e9", "", { "dependencies": { "@maci-protocol/crypto": "0.0.0-ci.ebb44e9" } }, "sha512-W5G2Y98DvICrO1V3S83VZNyWM8hUmRvKmh1njyLIEO6qy77Kx4Tb0w9uknVN6f1/7I6O0OMoaIxtBKg3p1cQCA=="],
+    "@maci-protocol/domainobjs": ["@maci-protocol/domainobjs@0.0.0-ci.de6bbd5", "", { "dependencies": { "@maci-protocol/crypto": "0.0.0-ci.de6bbd5" } }, "sha512-elc4zpzgT+UvMIfr1+Mp3kdHf0mmE/Xnql+EdOtIyFeDw9XxK55YLUvrbsclL6WbNUVqhp4L7JO6Bp0CI/ekeg=="],
 
-    "@maci-protocol/sdk": ["@maci-protocol/sdk@0.0.0-ci.ebb44e9", "", { "dependencies": { "@maci-protocol/contracts": "0.0.0-ci.ebb44e9", "@maci-protocol/core": "0.0.0-ci.ebb44e9", "@maci-protocol/crypto": "0.0.0-ci.ebb44e9", "@maci-protocol/domainobjs": "0.0.0-ci.ebb44e9", "@zk-kit/lean-imt": "^2.2.3", "ethers": "^6.14.4", "multiformats": "9.9.0", "snarkjs": "^0.7.5" }, "bin": { "maci-sdk": "./build/ts/index.js" } }, "sha512-rbOGvVpeqNcW83DJFmBHIEH7QZxVpLSwYZPdO4zqaoD9++6h0r73hE1FrhIYgDRrll7WSK/sZJ8ZQl+EBJwJ0w=="],
+    "@maci-protocol/sdk": ["@maci-protocol/sdk@0.0.0-ci.de6bbd5", "", { "dependencies": { "@maci-protocol/contracts": "0.0.0-ci.de6bbd5", "@maci-protocol/core": "0.0.0-ci.de6bbd5", "@maci-protocol/crypto": "0.0.0-ci.de6bbd5", "@maci-protocol/domainobjs": "0.0.0-ci.de6bbd5", "@zk-kit/lean-imt": "^2.2.3", "ethers": "^6.15.0", "multiformats": "9.9.0", "snarkjs": "^0.7.5" }, "bin": { "maci-sdk": "./build/ts/index.js" } }, "sha512-6gGH5JjpW4cSkYJkdoY/+MLw+gowo1ypfqNqRF7JWZ1oVE8xen2JVPq6vecrczwajTtgrAJv7B3rFHN4B5BZSA=="],
 
     "@metamask/abi-utils": ["@metamask/abi-utils@2.0.4", "", { "dependencies": { "@metamask/superstruct": "^3.1.0", "@metamask/utils": "^9.0.0" } }, "sha512-StnIgUB75x7a7AgUhiaUZDpCsqGp7VkNnZh2XivXkJ6mPkE83U8ARGQj5MbRis7VJY8BC5V1AbB1fjdh0hupPQ=="],
 
@@ -355,7 +355,7 @@
 
     "@nomicfoundation/hardhat-network-helpers": ["@nomicfoundation/hardhat-network-helpers@1.1.0", "", { "dependencies": { "ethereumjs-util": "^7.1.4" }, "peerDependencies": { "hardhat": "^2.26.0" } }, "sha512-ZS+NulZuR99NUHt2VwcgZvgeD6Y63qrbORNRuKO+lTowJxNVsrJ0zbRx1j5De6G3dOno5pVGvuYSq2QVG0qCYg=="],
 
-    "@nomicfoundation/hardhat-toolbox": ["@nomicfoundation/hardhat-toolbox@5.0.0", "", { "peerDependencies": { "@nomicfoundation/hardhat-chai-matchers": "^2.0.0", "@nomicfoundation/hardhat-ethers": "^3.0.0", "@nomicfoundation/hardhat-ignition-ethers": "^0.15.0", "@nomicfoundation/hardhat-network-helpers": "^1.0.0", "@nomicfoundation/hardhat-verify": "^2.0.0", "@typechain/ethers-v6": "^0.5.0", "@typechain/hardhat": "^9.0.0", "@types/chai": "^4.2.0", "@types/mocha": ">=9.1.0", "@types/node": ">=18.0.0", "chai": "^4.2.0", "ethers": "^6.4.0", "hardhat": "^2.11.0", "hardhat-gas-reporter": "^1.0.8", "solidity-coverage": "^0.8.1", "ts-node": ">=8.0.0", "typechain": "^8.3.0", "typescript": ">=4.5.0" } }, "sha512-FnUtUC5PsakCbwiVNsqlXVIWG5JIb5CEZoSXbJUsEBun22Bivx2jhF1/q9iQbzuaGpJKFQyOhemPB2+XlEE6pQ=="],
+    "@nomicfoundation/hardhat-toolbox": ["@nomicfoundation/hardhat-toolbox@6.1.0", "", { "peerDependencies": { "@nomicfoundation/hardhat-chai-matchers": "^2.1.0", "@nomicfoundation/hardhat-ethers": "^3.1.0", "@nomicfoundation/hardhat-ignition-ethers": "^0.15.14", "@nomicfoundation/hardhat-network-helpers": "^1.1.0", "@nomicfoundation/hardhat-verify": "^2.1.0", "@typechain/ethers-v6": "^0.5.0", "@typechain/hardhat": "^9.0.0", "@types/chai": "^4.2.0", "@types/mocha": ">=9.1.0", "@types/node": ">=20.0.0", "chai": "^4.2.0", "ethers": "^6.14.0", "hardhat": "^2.26.0", "hardhat-gas-reporter": "^2.3.0", "solidity-coverage": "^0.8.1", "ts-node": ">=8.0.0", "typechain": "^8.3.0", "typescript": ">=4.5.0" } }, "sha512-iAIl6pIK3F4R3JXeq+b6tiShXUrp1sQRiPfqoCMUE7QLUzoFifzGV97IDRL6e73pWsMKpUQBsHBvTCsqn+ZdpA=="],
 
     "@nomicfoundation/hardhat-verify": ["@nomicfoundation/hardhat-verify@2.1.0", "", { "dependencies": { "@ethersproject/abi": "^5.1.2", "@ethersproject/address": "^5.0.2", "cbor": "^8.1.0", "debug": "^4.1.1", "lodash.clonedeep": "^4.5.0", "picocolors": "^1.1.0", "semver": "^6.3.0", "table": "^6.8.0", "undici": "^5.14.0" }, "peerDependencies": { "hardhat": "^2.26.0" } }, "sha512-ogRbwlzphOR2MK/TxDG/uOftEhVJtD81eBU32YZ/maqQOHYOPKymu7BvF9syp7b2fxID5/loEIvxizjW1yBvvQ=="],
 
