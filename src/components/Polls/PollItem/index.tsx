@@ -1,6 +1,7 @@
 import Circle from '@/assets/circle.svg';
 import { PollStatus, type Poll } from '@/types';
 import { POLICY_ICONS } from '@/utils/constants';
+import { unixTimestampToDate } from '@/utils/formatPollDate';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -11,17 +12,6 @@ interface PollItemProps {
 }
 
 const PollItem: React.FC<PollItemProps> = ({ poll }) => {
-  const formatDate = (timestamp: string) => {
-    const date = new Date(parseInt(timestamp, 10) * 1000);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   return (
     <li className={styles['polls-list-item']}>
       <Link href={`/polls/${poll.id}`}>
@@ -55,12 +45,12 @@ const PollItem: React.FC<PollItemProps> = ({ poll }) => {
             <p>
               <span>Start Time</span>
               <span>:</span>
-              <span>{formatDate(poll.startDate)}</span>
+              <span>{unixTimestampToDate(poll.startDate)}</span>
             </p>
             <p>
               <span>End Time</span>
               <span>:</span>
-              <span>{formatDate(poll.endDate)}</span>
+              <span>{unixTimestampToDate(poll.endDate)}</span>
             </p>
           </div>
         </div>

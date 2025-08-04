@@ -27,7 +27,6 @@ export const SigContext = createContext<ISigContext>({} as ISigContext);
 export default function SigContextProvider({ children }: { children: React.ReactNode }) {
   const { address, isConnected } = useAccount();
   const [maciKeypair, setMaciKeypair] = useState<Keypair | null>(null);
-  const [signatureMessage, setSignatureMessage] = useState<string>('');
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [stateIndex, setStateIndex] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,6 +37,12 @@ export default function SigContextProvider({ children }: { children: React.React
   const privoteContract = usePrivoteContract();
   const { subgraphUrl } = useAppConstants();
 
+  // constants
+  const CACHE_EXPIRY_HOURS = 72;
+  const appName = 'PRIVOTE';
+  const purpose = 'This signature will be used to generate your secure MACI private key.';
+  const signatureMessage = `Welcome to ${appName}! ${purpose}`;
+
   // Function to load keypair from localStorage
   const loadKeypairFromLocalStorage = useCallback(() => {
     if (!address) return null;
@@ -46,8 +51,27 @@ export default function SigContextProvider({ children }: { children: React.React
     try {
       const storedKeypair = window.localStorage.getItem(storageKey);
       if (storedKeypair) {
-        const privateKey = PrivateKey.deserialize(storedKeypair);
-        return new Keypair(privateKey);
+        // parse the stored keypair
+        const { privateKey, timestamp } = JSON.parse(storedKeypair);
+
+        // check if privateKey & timestamp are valid
+        if (!PrivateKey.isValidSerialized(privateKey) || !timestamp) {
+          console.log('Invalid private key, clearing cache');
+          window.localStorage.removeItem(storageKey);
+          return null;
+        }
+
+        // check if the cache has expired
+        const now = Date.now();
+        const expiryTime = timestamp + CACHE_EXPIRY_HOURS * 60 * 60 * 1000;
+        if (now > expiryTime) {
+          console.log('Cached artifacts expired, clearing cache');
+          window.localStorage.removeItem(storageKey);
+          return null;
+        }
+
+        // return the keypair
+        return new Keypair(PrivateKey.deserialize(privateKey));
       }
     } catch (error) {
       console.error('Error reading keypair from localStorage:', error);
@@ -63,7 +87,11 @@ export default function SigContextProvider({ children }: { children: React.React
       const storageKey = `maciKeypair-${address}`;
       try {
         const privateKeyHex = keypair.privateKey.serialize();
-        window.localStorage.setItem(storageKey, privateKeyHex);
+        const localKey = {
+          privateKey: privateKeyHex,
+          timestamp: Date.now()
+        };
+        window.localStorage.setItem(storageKey, JSON.stringify(localKey));
       } catch (error) {
         console.error('Error saving keypair to localStorage:', error);
       }
@@ -231,10 +259,6 @@ export default function SigContextProvider({ children }: { children: React.React
       generateKeypair();
     }
   }, [address, loadKeypairFromLocalStorage, generateKeypair]);
-
-  useEffect(() => {
-    setSignatureMessage(`Login to ${window.location.origin}`);
-  }, []);
 
   // check if user is registered
   useEffect(() => {
