@@ -12,7 +12,6 @@ interface WithImageInputProps {
   index: number;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFileRemove: () => void;
-  placeholder: string;
   option: PollOption;
   type?: string;
   className?: string;
@@ -26,7 +25,6 @@ const WithImageInput = ({
   onChange,
   onFileChange,
   onFileRemove,
-  placeholder,
   type = 'text',
   className = '',
   file,
@@ -79,7 +77,7 @@ const WithImageInput = ({
           id={`candidate-${index}-title`}
           type={type}
           onChange={e => onChange(e, 'title')}
-          placeholder={placeholder}
+          placeholder={`*Option ${index + 1}`}
           className={styles['input-field']}
           required={required}
           {...rest}

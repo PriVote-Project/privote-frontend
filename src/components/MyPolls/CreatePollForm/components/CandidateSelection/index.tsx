@@ -16,7 +16,7 @@ const CandidateSelection = ({
   return (
     <div className={styles['candidate-box']}>
       <div className={styles['candidate-header']}>
-        <h1>Add your Candidates</h1>
+        <h1>Add your Options</h1>
         <div className={styles['candidate-add']}>
           <button type='button' className={styles['add-candidate-btn']} onClick={handleAddOption}>
             <Image src={'/plus-circle.svg'} width={32} height={32} alt='plus circle' />

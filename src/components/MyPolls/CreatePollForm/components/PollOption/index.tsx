@@ -20,7 +20,6 @@ const PollOption = ({
             required
             index={index}
             type='text'
-            placeholder={`*Candidate Name`}
             option={option}
             file={file}
             onChange={(e, field) => onOptionChange(index, e.target.value, field)}
