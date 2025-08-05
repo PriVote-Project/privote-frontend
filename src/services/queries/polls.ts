@@ -27,6 +27,7 @@ export const GET_POLL_QUERY = gql`
       id
       pollId
       name
+      coordinatorPublicKey
       maxVotePerPerson
       description
       pollType

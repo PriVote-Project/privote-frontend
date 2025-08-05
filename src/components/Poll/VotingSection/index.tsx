@@ -25,7 +25,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isContentOverflowing, setIsContentOverflowing] = useState(false);
-  const [coordinatorPubKey, setCoordinatorPubKey] = useState<PublicKey>();
+  const [coordinatorPubKey, setCoordinatorPubKey] = useState<[bigint, bigint]>();
   const descriptionRef = useRef<HTMLParagraphElement>(null);
 
   const { isConnected, address: userAddress } = useAccount();
@@ -40,7 +40,8 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     maxVotePerPerson,
     options,
     status: originalPollStatus,
-    owner: pollDeployer
+    owner: pollDeployer,
+    coordinatorPublicKey
   } = poll!;
 
   // Use dynamic status if available, otherwise fall back to original status
@@ -56,7 +57,10 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const { data: coordinatorPubKeyResult } = useReadContract({
     abi: pollAbi,
     address: pollAddress as `0x${string}`,
-    functionName: 'coordinatorPublicKey'
+    functionName: 'coordinatorPublicKey',
+    query: {
+      enabled: !!poll && !poll.coordinatorPublicKey
+    }
   });
 
   const {
@@ -67,7 +71,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     castVote: onVote,
     isPending: isSubmittingVotes
   } = useVoting({
-    coordinatorPubKey,
+    coordinatorPubKey: coordinatorPublicKey ?? coordinatorPubKey,
     pollAddress: poll?.id,
     mode: poll?.mode,
     pollType: poll?.pollType || PollType.NOT_SELECTED,
@@ -154,15 +158,8 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
 
   useEffect(() => {
     if (!coordinatorPubKeyResult) return;
-    try {
-      const publicKey = new PublicKey([
-        BigInt((coordinatorPubKeyResult as bigint[])[0].toString()),
-        BigInt((coordinatorPubKeyResult as bigint[])[1].toString())
-      ]);
-      setCoordinatorPubKey(publicKey);
-    } catch (err) {
-      console.error('Error setting coordinator public key:', err);
-    }
+    const result = coordinatorPubKeyResult as [bigint, bigint];
+    setCoordinatorPubKey([result[0], result[1]]);
   }, [coordinatorPubKeyResult]);
 
   return (

@@ -12,7 +12,7 @@ interface UseVotingProps {
   pollType: PollType;
   status?: PollStatus;
   stateIndex: number | null;
-  coordinatorPubKey?: PublicKey;
+  coordinatorPubKey?: bigint[];
   keypair?: Keypair | null;
   pollId?: bigint;
   maxVotePerPerson?: number;
@@ -111,6 +111,7 @@ const useVoting = ({
       stateIndex == null ||
       stateIndex <= 0 ||
       !coordinatorPubKey ||
+      coordinatorPubKey.length !== 2 ||
       !keypair
     ) {
       console.log('Missing required parameters', pollAddress, pollId, stateIndex, coordinatorPubKey, keypair);
@@ -172,21 +173,21 @@ const useVoting = ({
 
     let notificationId = notification.loading('Submitting votes...');
 
-    const votesToMessage = updatedVotes
-      .sort((a, b) => a.index - b.index)
-      .map((v, i) =>
-        getMessageAndEncKeyPair(
-          BigInt(stateIndex),
-          pollId,
-          BigInt(v.index),
-          BigInt(v.votes),
-          BigInt(updatedVotes.length - i),
-          coordinatorPubKey,
-          keypair
-        )
-      );
-
     try {
+      const votesToMessage = updatedVotes
+        .sort((a, b) => a.index - b.index)
+        .map((v, i) =>
+          getMessageAndEncKeyPair(
+            BigInt(stateIndex),
+            pollId,
+            BigInt(v.index),
+            BigInt(v.votes),
+            BigInt(updatedVotes.length - i),
+            new PublicKey(coordinatorPubKey as [bigint, bigint]),
+            keypair
+          )
+        );
+
       let txHash: `0x${string}`;
       if (votesToMessage.length === 1) {
         txHash = await writeContractAsync({

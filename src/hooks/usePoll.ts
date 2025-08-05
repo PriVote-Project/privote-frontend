@@ -60,6 +60,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
         // Convert numeric indices to string constants
         const pollTypeString = getPollTypeString(Number(data.poll.pollType));
         const modeString = getEModeString(Number(data.poll.mode));
+        const pubKey = data.poll.coordinatorPublicKey;
 
         // Create the transformed poll with the correct types and values
         const transformedPoll: TransformedPoll = {
@@ -67,8 +68,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
           status: getPollStatus(data.poll),
           pollType: pollTypeString,
           mode: modeString,
-          totalSignups: data.poll.totalSignups,
-          maxVotePerPerson: data.poll.maxVotePerPerson
+          coordinatorPublicKey: pubKey ? [BigInt(pubKey[0]), BigInt(pubKey[1])] : undefined
         };
 
         return transformedPoll;

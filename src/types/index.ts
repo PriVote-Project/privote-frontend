@@ -27,6 +27,7 @@ export interface RawPoll {
   voteOptions: string;
   owner: string;
   policyTrait: PollPolicyType;
+  coordinatorPublicKey?: bigint[];
   policyData?: Hex;
   options?: PollOption[];
   maxVotePerPerson?: string;
