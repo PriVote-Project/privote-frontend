@@ -19,6 +19,7 @@ interface TreeValidationState {
   isValidating: boolean;
   isValid: boolean;
   error: string;
+  errorType?: 'ADDRESS_NOT_FOUND' | 'NETWORK_ERROR' | 'VALIDATION_ERROR' | 'UNKNOWN';
   treeMetadata?: {
     totalLeaves: number;
     treeDepth: number;
@@ -48,6 +49,13 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
   const merkleTreeUrl = decodedPolicyData?.merkleTreeUrl || '';
 
   const requirementsDescription = `This poll requires your address to be included in the Merkle tree`;
+
+  // Retry validation
+  const retryValidation = useCallback(() => {
+    if (address && merkleTreeUrl && merkleRoot) {
+      validateUserInTree();
+    }
+  }, [address, merkleTreeUrl, merkleRoot]);
 
   // Fetch and validate tree data
   const validateUserInTree = useCallback(async () => {
@@ -104,14 +112,36 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
         isValidating: false,
         isValid: true,
         error: '',
+        errorType: undefined,
         treeMetadata: treeData.metadata
       });
     } catch (error) {
       console.error('Tree validation error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      // Determine error type based on error message
+      let errorType: 'ADDRESS_NOT_FOUND' | 'NETWORK_ERROR' | 'VALIDATION_ERROR' | 'UNKNOWN' = 'UNKNOWN';
+
+      if (
+        errorMessage.includes('not found in the Merkle tree') ||
+        errorMessage.includes("Make sure it's in the whitelist")
+      ) {
+        errorType = 'ADDRESS_NOT_FOUND';
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Network')) {
+        errorType = 'NETWORK_ERROR';
+      } else if (
+        errorMessage.includes('validation') ||
+        errorMessage.includes('mismatch') ||
+        errorMessage.includes('verification')
+      ) {
+        errorType = 'VALIDATION_ERROR';
+      }
+
       setValidationState({
         isValidating: false,
         isValid: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error: errorMessage,
+        errorType
       });
     }
   }, [address, merkleTreeUrl, merkleRoot, merkleManager]);
@@ -203,31 +233,70 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
           )}
         </div>
 
-        {validationState.error && (
-          <div className={styles.merkleErrorMessage}>
-            <div className={styles.merkleErrorIcon}>❌</div>
-            <div className={styles.merkleErrorContent}>
-              <strong>Validation Failed</strong>
-              <p>{validationState.error}</p>
+        {validationState.error && validationState.errorType === 'ADDRESS_NOT_FOUND' && (
+          <div className={styles.merkleNotFoundMessage}>
+            <div className={styles.merkleNotFoundContent}>
+              <strong>🚫 Address Not Whitelisted</strong>
+              <p>
+                Your address ({address?.slice(0, 6)}...{address?.slice(-4)}) is not included in the Merkle tree for this
+                poll.
+              </p>
+              <div className={styles.merkleNotFoundActions}>
+                <div className={styles.merkleNotFoundSuggestions}>
+                  <h6>What you can do:</h6>
+                  <ul>
+                    <li>Verify you're using the correct wallet address</li>
+                    <li>Check if you have another eligible address</li>
+                  </ul>
+                </div>
+                <button className={styles.retryButton} onClick={retryValidation} title='Retry validation'>
+                  🔄 Retry Validation
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* {validationState.isValid && (
-          <div className={styles.merkleNotInTreeMessage}>
-            <div className={styles.merkleWarningIcon}>⚠️</div>
-            <div className={styles.merkleWarningContent}>
-              <strong>Address Not Found</strong>
-              <p>Your address ({address?.slice(0, 10)}...) is not included in the Merkle tree for this poll.</p>
+        {validationState.error && validationState.errorType === 'NETWORK_ERROR' && (
+          <div className={styles.merkleErrorMessage}>
+            <div className={styles.merkleErrorContent}>
+              <strong>🌐 Network Error</strong>
+              <p>Failed to fetch tree data. Please check your internet connection.</p>
+              <button className={styles.retryButton} onClick={retryValidation} title='Retry validation'>
+                🔄 Retry
+              </button>
             </div>
           </div>
-        )} */}
+        )}
+
+        {validationState.error && validationState.errorType === 'VALIDATION_ERROR' && (
+          <div className={styles.merkleErrorMessage}>
+            <div className={styles.merkleErrorContent}>
+              <strong>⚠️ Validation Error</strong>
+              <p>{validationState.error}</p>
+              <button className={styles.retryButton} onClick={retryValidation} title='Retry validation'>
+                🔄 Retry
+              </button>
+            </div>
+          </div>
+        )}
+
+        {validationState.error && (!validationState.errorType || validationState.errorType === 'UNKNOWN') && (
+          <div className={styles.merkleErrorMessage}>
+            <div className={styles.merkleErrorContent}>
+              <strong>❌ Validation Failed</strong>
+              <p>{validationState.error}</p>
+              <button className={styles.retryButton} onClick={retryValidation} title='Retry validation'>
+                🔄 Retry
+              </button>
+            </div>
+          </div>
+        )}
 
         {validationState.isValid && (
           <div className={styles.merkleSuccessMessage}>
-            <div className={styles.merkleSuccessIcon}>✅</div>
             <div className={styles.merkleSuccessContent}>
-              <strong>Address Verified</strong>
+              <strong>✅ Address Verified 🎉</strong>
               <p>Your address is included in the Merkle tree. You can join this poll!</p>
               {userProof.length > 0 && (
                 <div className={styles.merkleProofInfo}>

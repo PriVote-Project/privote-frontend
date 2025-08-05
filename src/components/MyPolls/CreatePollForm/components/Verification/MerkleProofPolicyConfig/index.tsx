@@ -1,9 +1,10 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { MerkleTreeManager } from '@/services/MerkleTreeManager';
 import styles from '../index.module.css';
 import { IPolicyConfigProps } from '../types';
-import { Hex } from 'viem';
+import { Hex, isAddress } from 'viem';
 import { StandardMerkleTreeData } from '@openzeppelin/merkle-tree/dist/standard';
+import { notification } from '@/utils/notification';
 
 type MerkleInputMode = 'addresses' | 'upload';
 
@@ -15,6 +16,9 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
   const [addressList, setAddressList] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [validAddressCount, setValidAddressCount] = useState(0);
+  const [invalidAddresses, setInvalidAddresses] = useState<string[]>([]);
   const [treeMetadata, setTreeMetadata] = useState<{
     totalLeaves: number;
     treeDepth: number;
@@ -25,45 +29,78 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
   // Create MerkleTreeManager instance
   const merkleManager = useMemo(() => new MerkleTreeManager(), []);
 
+  // Validate Ethereum addresses
+  const validateAddresses = useCallback((addresses: string[]) => {
+    const cleanAddresses = addresses.map(addr => addr.trim()).filter(addr => addr.length > 0);
+    const validAddresses: string[] = [];
+    const invalidAddresses: string[] = [];
+
+    cleanAddresses.forEach(addr => {
+      if (isAddress(addr)) {
+        validAddresses.push(addr);
+      } else {
+        invalidAddresses.push(addr);
+      }
+    });
+
+    return { validAddresses, invalidAddresses };
+  }, []);
+
   // Generate Merkle tree from addresses using MerkleTreeManager
   const generateMerkleTree = useCallback(
     (addresses: string[]) => {
       try {
-        // Clean and validate addresses
-        const cleanAddresses = addresses.map(addr => addr.trim()).filter(addr => addr.length > 0);
+        const { validAddresses, invalidAddresses } = validateAddresses(addresses);
 
-        if (cleanAddresses.length === 0) {
-          throw new Error('No valid addresses provided');
+        if (validAddresses.length === 0) {
+          throw new Error('No valid Ethereum addresses provided');
         }
 
         // Use MerkleTreeManager to create tree
-        const tree = merkleManager.createTreeFromAddresses(cleanAddresses as Hex[]);
+        const tree = merkleManager.createTreeFromAddresses(validAddresses as Hex[]);
         const root = tree.root;
-        const treeJSON = merkleManager.exportToJSON(cleanAddresses);
+        const treeJSON = merkleManager.exportToJSON(validAddresses);
+
+        // Calculate tree depth (log2 of number of leaves, rounded up)
+        const treeDepth = Math.ceil(Math.log2(validAddresses.length));
+
+        // Create metadata
+        const metadata = {
+          totalLeaves: validAddresses.length,
+          treeDepth,
+          generatedAt: new Date().toISOString()
+        };
+
+        // Add metadata to tree JSON
+        const enhancedTreeJSON = {
+          ...treeJSON,
+          metadata
+        };
 
         return {
           root,
-          treeJSON
+          treeJSON: enhancedTreeJSON,
+          metadata,
+          validAddresses,
+          invalidAddresses
         };
       } catch (error) {
         throw new Error(`Failed to generate Merkle tree: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     },
-    [merkleManager]
+    [merkleManager, validateAddresses]
   );
 
-  // Handle address list change
-  const handleAddressListChange = useCallback(
-    (value: string) => {
-      setAddressList(value);
-      setFeedback('');
+  // Debounced tree generation
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Real-time address validation (no tree generation)
+  const validateAddressesRealTime = useCallback(
+    (value: string) => {
       if (!value.trim()) {
-        onConfigChange({
-          ...config,
-          merkleRoot: '',
-          merkleTreeData: ''
-        });
+        setValidAddressCount(0);
+        setInvalidAddresses([]);
+        setFeedback('');
         return;
       }
 
@@ -71,34 +108,100 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         .split('\n')
         .map(addr => addr.trim())
         .filter(Boolean);
+      const { validAddresses, invalidAddresses } = validateAddresses(addresses);
+
+      setValidAddressCount(validAddresses.length);
+      setInvalidAddresses(invalidAddresses);
 
       if (addresses.length === 0) {
         setFeedback('Please provide at least one address');
+      } else if (validAddresses.length === 0) {
+        setFeedback('❌ No valid Ethereum addresses found');
+      } else if (invalidAddresses.length > 0) {
+        setFeedback(`⚠️ ${validAddresses.length} valid, ${invalidAddresses.length} invalid addresses`);
+      } else {
+        setFeedback(`✅ ${validAddresses.length} valid addresses ready for tree generation`);
+      }
+    },
+    [validateAddresses]
+  );
+
+  // Generate tree with debouncing
+  const generateTreeDebounced = useCallback(
+    (addresses: string[]) => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      debounceTimeoutRef.current = setTimeout(() => {
+        if (addresses.length === 0) return;
+
+        try {
+          setIsGenerating(true);
+          const treeData = generateMerkleTree(addresses);
+
+          onConfigChange({
+            ...config,
+            merkleRoot: treeData.root,
+            merkleTreeData: JSON.stringify(treeData.treeJSON)
+          });
+
+          setTreeMetadata(treeData.metadata);
+
+          let feedbackMessage = `✅ Generated Merkle tree with ${treeData.validAddresses.length} addresses`;
+          if (treeData.invalidAddresses.length > 0) {
+            feedbackMessage += ` (${treeData.invalidAddresses.length} invalid addresses excluded)`;
+          }
+          setFeedback(feedbackMessage);
+
+          if (treeData.invalidAddresses.length > 0) {
+            notification.warning(`Excluded ${treeData.invalidAddresses.length} invalid addresses from tree`);
+          }
+        } catch (error) {
+          setFeedback(`❌ ${error instanceof Error ? error.message : 'Failed to generate tree'}`);
+          onConfigChange({
+            ...config,
+            merkleRoot: '',
+            merkleTreeData: ''
+          });
+          setTreeMetadata(null);
+        } finally {
+          setIsGenerating(false);
+        }
+      }, 1000); // 1 second debounce
+    },
+    [config, onConfigChange, generateMerkleTree]
+  );
+
+  // Handle address list change
+  const handleAddressListChange = useCallback(
+    (value: string) => {
+      setAddressList(value);
+
+      // Real-time validation feedback
+      validateAddressesRealTime(value);
+
+      if (!value.trim()) {
+        onConfigChange({
+          ...config,
+          merkleRoot: '',
+          merkleTreeData: ''
+        });
+        setTreeMetadata(null);
         return;
       }
 
-      try {
-        setIsGenerating(true);
-        const treeData = generateMerkleTree(addresses);
+      const addresses = value
+        .split('\n')
+        .map(addr => addr.trim())
+        .filter(Boolean);
+      const { validAddresses } = validateAddresses(addresses);
 
-        onConfigChange({
-          ...config,
-          merkleRoot: treeData.root,
-          merkleTreeData: JSON.stringify(treeData.treeJSON)
-        });
-
-        setFeedback(`✅ Generated Merkle tree with ${addresses.length} addresses`);
-      } catch (error) {
-        setFeedback(`❌ ${error instanceof Error ? error.message : 'Failed to generate tree'}`);
-        onConfigChange({
-          ...config,
-          merkleRoot: ''
-        });
-      } finally {
-        setIsGenerating(false);
+      if (validAddresses.length > 0) {
+        generateTreeDebounced(addresses);
       }
     },
-    [config, onConfigChange, generateMerkleTree]
+    [config, onConfigChange, validateAddressesRealTime, generateTreeDebounced, validateAddresses]
   );
 
   // Handle file upload
@@ -112,13 +215,37 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         return;
       }
 
+      setIsUploading(true);
+      setFeedback('Uploading and validating tree file...');
+
       const reader = new FileReader();
       reader.onload = e => {
         try {
           const content = e.target?.result as string;
           const treeJSON: StandardMerkleTreeData<Hex[]> = JSON.parse(content);
 
+          // Validate tree structure
+          if (!treeJSON.format || !treeJSON.tree || !treeJSON.values) {
+            throw new Error('Invalid tree JSON structure');
+          }
+
           const tree = merkleManager.createTreeFromJSON(treeJSON);
+          const addressCount = treeJSON.values.length;
+
+          // Extract or calculate metadata
+          let metadata = {
+            totalLeaves: addressCount,
+            treeDepth: Math.ceil(Math.log2(addressCount)),
+            generatedAt: new Date().toISOString()
+          };
+
+          // Use existing metadata if available
+          if ('metadata' in treeJSON && treeJSON.metadata) {
+            metadata = {
+              ...metadata,
+              ...(treeJSON.metadata as any)
+            };
+          }
 
           onConfigChange({
             ...config,
@@ -126,10 +253,25 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
             merkleTreeData: content
           });
 
-          setFeedback(`✅ Loaded tree with root ${tree.root}`);
+          setTreeMetadata(metadata);
+          setValidAddressCount(addressCount);
+          setInvalidAddresses([]);
+          setFeedback(`✅ Loaded tree with ${addressCount} addresses (root: ${tree.root.slice(0, 10)}...)`);
+          notification.success(`Successfully loaded Merkle tree with ${addressCount} addresses`);
         } catch (error) {
           setFeedback(`❌ ${error instanceof Error ? error.message : 'Failed to parse JSON'}`);
+          setTreeMetadata(null);
+          setValidAddressCount(0);
+          notification.error('Failed to load tree file');
+        } finally {
+          setIsUploading(false);
         }
+      };
+
+      reader.onerror = () => {
+        setFeedback('❌ Failed to read file');
+        setIsUploading(false);
+        notification.error('Failed to read file');
       };
 
       reader.readAsText(file);
@@ -149,7 +291,18 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
     });
     setFeedback('');
     setTreeMetadata(null);
+    setValidAddressCount(0);
+    setInvalidAddresses([]);
   }, [config, onConfigChange]);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className={styles.policyConfig}>
@@ -186,18 +339,45 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
           <label htmlFor='addressList'>
             Eligible Addresses
             <span className={styles.helpText}>
-              Enter one Ethereum address per line. The Merkle tree will be generated automatically.
+              Enter one Ethereum address per line. The Merkle tree will be generated automatically with 1-second
+              debouncing.
             </span>
           </label>
+
+          {/* Address Count Display */}
+          {addressList && (
+            <div className={styles.addressCount}>
+              <span className={styles.validCount}>🟢 {validAddressCount} valid</span>
+              {invalidAddresses.length > 0 && (
+                <span className={styles.invalidCount}>🔴 {invalidAddresses.length} invalid</span>
+              )}
+            </div>
+          )}
+
           <textarea
             id='addressList'
             className={styles.textarea}
-            placeholder='0x1234567890123456789012345678901234567890\n0xabcdefabcdefabcdefabcdefabcdefabcdefabcd\n...'
+            placeholder={`0x1234567890123456789012345678901234567890\n0xabcdefabcdefabcdefabcdefabcdefabcdefabcd\n...`}
             value={addressList}
             onChange={e => handleAddressListChange(e.target.value)}
             rows={8}
             disabled={isGenerating}
           />
+
+          {/* Invalid Addresses Display */}
+          {invalidAddresses.length > 0 && (
+            <details className={styles.invalidAddressesDetails}>
+              <summary>View {invalidAddresses.length} invalid addresses</summary>
+              <div className={styles.invalidAddressesList}>
+                {invalidAddresses.map((addr, index) => (
+                  <div key={index} className={styles.invalidAddress}>
+                    {addr}
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+
           {isGenerating && (
             <div className={styles.loadingIndicator}>
               <span>🔄 Generating Merkle tree...</span>
@@ -215,6 +395,14 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
               Upload a JSON file containing the Merkle tree structure with root, leaves, and tree data.
             </span>
           </label>
+
+          {/* File Upload Status */}
+          {validAddressCount > 0 && (
+            <div className={styles.fileUploadStatus}>
+              <span className={styles.fileStatusSuccess}>✅ Loaded {validAddressCount} addresses from file</span>
+            </div>
+          )}
+
           <div className={styles.fileUploadContainer}>
             <input
               ref={fileInputRef}
@@ -223,13 +411,20 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
               accept='.json'
               onChange={handleFileUpload}
               className={styles.fileInput}
+              disabled={isUploading}
             />
             {config.merkleTreeData && (
-              <button type='button' onClick={clearFileInput} className={styles.clearButton}>
+              <button type='button' onClick={clearFileInput} className={styles.clearButton} disabled={isUploading}>
                 Clear
               </button>
             )}
           </div>
+
+          {isUploading && (
+            <div className={styles.loadingIndicator}>
+              <span>📋 Uploading and validating file...</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -276,22 +471,17 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         <h4>📋 How it works:</h4>
         <ul>
           <li>
-            <strong>Address List:</strong> Provide Ethereum addresses line by line. Our MerkleTreeManager will validate
-            addresses, generate the tree, and provide detailed metadata.
+            <strong>Address List Mode:</strong> Enter Ethereum addresses line by line. Real-time validation shows
+            valid/invalid counts. Tree generation is debounced (1-second delay) to avoid expensive operations while
+            typing.
           </li>
           <li>
-            <strong>Upload tree.json:</strong> Upload a pre-generated tree file. We'll verify its integrity and recreate
-            the tree to ensure validity.
+            <strong>File Upload Mode:</strong> Upload a pre-generated tree.json file. We validate the JSON structure,
+            recreate the tree for integrity verification, and extract metadata.
           </li>
           <li>
-            <strong>Validation:</strong> All trees are validated using keccak256 hashing with sorted pairs for
-            consistency.
-          </li>
-          <li>
-            <strong>Metadata:</strong> View tree depth, total leaves, and generation timestamp for transparency.
-          </li>
-          <li>
-            <strong>Future:</strong> Tree data will be stored on IPFS for decentralized verification during voting.
+            <strong>Tree Generation:</strong> Uses OpenZeppelin's StandardMerkleTree with keccak256 hashing and sorted
+            pairs for consistency and gas optimization.
           </li>
         </ul>
       </div>
