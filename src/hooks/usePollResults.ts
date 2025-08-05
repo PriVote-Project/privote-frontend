@@ -3,12 +3,14 @@ import { useQuery, type Query } from '@tanstack/react-query';
 import useEthersSigner from './useEthersSigner';
 import usePollContext from './usePollContext';
 import usePrivoteContract from './usePrivoteContract';
+import { EMode } from '@/types';
+import { DEFAULT_VOICE_CREDITS } from '@/utils/constants';
 
 const usePollResults = () => {
   const { poll, checkIsTallied, dynamicPollStatus } = usePollContext();
   const signer = useEthersSigner();
   const privoteContractAddress = usePrivoteContract()?.address;
-  const pollId = poll?.pollId;
+  const { pollId, mode } = poll || {};
   const status = dynamicPollStatus || poll?.status;
 
   return useQuery({
@@ -41,6 +43,9 @@ const usePollResults = () => {
               pollId: pollId.toString(),
               signer
             });
+            if (mode === EMode.FULL) {
+              results = results.map(r => ({ ...r, value: r.value / DEFAULT_VOICE_CREDITS }));
+            }
             total = results.reduce((acc: bigint, cur: IResult) => acc + cur.value, 0n);
           }
         } catch (error) {

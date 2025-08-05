@@ -2,7 +2,7 @@
 import { FaucetModal } from '@/components/shared';
 import { supportedChains } from '@/config/chains';
 import { notification } from '@/utils/notification';
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useAccount, useBalance, useChainId } from 'wagmi';
 import { IFaucetContext } from './types';
 
@@ -13,14 +13,8 @@ const MIN_BALANCE = 0;
 const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   const { address } = useAccount();
   const chainId = useChainId();
-  const { data: balance } = useBalance({ address, chainId, query: { enabled: !!address && !!chainId } });
+  const { data: balance, isLoading } = useBalance({ address, chainId, query: { enabled: !!address && !!chainId } });
   const [showFaucetModal, setShowFaucetModal] = useState(false);
-
-  const memoizedBalance = useMemo(() => {
-    if (balance) {
-      return balance.value;
-    }
-  }, [balance]);
 
   const checkBalance = () => {
     if (!address) {
@@ -35,7 +29,7 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
       return true;
     }
 
-    if (memoizedBalance != undefined && Number(memoizedBalance) <= MIN_BALANCE) {
+    if (!isLoading && balance && Number(balance.value) <= MIN_BALANCE) {
       notification.error('Insufficient balance');
       setShowFaucetModal(true);
 
@@ -46,10 +40,10 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (memoizedBalance !== undefined && Number(memoizedBalance) > MIN_BALANCE) {
+    if (!isLoading && balance && Number(balance.value) > MIN_BALANCE) {
       setShowFaucetModal(false);
     }
-  }, [memoizedBalance]);
+  }, [balance, isLoading]);
 
   return (
     <FaucetContext.Provider value={{ checkBalance }}>

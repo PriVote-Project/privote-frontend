@@ -5,6 +5,7 @@ import { Keypair, PublicKey, VoteCommand } from '@maci-protocol/domainobjs';
 import { useEffect, useState } from 'react';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import useFaucetContext from './useFaucetContext';
+import { DEFAULT_VOICE_CREDITS } from '@/utils/constants';
 
 interface UseVotingProps {
   pollAddress?: string;
@@ -143,6 +144,15 @@ const useVoting = ({
         votes: parseInt(v.votes)
       }))
       .filter(v => !isNaN(v.votes));
+
+    if (mode === EMode.FULL) {
+      if (updatedVotes.length > 1) {
+        notification.error('You can only vote for one option in FULL mode');
+        return;
+      } else {
+        updatedVotes = [{ index: updatedVotes[0].index, votes: Number(DEFAULT_VOICE_CREDITS) }];
+      }
+    }
 
     if (
       pollType === PollType.WEIGHTED_MULTIPLE_VOTE &&

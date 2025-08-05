@@ -1,6 +1,6 @@
 // Poll Deployment Helpers
 import { EMode, PollPolicyType, PollType } from '@/types';
-import { ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
+import { DEFAULT_VOICE_CREDITS, ZERO_ADDRESS, ZERO_BYTES32 } from '@/utils/constants';
 import { PublicKey } from '@maci-protocol/domainobjs';
 import { Hex, parseEther } from 'viem';
 import type { IPollData } from '../types';
@@ -82,7 +82,7 @@ export function getPollArgs({
   encodedOptions,
   startTime,
   endTime,
-  voiceCredits = 100n,
+  voiceCredits = DEFAULT_VOICE_CREDITS,
   merkleTreeUrl
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: GetPollArgsParams): readonly any[] {
@@ -198,7 +198,7 @@ export const getCoordinatorPollArgs = ({
   endTime,
   chain,
   privoteAddress,
-  voiceCredits = 100n
+  voiceCredits = DEFAULT_VOICE_CREDITS
 }: GetCoordinatorPollArgsParams): IDeployPollArgs => {
   // Create poll metadata
   const metadata = JSON.stringify({
