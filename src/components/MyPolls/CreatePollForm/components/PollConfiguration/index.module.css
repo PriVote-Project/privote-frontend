@@ -171,6 +171,117 @@
   text-decoration: underline;
 }
 
+/* Key Option Selector Styles */
+.key-option-selector {
+  margin-bottom: 16px;
+}
+
+.option-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #535861;
+  background: #141414;
+  transition: all 0.2s ease;
+}
+
+.radio-option:hover {
+  border-color: #c65ec6;
+  background: #1a1a1a;
+}
+
+.radio-option input[type='radio'] {
+  margin: 0;
+  accent-color: #c65ec6;
+}
+
+.radio-label {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Wallet Key Section Styles */
+.wallet-key-section {
+  margin-top: 16px;
+}
+
+.key-management {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.key-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #535861;
+  background: #141414;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.key-action-btn:hover {
+  background: #1a1a1a;
+  border-color: #c65ec6;
+}
+
+.delete-btn:hover {
+  background: #2d1b1b;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+}
+
+.generate-btn:hover {
+  background: #1b2d1b;
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.no-keypair {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #1a1a1a;
+  border: 1px solid #535861;
+}
+
+.no-keypair p {
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+/* Manual Key Section Styles */
+.manual-key-section {
+  margin-top: 16px;
+}
+
+.manual-key-section > input {
+  width: 100%;
+}
+
 @media (max-width: 570px) {
   .poll-config {
     align-items: stretch;
@@ -179,5 +290,25 @@
 
   .config-wrapper {
     flex: auto;
+  }
+
+  .option-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .radio-option {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .key-management {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .key-action-btn {
+    width: 100%;
+    min-width: unset;
   }
 }
