@@ -25,7 +25,7 @@ const POLICY_NAMES = {
   [PollPolicyType.FreeForAll]: 'None',
   [PollPolicyType.GitcoinPassport]: 'Gitcoin Passport',
   // [PollPolicyType.Hats]: 'Hats',
-  [PollPolicyType.MerkleProof]: 'Merkle Proof',
+  [PollPolicyType.MerkleProof]: 'Whitelist',
   // [PollPolicyType.Semaphore]: 'Semaphore',
   [PollPolicyType.Token]: 'NFT'
   // [PollPolicyType.Zupass]: 'Zupass'
