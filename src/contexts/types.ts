@@ -22,7 +22,14 @@ export interface IProofGenerationProgress {
 }
 export type TCoordinatorServiceResult<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
-export type FinalizeStatus = 'notStarted' | 'signing' | 'merging' | 'proving' | 'submitting' | 'submitted';
+export type FinalizeStatus =
+  | 'notStarted'
+  | 'signing'
+  | 'merging'
+  | 'proving'
+  | 'submitting'
+  | 'submitted'
+  | 'redirecting';
 
 export interface IFinalizePollArgs {
   setFinalizeStatus: (status: FinalizeStatus) => void;

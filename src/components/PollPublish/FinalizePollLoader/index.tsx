@@ -11,7 +11,8 @@ export const btnTextMap: Record<FinalizeStatus, string> = {
   merging: 'Merging Signups...',
   proving: 'Generating Proofs...',
   submitting: 'Submitting onchain...',
-  submitted: 'Result Published'
+  submitted: 'Result Published',
+  redirecting: 'Redirecting to poll page...'
 };
 
 const FinalizeLoader: React.FC<{
@@ -22,12 +23,14 @@ const FinalizeLoader: React.FC<{
   return (
     <Modal isOpen={isOpen} showCloseButton maxWidth='300px' padding='8px' onClose={onClose || (() => {})}>
       <div className={styles.container}>
-        {status === 'submitted' ? (
+        {status === 'submitted' || status === 'redirecting' ? (
           <Image src={checkIcon} alt='check' width={200} height={200} />
         ) : (
           <Image src={loaderGif} alt='loader' width={200} height={200} />
         )}
-        <div className={`${styles['content']} ${status === 'submitted' ? styles.published : ''}}`}>
+        <div
+          className={`${styles['content']} ${status === 'submitted' || status === 'redirecting' ? styles.published : ''}`}
+        >
           <p className={styles.text}>{btnTextMap[status]}</p>
         </div>
       </div>
