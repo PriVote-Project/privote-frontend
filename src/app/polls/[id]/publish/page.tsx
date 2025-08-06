@@ -59,7 +59,7 @@ const PublishInternal = () => {
     };
 
     checkTalliedStatus();
-  }, [pollAddress]);
+  }, [pollAddress, checkIsTallied]);
 
   if (pollError) {
     return <div>Error loading poll details</div>;
