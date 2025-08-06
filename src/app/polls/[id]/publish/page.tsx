@@ -30,34 +30,36 @@ export default function Publish() {
 const PublishInternal = () => {
   const [selected, setSelected] = useState(0);
   const [isTallied, setIsTallied] = useState<boolean | null>(null);
+  const [isCheckingTallied, setisCheckingTallied] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const { poll, pollError, pollLoading, checkIsTallied, isCheckingTallied } = usePollContext();
+  const { poll, pollError, pollLoading, checkIsTallied } = usePollContext();
   const router = useRouter();
   const { id: pollAddress } = useParams<{ id: string }>();
 
   // Check if poll is tallied when component mounts
   useEffect(() => {
     const checkTalliedStatus = async () => {
-      if (poll && !pollLoading && !pollError) {
-        try {
-          const tallied = await checkIsTallied();
-          setIsTallied(tallied);
+      try {
+        setisCheckingTallied(true);
+        const tallied = await checkIsTallied();
+        setIsTallied(tallied);
 
-          if (tallied) {
-            setIsRedirecting(true);
-            setTimeout(() => {
-              router.push(`/polls/${pollAddress}`);
-            }, 2000);
-          }
-        } catch (error) {
-          console.error('Error checking tally status:', error);
-          setIsTallied(false);
+        if (tallied) {
+          setIsRedirecting(true);
+          setTimeout(() => {
+            router.push(`/polls/${pollAddress}`);
+          }, 2000);
         }
+      } catch (error) {
+        console.error('Error checking tally status:', error);
+        setIsTallied(false);
+      } finally {
+        setisCheckingTallied(false);
       }
     };
 
     checkTalliedStatus();
-  }, [poll, pollLoading, pollError, checkIsTallied, router, pollAddress]);
+  }, [pollAddress]);
 
   if (pollError) {
     return <div>Error loading poll details</div>;
