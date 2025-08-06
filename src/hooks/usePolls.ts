@@ -15,6 +15,7 @@ interface UsePollsParams {
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
   limit?: number;
+  isTrending?: boolean;
 }
 
 export function getPollStatus(poll: RawPoll): PollStatus {
@@ -42,20 +43,25 @@ const fetchPolls = async (
       string | undefined,
       string | undefined,
       'asc' | 'desc' | undefined,
-      number | undefined
+      number | undefined,
+      boolean | undefined
     ],
     number
   >
 ): Promise<Poll[]> => {
   const { pageParam, queryKey } = context;
-  const [, subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit] = queryKey;
+  const [, subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit, isTrending] = queryKey;
 
-  const where: { name_contains_nocase?: string; owner?: string } = {};
+  const where: { name_contains_nocase?: string; owner?: string; endDate_gt?: number; startDate_lt?: number } = {};
   if (searchTerm) {
     where.name_contains_nocase = searchTerm;
   }
   if (ownerAddress) {
     where.owner = ownerAddress;
+  }
+  if (isTrending) {
+    where.endDate_gt = Math.round(Date.now() / 1000);
+    where.startDate_lt = Math.round(Date.now() / 1000);
   }
 
   const variables = {
@@ -70,10 +76,17 @@ const fetchPolls = async (
   return data.polls.map(poll => ({ ...poll, status: getPollStatus(poll) }));
 };
 
-const usePolls = ({ searchTerm = '', ownerAddress, orderBy, orderDirection, limit = 10 }: UsePollsParams) => {
+const usePolls = ({
+  searchTerm = '',
+  ownerAddress,
+  orderBy,
+  orderDirection,
+  limit = 10,
+  isTrending = false
+}: UsePollsParams) => {
   const { subgraphUrl } = useAppConstants();
   return useInfiniteQuery({
-    queryKey: ['polls', subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit] as const,
+    queryKey: ['polls', subgraphUrl, searchTerm, ownerAddress, orderBy, orderDirection, limit, isTrending] as const,
     queryFn: fetchPolls,
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

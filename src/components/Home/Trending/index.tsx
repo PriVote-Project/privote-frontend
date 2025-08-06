@@ -8,7 +8,8 @@ const Trending: React.FC = () => {
   const { data, isLoading, isError, error, refetch } = usePolls({
     orderBy: 'createdAt',
     orderDirection: 'desc',
-    limit: 3
+    limit: 3,
+    isTrending: true
   });
 
   const polls = data?.pages.flat().slice(0, 3) || [];
