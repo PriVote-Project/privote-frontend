@@ -1,20 +1,17 @@
-"use client";
-import React, { useState } from "react";
-import Modal from "../Modal";
-import styles from "./index.module.css";
-import { IoWarningOutline } from "react-icons/io5";
-import { IoCopy, IoCheckmark } from "react-icons/io5";
-import { useAccount, useChainId, useChains } from "wagmi";
-import { type FaucetProvider } from "@/config/constants";
-import useAppConstants from "@/hooks/useAppConstants";
+'use client';
+import React, { useState } from 'react';
+import Modal from '../Modal';
+import styles from './index.module.css';
+import { IoWarningOutline } from 'react-icons/io5';
+import { IoCopy, IoCheckmark } from 'react-icons/io5';
+import { useAccount, useChainId, useChains } from 'wagmi';
+import { type FaucetProvider } from '@/config/constants';
+import useAppConstants from '@/hooks/useAppConstants';
 declare global {
   interface Window {
     grecaptcha: {
       ready: (callback: () => void) => void;
-      execute: (
-        siteKey: string,
-        options: { action: string }
-      ) => Promise<string>;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
     };
   }
 }
@@ -37,7 +34,7 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
 
   // Get available faucets for the current chain
   const availableFaucets: FaucetProvider[] = constants.faucets || [];
-  
+
   // Get current chain name for description
   const currentChain = chains.find(chain => chain.id === chainId);
   const chainName = currentChain?.name || 'this network';
@@ -58,37 +55,28 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
     setIsLoading(true);
     setError(null);
 
-    const token = await window.grecaptcha.execute(
-      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "",
-      {
-        action: "faucet_request",
-      }
-    );
+    const token = await window.grecaptcha.execute(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '', {
+      action: 'faucet_request'
+    });
 
     // wait for 5 seconds
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_FAUCET_URL}/api/faucets/${address}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ captchaToken: token }),
-        }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_FAUCET_URL}/api/faucets/${address}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ captchaToken: token, chainId })
+      });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to get test ETH");
+        throw new Error(data.error || 'Failed to get test ETH');
       }
 
-      localStorage.setItem(
-        `faucet_last_request_${address}`,
-        Date.now().toString()
-      );
+      localStorage.setItem(`faucet_last_request_${address}`, Date.now().toString());
 
       setSuccess(true);
       setTimeout(() => {
@@ -96,7 +84,7 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
         onClose();
       }, 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to get test ETH");
+      setError(err instanceof Error ? err.message : 'Failed to get test ETH');
     } finally {
       setIsLoading(false);
       requestInProgress.current = false;
@@ -104,28 +92,18 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      showCloseButton
-      maxWidth="400px"
-      padding="16px"
-      onClose={onClose}
-    >
+    <Modal isOpen={isOpen} showCloseButton maxWidth='400px' padding='16px' onClose={onClose}>
       <div className={styles.container}>
         <IoWarningOutline size={64} />
         <h3 className={styles.title}>Insufficient Balance</h3>
         <p className={styles.description}>
-          Your wallet balance is too low to perform transactions on {chainName}.
-          Verify that you're human to receive test ETH:
+          Your wallet balance is too low to perform transactions on {chainName}. Verify that you're human to receive
+          test ETH:
         </p>
         {address && (
           <div className={styles.addressContainer} onClick={handleCopy}>
-            <div className={styles.address}>
-              {`${address.slice(0, 6)}...${address.slice(-4)}`}
-            </div>
-            <button className={styles.copyButton}>
-              {copied ? <IoCheckmark size={20} /> : <IoCopy size={20} />}
-            </button>
+            <div className={styles.address}>{`${address.slice(0, 6)}...${address.slice(-4)}`}</div>
+            <button className={styles.copyButton}>{copied ? <IoCheckmark size={20} /> : <IoCopy size={20} />}</button>
           </div>
         )}
         {!isLoading && !success && (
@@ -140,16 +118,11 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
 
         {isLoading && (
           <div className={styles.statusMessage}>
-            <span className={`${styles.spinner} spinner`}></span>Processing your
-            request...
+            <span className={`${styles.spinner} spinner`}></span>Processing your request...
           </div>
         )}
 
-        {success && (
-          <div className={styles.successMessage}>
-            Success! Test ETH has been sent.
-          </div>
-        )}
+        {success && <div className={styles.successMessage}>Success! Test ETH has been sent.</div>}
 
         {error && <div className={styles.errorMessage}>{error}</div>}
 
@@ -158,48 +131,38 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className={styles.externalLinksSection}>
-          <h4 className={styles.externalLinksHeader}>
-            External Faucet Options
-          </h4>
+          <h4 className={styles.externalLinksHeader}>External Faucet Options</h4>
           {availableFaucets.length > 0 ? (
             <div className={styles.links}>
               {availableFaucets.map((faucet, index) => (
-                <a
-                  key={index}
-                  href={faucet.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.link}
-                >
+                <a key={index} href={faucet.url} target='_blank' rel='noopener noreferrer' className={styles.link}>
                   {faucet.name}
                 </a>
               ))}
             </div>
           ) : (
-            <div className={styles.noFaucetsMessage}>
-              No external faucets available for this chain
-            </div>
+            <div className={styles.noFaucetsMessage}>No external faucets available for this chain</div>
           )}
         </div>
         <div className={styles.recaptchaNotice}>
-          This site is protected by reCAPTCHA and the Google{" "}
+          This site is protected by reCAPTCHA and the Google{' '}
           <a
-            href="https://policies.google.com/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='https://policies.google.com/privacy'
+            target='_blank'
+            rel='noopener noreferrer'
             className={styles.recaptchaLink}
           >
             Privacy Policy
-          </a>{" "}
-          and{" "}
+          </a>{' '}
+          and{' '}
           <a
-            href="https://policies.google.com/terms"
-            target="_blank"
-            rel="noopener noreferrer"
+            href='https://policies.google.com/terms'
+            target='_blank'
+            rel='noopener noreferrer'
             className={styles.recaptchaLink}
           >
             Terms of Service
-          </a>{" "}
+          </a>{' '}
           apply.
         </div>
       </div>
