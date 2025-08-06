@@ -22,7 +22,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
   const [treeMetadata, setTreeMetadata] = useState<{
     totalLeaves: number;
     treeDepth: number;
-    generatedAt?: string;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,8 +66,7 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         // Create metadata
         const metadata = {
           totalLeaves: validAddresses.length,
-          treeDepth,
-          generatedAt: new Date().toISOString()
+          treeDepth
         };
 
         // Add metadata to tree JSON
@@ -235,8 +233,7 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
           // Extract or calculate metadata
           let metadata = {
             totalLeaves: addressCount,
-            treeDepth: Math.ceil(Math.log2(addressCount)),
-            generatedAt: new Date().toISOString()
+            treeDepth: Math.ceil(Math.log2(addressCount))
           };
 
           // Use existing metadata if available
@@ -449,12 +446,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
               <span className={styles.metadataLabel}>Tree Depth:</span>
               <span className={styles.metadataValue}>{treeMetadata.treeDepth}</span>
             </div>
-            {treeMetadata.generatedAt && (
-              <div className={styles.metadataItem}>
-                <span className={styles.metadataLabel}>Generated:</span>
-                <span className={styles.metadataValue}>{new Date(treeMetadata.generatedAt).toLocaleString()}</span>
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -84,12 +84,6 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
 
       const treeData = await response.json();
 
-      // Validate the tree data structure and integrity
-      // const verificationResult = merkleManager.verifyJSONData(treeData);
-      // if (!verificationResult.isValid) {
-      //   throw new Error(`Tree validation failed: ${verificationResult.error}`);
-      // }
-
       // Create tree from JSON data
       const tree = merkleManager.createTreeFromJSON(treeData);
 
@@ -215,12 +209,12 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
         </div>
       </div>
 
-      <div className={styles.policyDetails}>
+      {/* <div className={styles.policyDetails}>
         <div className={styles.policyDetailRow}>
           <span className={styles.detailLabel}>Merkle Root:</span>
           <span className={`${styles.detailValue} ${styles.addressText}`}>{merkleRoot}</span>
         </div>
-      </div>
+      </div> */}
 
       <div className={styles.merkleValidationSection}>
         <div className={styles.merkleSectionHeader}>
@@ -307,7 +301,7 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
           </div>
         )}
 
-        {validationState.treeMetadata && (
+        {/* {validationState.treeMetadata && (
           <div className={styles.merkleTreeMetadata}>
             <h6>Tree Information</h6>
             <div className={styles.merkleMetadataGrid}>
@@ -321,7 +315,7 @@ const MerkleProofPolicy = ({ policyData, signupState, setSignupState, onNext, on
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {!validationState.isValidating && !validationState.error && !validationState.isValid && (
           <div className={styles.merkleHelpText}>
