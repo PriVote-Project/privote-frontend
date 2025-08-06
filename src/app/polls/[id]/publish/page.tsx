@@ -106,12 +106,7 @@ const PublishInternal = () => {
       <div className={styles.details}>
         <h2 className={styles.heading}>Choose how you want to publish poll results</h2>
         <div className={styles['card-wrapper']}>
-          <HardhatConfig
-            poll={poll}
-            pollId={poll?.pollId as string}
-            isSelected={selected === 1}
-            onClick={() => setSelected(1)}
-          />
+          <HardhatConfig pollId={poll?.pollId as string} isSelected={selected === 1} onClick={() => setSelected(1)} />
           <CoordinatorConfig isSelected={selected === 2} pollAddress={pollAddress} onClick={() => setSelected(2)} />
         </div>
       </div>
