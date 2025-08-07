@@ -13,7 +13,11 @@ const MIN_BALANCE = 0;
 const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   const { address } = useAccount();
   const chainId = useChainId();
-  const { data: balance, isLoading } = useBalance({ address, chainId, query: { enabled: !!address && !!chainId } });
+  const {
+    data: balance,
+    isLoading,
+    refetch: refetchBalance
+  } = useBalance({ address, chainId, query: { enabled: !!address && !!chainId } });
   const [showFaucetModal, setShowFaucetModal] = useState(false);
 
   const checkBalance = () => {
@@ -48,7 +52,7 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <FaucetContext.Provider value={{ checkBalance }}>
       {children}
-      <FaucetModal isOpen={showFaucetModal} onClose={() => setShowFaucetModal(false)} />
+      <FaucetModal isOpen={showFaucetModal} onClose={() => setShowFaucetModal(false)} refetchBalance={refetchBalance} />
     </FaucetContext.Provider>
   );
 };

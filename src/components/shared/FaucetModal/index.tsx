@@ -7,6 +7,10 @@ import { IoCopy, IoCheckmark } from 'react-icons/io5';
 import { useAccount, useChainId, useChains } from 'wagmi';
 import { type FaucetProvider } from '@/config/constants';
 import useAppConstants from '@/hooks/useAppConstants';
+import { type RefetchOptions, type QueryObserverResult } from '@tanstack/react-query';
+import { GetBalanceErrorType } from 'viem';
+import { GetBalanceData } from 'wagmi/query';
+
 declare global {
   interface Window {
     grecaptcha: {
@@ -19,9 +23,10 @@ declare global {
 interface FaucetModalProps {
   isOpen: boolean;
   onClose: () => void;
+  refetchBalance: (options?: RefetchOptions) => Promise<QueryObserverResult<GetBalanceData, GetBalanceErrorType>>;
 }
 
-const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
+const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose, refetchBalance }) => {
   const { address } = useAccount();
   const chainId = useChainId();
   const chains = useChains();
@@ -78,6 +83,7 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose }) => {
 
       localStorage.setItem(`faucet_last_request_${address}`, Date.now().toString());
 
+      await refetchBalance();
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
