@@ -2,13 +2,13 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollPolicyType, PollType } from '@/types';
-import { PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
+import { ONE_HOUR_MS, ONE_MINUTE_MS, PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
 import { makeCoordinatorServicePostRequest } from '@/utils/coordinator';
 import { getWrapperFunctionName } from '@/utils/getWrapperFunctionName';
 import { uploadFileToLighthouse } from '@/utils/lighthouse';
 import { handleNotice, notification } from '@/utils/notification';
 import { encodeOptionInfo } from '@/utils/optionInfo';
-import { Keypair, PublicKey } from '@maci-protocol/domainobjs';
+import { Keypair } from '@maci-protocol/domainobjs';
 import { CID } from 'multiformats';
 import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
@@ -21,8 +21,8 @@ import { validatePollForm, getFirstErrorMessage } from '@/utils/pollValidation';
 const initialPollData: IPollData = {
   title: '',
   description: '',
-  startTime: new Date(Date.now() + 5 * 60 * 1000),
-  endTime: new Date(Date.now() + 60 * 60 * 1000),
+  startTime: new Date(Date.now() + 10 * ONE_MINUTE_MS),
+  endTime: new Date(Date.now() + ONE_HOUR_MS + 10 * ONE_MINUTE_MS),
   maxVotePerPerson: 1,
   pollType: PollType.NOT_SELECTED,
   mode: null,

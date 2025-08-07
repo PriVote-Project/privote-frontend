@@ -1,3 +1,4 @@
+import { ONE_HOUR_MS } from '@/utils/constants';
 import { IndexedDBStore } from '@/utils/indexedDB';
 import { downloadPollJoiningArtifactsBrowser, type IPollJoiningArtifacts } from '@maci-protocol/sdk/browser';
 import { useCallback, useEffect, useState } from 'react';
@@ -95,7 +96,7 @@ const usePollArtifacts = (autoLoad: boolean = true): UsePollArtifactsReturn => {
 
       // Check expiry
       const now = Date.now();
-      const expiryTime = cached.timestamp + CACHE_EXPIRY_HOURS * 60 * 60 * 1000;
+      const expiryTime = cached.timestamp + CACHE_EXPIRY_HOURS * ONE_HOUR_MS;
       if (now > expiryTime) {
         console.log('Cached artifacts expired, clearing cache');
         await db.delete(ARTIFACTS_KEY);

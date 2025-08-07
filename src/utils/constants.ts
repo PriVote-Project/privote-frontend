@@ -16,6 +16,9 @@ export const DEFAULT_VOICE_CREDITS = 99n;
 export const DEFAULT_SG_DATA = '0x';
 export const DEFAULT_IVCP_DATA = '0x';
 
+export const ONE_MINUTE_MS = 60 * 1000;
+export const ONE_HOUR_MS = 60 * 60 * 1000;
+
 export const POLICY_ICONS = {
   [PollPolicyType.AnonAadhaar]: '/icons/aadhaar-icon.svg',
   [PollPolicyType.EAS]: '/icons/eas-icon.png',

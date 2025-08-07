@@ -3,7 +3,7 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { DEFAULT_SG_DATA } from '@/utils/constants';
+import { DEFAULT_SG_DATA, ONE_HOUR_MS } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { getSignedupUserData } from '@/utils/subgraph';
 import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
@@ -65,7 +65,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
         // check if the cache has expired
         const now = Date.now();
-        const expiryTime = timestamp + CACHE_EXPIRY_HOURS * 60 * 60 * 1000;
+        const expiryTime = timestamp + CACHE_EXPIRY_HOURS * ONE_HOUR_MS;
         if (now > expiryTime) {
           console.log('Cached artifacts expired, clearing cache');
           window.localStorage.removeItem(storageKey);
