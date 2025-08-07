@@ -407,8 +407,7 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         <ul>
           <li>
             <strong>Address List Mode:</strong> Enter Ethereum addresses line by line. Real-time validation shows
-            valid/invalid counts. Tree generation is debounced (1-second delay) to avoid expensive operations while
-            typing.
+            valid/invalid counts.
           </li>
           <li>
             <strong>File Upload Mode:</strong> Upload a pre-generated tree.json file. We validate the JSON structure,
