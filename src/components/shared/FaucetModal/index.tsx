@@ -81,8 +81,6 @@ const FaucetModal: React.FC<FaucetModalProps> = ({ isOpen, onClose, refetchBalan
         throw new Error(data.error || 'Failed to get test ETH');
       }
 
-      localStorage.setItem(`faucet_last_request_${address}`, Date.now().toString());
-
       await refetchBalance();
       setSuccess(true);
       setTimeout(() => {
