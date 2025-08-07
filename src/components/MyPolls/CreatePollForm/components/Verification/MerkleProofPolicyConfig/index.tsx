@@ -14,15 +14,10 @@ type MerkleInputMode = 'addresses' | 'upload';
 const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps) => {
   const [inputMode, setInputMode] = useState<MerkleInputMode>('addresses');
   const [addressList, setAddressList] = useState<string>('');
-  const [feedback, setFeedback] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [validAddressCount, setValidAddressCount] = useState(0);
   const [invalidAddresses, setInvalidAddresses] = useState<string[]>([]);
-  const [treeMetadata, setTreeMetadata] = useState<{
-    totalLeaves: number;
-    treeDepth: number;
-  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Create MerkleTreeManager instance
@@ -98,7 +93,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
       if (!value.trim()) {
         setValidAddressCount(0);
         setInvalidAddresses([]);
-        setFeedback('');
         return;
       }
 
@@ -110,16 +104,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
 
       setValidAddressCount(validAddresses.length);
       setInvalidAddresses(invalidAddresses);
-
-      if (addresses.length === 0) {
-        setFeedback('Please provide at least one address');
-      } else if (validAddresses.length === 0) {
-        setFeedback('❌ No valid Ethereum addresses found');
-      } else if (invalidAddresses.length > 0) {
-        setFeedback(`⚠️ ${validAddresses.length} valid, ${invalidAddresses.length} invalid addresses`);
-      } else {
-        setFeedback(`✅ ${validAddresses.length} valid addresses ready for tree generation`);
-      }
     },
     [validateAddresses]
   );
@@ -144,25 +128,15 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
             merkleTreeData: JSON.stringify(treeData.treeJSON)
           });
 
-          setTreeMetadata(treeData.metadata);
-
-          let feedbackMessage = `✅ Generated Merkle tree with ${treeData.validAddresses.length} addresses`;
-          if (treeData.invalidAddresses.length > 0) {
-            feedbackMessage += ` (${treeData.invalidAddresses.length} invalid addresses excluded)`;
-          }
-          setFeedback(feedbackMessage);
-
           if (treeData.invalidAddresses.length > 0) {
             notification.warning(`Excluded ${treeData.invalidAddresses.length} invalid addresses from tree`);
           }
         } catch (error) {
-          setFeedback(`❌ ${error instanceof Error ? error.message : 'Failed to generate tree'}`);
           onConfigChange({
             ...config,
             merkleRoot: '',
             merkleTreeData: ''
           });
-          setTreeMetadata(null);
         } finally {
           setIsGenerating(false);
         }
@@ -185,7 +159,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
           merkleRoot: '',
           merkleTreeData: ''
         });
-        setTreeMetadata(null);
         return;
       }
 
@@ -209,12 +182,10 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
       if (!file) return;
 
       if (file.type !== 'application/json') {
-        setFeedback('❌ Please upload a JSON file');
         return;
       }
 
       setIsUploading(true);
-      setFeedback('Uploading and validating tree file...');
 
       const reader = new FileReader();
       reader.onload = e => {
@@ -250,14 +221,10 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
             merkleTreeData: content
           });
 
-          setTreeMetadata(metadata);
           setValidAddressCount(addressCount);
           setInvalidAddresses([]);
-          setFeedback(`✅ Loaded tree with ${addressCount} addresses (root: ${tree.root.slice(0, 10)}...)`);
           notification.success(`Successfully loaded Merkle tree with ${addressCount} addresses`);
         } catch (error) {
-          setFeedback(`❌ ${error instanceof Error ? error.message : 'Failed to parse JSON'}`);
-          setTreeMetadata(null);
           setValidAddressCount(0);
           notification.error('Failed to load tree file');
         } finally {
@@ -266,7 +233,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
       };
 
       reader.onerror = () => {
-        setFeedback('❌ Failed to read file');
         setIsUploading(false);
         notification.error('Failed to read file');
       };
@@ -286,8 +252,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
       merkleRoot: '',
       merkleTreeData: ''
     });
-    setFeedback('');
-    setTreeMetadata(null);
     setValidAddressCount(0);
     setInvalidAddresses([]);
   }, [config, onConfigChange]);
@@ -336,8 +300,7 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
           <label htmlFor='addressList'>
             Eligible Addresses
             <span className={styles.helpText}>
-              Enter one Ethereum address per line. The Merkle tree will be generated automatically with 1-second
-              debouncing.
+              Enter one Ethereum address per line. The Merkle tree will be generated automatically.
             </span>
           </label>
 
@@ -430,30 +393,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         <div className={styles.configField}>
           <label htmlFor='merkleRoot'>Generated Merkle Root</label>
           <input type='text' id='merkleRoot' value={config.merkleRoot} readOnly className={styles.readOnlyInput} />
-        </div>
-      )}
-
-      {/* Tree Metadata Display */}
-      {treeMetadata && (
-        <div className={styles.metadataBox}>
-          <h4>🌳 Tree Information</h4>
-          <div className={styles.metadataGrid}>
-            <div className={styles.metadataItem}>
-              <span className={styles.metadataLabel}>Total Addresses:</span>
-              <span className={styles.metadataValue}>{treeMetadata.totalLeaves}</span>
-            </div>
-            <div className={styles.metadataItem}>
-              <span className={styles.metadataLabel}>Tree Depth:</span>
-              <span className={styles.metadataValue}>{treeMetadata.treeDepth}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Feedback */}
-      {feedback && (
-        <div className={`${styles.feedback} ${feedback.includes('❌') ? styles.error : styles.success}`}>
-          {feedback}
         </div>
       )}
 
