@@ -1,9 +1,7 @@
-import { supportedChains } from '@/config/chains';
+import useAppConstants from '@/hooks/useAppConstants';
 import styles from '@/styles/publish.module.css';
-import { EMode, TransformedPoll } from '@/types';
 import { useState } from 'react';
 import { FiCheck, FiCopy } from 'react-icons/fi';
-import { useAccount } from 'wagmi';
 
 interface HardhatConfigProps {
   isSelected: boolean;
@@ -31,7 +29,7 @@ const CommandBlock = ({ command }: { command: string }) => {
 };
 
 export const HardhatConfig = ({ pollId, isSelected, onClick }: HardhatConfigProps) => {
-  const { isConnected, chain } = useAccount();
+  const { slugs } = useAppConstants();
 
   return (
     <div className={styles['config-wrapper']}>
@@ -52,11 +50,7 @@ export const HardhatConfig = ({ pollId, isSelected, onClick }: HardhatConfigProp
 
                 <div className={styles.stepBlock}>
                   <h3 className={styles.stepTitle}>Step 2: Merge Signups</h3>
-                  <CommandBlock
-                    command={`yarn hardhat merge --poll ${pollId} --network ${
-                      isConnected ? chain?.name?.toLowerCase() : supportedChains[0].name?.toLowerCase()
-                    }`}
-                  />
+                  <CommandBlock command={`yarn hardhat merge --poll ${pollId} --network ${slugs.coordinator}`} />
                 </div>
 
                 <div className={styles.stepBlock}>
@@ -66,9 +60,7 @@ export const HardhatConfig = ({ pollId, isSelected, onClick }: HardhatConfigProp
                     creating the poll.
                   </p>
                   <CommandBlock
-                    command={`yarn hardhat prove --poll ${pollId} --output-dir ./out-dir/ --tally-file ./out-dir/tally.json --submit-on-chain --coordinator-private-key <private-key> --network ${
-                      isConnected ? chain?.name?.toLowerCase() : supportedChains[0].name?.toLowerCase()
-                    }`}
+                    command={`yarn hardhat prove --poll ${pollId} --output-dir ./out-dir/ --tally-file ./out-dir/tally.json --submit-on-chain --coordinator-private-key <private-key> --network ${slugs.coordinator}`}
                   />
                 </div>
               </div>
