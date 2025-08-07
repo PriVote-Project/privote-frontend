@@ -1,6 +1,7 @@
 import { PublicKey } from '@maci-protocol/domainobjs';
 import { PollPolicyType } from '@/types';
 import type { IPollData, PolicyConfigType } from '@/components/MyPolls/CreatePollForm/types';
+import { isAddress } from 'viem';
 
 export interface ValidationError {
   field: string;
@@ -20,10 +21,6 @@ export const validateBasicFields = (pollData: IPollData): ValidationError[] => {
 
   if (!pollData.title.trim()) {
     errors.push({ field: 'title', message: 'Please enter a title' });
-  }
-
-  if (!pollData.description.trim()) {
-    errors.push({ field: 'description', message: 'Please enter a description' });
   }
 
   if (pollData.startTime.getTime() > pollData.endTime.getTime()) {
@@ -90,13 +87,6 @@ export const validatePollConfiguration = (pollConfig: number, publicKey: string)
 };
 
 /**
- * Validates Ethereum address format
- */
-const isValidEthereumAddress = (address: string): boolean => {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
-};
-
-/**
  * Validates policy-specific configuration based on policy type
  */
 export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: PolicyConfigType): ValidationError[] => {
@@ -110,7 +100,7 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
     case PollPolicyType.AnonAadhaar:
       if (!policyConfig.verifierAddress?.trim()) {
         errors.push({ field: 'verifierAddress', message: 'Verifier address is required for Anon Aadhaar policy' });
-      } else if (!isValidEthereumAddress(policyConfig.verifierAddress)) {
+      } else if (!isAddress(policyConfig.verifierAddress)) {
         errors.push({ field: 'verifierAddress', message: 'Please enter a valid Ethereum address for verifier' });
       }
 
@@ -122,7 +112,7 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
     case PollPolicyType.ERC20:
       if (!policyConfig.tokenAddress?.trim()) {
         errors.push({ field: 'tokenAddress', message: 'Token address is required for ERC20 policy' });
-      } else if (!isValidEthereumAddress(policyConfig.tokenAddress)) {
+      } else if (!isAddress(policyConfig.tokenAddress)) {
         errors.push({ field: 'tokenAddress', message: 'Please enter a valid Ethereum address for token' });
       }
 
@@ -136,7 +126,7 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
     case PollPolicyType.ERC20Votes:
       if (!policyConfig.tokenAddress?.trim()) {
         errors.push({ field: 'tokenAddress', message: 'Token address is required for ERC20Votes policy' });
-      } else if (!isValidEthereumAddress(policyConfig.tokenAddress)) {
+      } else if (!isAddress(policyConfig.tokenAddress)) {
         errors.push({ field: 'tokenAddress', message: 'Please enter a valid Ethereum address for token' });
       }
 
@@ -156,7 +146,7 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
     case PollPolicyType.Token:
       if (!policyConfig.tokenAddress?.trim()) {
         errors.push({ field: 'tokenAddress', message: 'Token address is required for Token policy' });
-      } else if (!isValidEthereumAddress(policyConfig.tokenAddress)) {
+      } else if (!isAddress(policyConfig.tokenAddress)) {
         errors.push({ field: 'tokenAddress', message: 'Please enter a valid Ethereum address for token' });
       }
       break;
@@ -172,13 +162,13 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
     case PollPolicyType.EAS:
       if (!policyConfig.easContract?.trim()) {
         errors.push({ field: 'easContract', message: 'EAS contract address is required for EAS policy' });
-      } else if (!isValidEthereumAddress(policyConfig.easContract)) {
+      } else if (!isAddress(policyConfig.easContract)) {
         errors.push({ field: 'easContract', message: 'Please enter a valid Ethereum address for EAS contract' });
       }
 
       if (!policyConfig.attester?.trim()) {
         errors.push({ field: 'attester', message: 'Attester address is required for EAS policy' });
-      } else if (!isValidEthereumAddress(policyConfig.attester)) {
+      } else if (!isAddress(policyConfig.attester)) {
         errors.push({ field: 'attester', message: 'Please enter a valid Ethereum address for attester' });
       }
 
@@ -195,7 +185,7 @@ export const validatePolicyConfig = (policyType: PollPolicyType, policyConfig: P
           field: 'gitcoinDecoderAddress',
           message: 'Gitcoin decoder address is required for Gitcoin Passport policy'
         });
-      } else if (!isValidEthereumAddress(policyConfig.gitcoinDecoderAddress)) {
+      } else if (!isAddress(policyConfig.gitcoinDecoderAddress)) {
         errors.push({
           field: 'gitcoinDecoderAddress',
           message: 'Please enter a valid Ethereum address for Gitcoin decoder'

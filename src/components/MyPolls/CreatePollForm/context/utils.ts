@@ -90,7 +90,7 @@ export function getPollArgs({
   const metadataOb = {
     pollType: getPollTypeIndex(pollData.pollType),
     maxVotePerPerson: pollData.maxVotePerPerson,
-    description: pollData.description
+    description: pollData.description?.trim()
   };
   const metadata = merkleTreeUrl
     ? JSON.stringify({ ...metadataOb, treeUrlVersion: '0.0.0', merkleTreeUrl })
