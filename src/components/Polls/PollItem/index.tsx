@@ -39,7 +39,7 @@ const PollItem: React.FC<PollItemProps> = ({ poll }) => {
                 <Image src={POLICY_ICONS[poll.policyTrait] as string} width={26} height={26} alt='icon' />
               )}
             </div>
-            <p>{Number(poll.voteOptions)} Candidates</p>
+            <p>{Number(poll.voteOptions)} Options</p>
           </div>
           <div className={styles.right}>
             <p>
