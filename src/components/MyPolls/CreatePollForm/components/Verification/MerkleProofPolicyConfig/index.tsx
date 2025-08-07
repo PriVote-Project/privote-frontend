@@ -111,6 +111,7 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
   // Generate tree with debouncing
   const generateTreeDebounced = useCallback(
     (addresses: string[]) => {
+      setIsGenerating(true);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
@@ -119,7 +120,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
         if (addresses.length === 0) return;
 
         try {
-          setIsGenerating(true);
           const treeData = generateMerkleTree(addresses);
 
           onConfigChange({
@@ -170,6 +170,12 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
 
       if (validAddresses.length > 0) {
         generateTreeDebounced(addresses);
+      } else {
+        onConfigChange({
+          ...config,
+          merkleRoot: '',
+          merkleTreeData: ''
+        });
       }
     },
     [config, onConfigChange, validateAddressesRealTime, generateTreeDebounced, validateAddresses]
@@ -321,7 +327,6 @@ const MerkleProofPolicyConfig = ({ config, onConfigChange }: IPolicyConfigProps)
             value={addressList}
             onChange={e => handleAddressListChange(e.target.value)}
             rows={8}
-            disabled={isGenerating}
           />
 
           {/* Invalid Addresses Display */}
