@@ -62,40 +62,40 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       }
     ]
   },
-  // [baseSepolia.id]: {
-  //   chain: baseSepolia,
-  //   contracts: {
-  //     eas: '0x4200000000000000000000000000000000000021',
-  //     anonAadhaarVerifier: '0x21046d78637897f667E1e3504A58777C0e9A95cc',
-  //     semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
-  //     gitcoinPassportDecoder: '0x'
-  //   },
-  //   slugs: {
-  //     eas: 'base-sepolia',
-  //     coordinator: 'base-sepolia',
-  //     infura: 'base-sepolia',
-  //     subgraph: 'base-sepolia'
-  //   },
-  //   supportedPolicies: [
-  //     PollPolicyType.FreeForAll,
-  //     PollPolicyType.AnonAadhaar,
-  //     PollPolicyType.EAS,
-  //     PollPolicyType.ERC20,
-  //     PollPolicyType.ERC20Votes,
-  //     PollPolicyType.MerkleProof,
-  //     PollPolicyType.Token
-  //   ],
-  //   faucets: [
-  //     {
-  //       name: 'Alchemy Faucet',
-  //       url: 'https://www.alchemy.com/faucets/base-sepolia'
-  //     },
-  //     {
-  //       name: 'Quicknode Faucet',
-  //       url: 'https://faucet.quicknode.com/base/sepolia'
-  //     }
-  //   ]
-  // },
+  [baseSepolia.id]: {
+    chain: baseSepolia,
+    contracts: {
+      eas: '0x4200000000000000000000000000000000000021',
+      anonAadhaarVerifier: '0x21046d78637897f667E1e3504A58777C0e9A95cc',
+      semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+      gitcoinPassportDecoder: '0x'
+    },
+    slugs: {
+      eas: 'base-sepolia',
+      coordinator: 'base-sepolia',
+      infura: 'base-sepolia',
+      subgraph: 'base-sepolia'
+    },
+    supportedPolicies: [
+      PollPolicyType.FreeForAll,
+      PollPolicyType.AnonAadhaar,
+      PollPolicyType.EAS,
+      PollPolicyType.ERC20,
+      PollPolicyType.ERC20Votes,
+      PollPolicyType.MerkleProof,
+      PollPolicyType.Token
+    ],
+    faucets: [
+      {
+        name: 'Alchemy Faucet',
+        url: 'https://www.alchemy.com/faucets/base-sepolia'
+      },
+      {
+        name: 'Quicknode Faucet',
+        url: 'https://faucet.quicknode.com/base/sepolia'
+      }
+    ]
+  },
   [scrollSepolia.id]: {
     chain: scrollSepolia,
     contracts: {
