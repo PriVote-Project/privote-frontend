@@ -21,7 +21,7 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   const [showFaucetModal, setShowFaucetModal] = useState(false);
 
   const checkBalance = () => {
-    return true
+    return false;
     // if (!address) {
     //   notification.error('Please connect your wallet');
     //   return true;
