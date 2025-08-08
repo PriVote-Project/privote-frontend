@@ -32,6 +32,7 @@
     "multiformats": "^13.3.7",
     "next": "15.3.4",
     "pinata": "^2.4.9",
+    "porto": "^0.0.63",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
