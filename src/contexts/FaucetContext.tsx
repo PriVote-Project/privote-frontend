@@ -11,7 +11,7 @@ export const FaucetContext = createContext<IFaucetContext | null>(null);
 const MIN_BALANCE = 0;
 
 const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
   const chainId = useChainId();
   const {
     data: balance,
@@ -21,6 +21,12 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   const [showFaucetModal, setShowFaucetModal] = useState(false);
 
   const checkBalance = () => {
+    // Always return true for Porto connector
+    if (connector?.name === 'Porto') {
+      console.log('Porto connector detected');
+      return false;
+    }
+
     if (!address) {
       notification.error('Please connect your wallet');
       return true;
