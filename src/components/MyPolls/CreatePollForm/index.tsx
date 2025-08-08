@@ -29,6 +29,14 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
     handlePolicyConfigChange
   } = usePollForm();
 
+  const handleDateTimeFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setTimeout(() => {
+      if (e.target && e.target.showPicker) {
+        e.target.showPicker();
+      }
+    }, 10);
+  };
+
   if (!isConnected) {
     return (
       <div className={styles.container}>
@@ -74,6 +82,7 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
                 startTime: new Date(e.target.value)
               }))
             }
+            onFocus={handleDateTimeFocus}
           />
         </div>
 
@@ -88,6 +97,7 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
                 endTime: new Date(e.target.value)
               }))
             }
+            onFocus={handleDateTimeFocus}
           />
         </div>
 
