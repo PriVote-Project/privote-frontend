@@ -9,7 +9,9 @@ import { Hex } from 'viem';
 export enum EProofGenerationEvents {
   START = 'start-generation',
   PROGRESS = 'progress-generation',
-  FINISH = 'finish-generation',
+  MERGE_FINISH = 'finish-merge',
+  GENERATE_FINISH = 'finish-generation',
+  SUBMIT_FINISH = 'finish-submit',
   ERROR = 'exception'
 }
 
@@ -63,8 +65,11 @@ export interface IGenerateProofDto {
  * Callback functions for proof generation events
  */
 export interface IProofGenerationCallbacks {
+  onMergeComplete?: () => void;
   onProgress?: (data: IGenerateProofsBatchData) => void;
-  onComplete?: (result: IProofGenerationResult) => void;
+  onGenerationComplete?: (result: { processProofs: IProof[] }) => void;
+  onSubmitComplete?: (tally: ITallyData) => void;
+  onComplete?: (result: IProofGenerationResult) => void; // final, after submit
   onError?: (error: IProofGenerationError) => void;
 }
 
@@ -149,6 +154,7 @@ export class ProofWebSocketService {
       }
 
       let isResolved = false;
+      let latestProofs: IProof[] = [];
 
       // Set up event listeners
       const onProgress = (progressData: IGenerateProofsBatchData) => {
@@ -156,13 +162,34 @@ export class ProofWebSocketService {
         callbacks.onProgress?.(progressData);
       };
 
-      const onComplete = (result: IProofGenerationResult) => {
+      const onMergeFinish = () => {
+        console.log('✅ Merge completed via WebSocket');
+        callbacks.onMergeComplete?.();
+      };
+
+      const onGenerateFinish = (result: { processProofs?: IProof[]; proofs?: IProof[] }) => {
+        const proofs = result.processProofs ?? result.proofs ?? [];
+        latestProofs = proofs;
         console.log('✅ Proof generation completed successfully');
+        callbacks.onGenerationComplete?.({ processProofs: proofs });
+      };
+
+      const onSubmitFinish = (result: { tallyData?: ITallyData; processProofs?: IProof[] }) => {
+        const tallyData = result.tallyData as ITallyData;
+        // Some implementations may also include processProofs on the final event
+        if (result.processProofs && (!latestProofs || latestProofs.length === 0)) {
+          latestProofs = result.processProofs;
+        }
         cleanup();
         if (!isResolved) {
           isResolved = true;
-          callbacks.onComplete?.(result);
-          resolve(result);
+          const finalResult: IProofGenerationResult = {
+            processProofs: latestProofs,
+            tallyData
+          };
+          callbacks.onSubmitComplete?.(tallyData);
+          callbacks.onComplete?.(finalResult);
+          resolve(finalResult);
         }
       };
 
@@ -178,13 +205,17 @@ export class ProofWebSocketService {
 
       let cleanup = () => {
         this.socket?.off(EProofGenerationEvents.PROGRESS, onProgress);
-        this.socket?.off(EProofGenerationEvents.FINISH, onComplete);
+        this.socket?.off(EProofGenerationEvents.MERGE_FINISH, onMergeFinish);
+        this.socket?.off(EProofGenerationEvents.GENERATE_FINISH, onGenerateFinish);
+        this.socket?.off(EProofGenerationEvents.SUBMIT_FINISH, onSubmitFinish);
         this.socket?.off(EProofGenerationEvents.ERROR, onError);
       };
 
       // Register event listeners
       this.socket.on(EProofGenerationEvents.PROGRESS, onProgress);
-      this.socket.on(EProofGenerationEvents.FINISH, onComplete);
+      this.socket.on(EProofGenerationEvents.MERGE_FINISH, onMergeFinish);
+      this.socket.on(EProofGenerationEvents.GENERATE_FINISH, onGenerateFinish);
+      this.socket.on(EProofGenerationEvents.SUBMIT_FINISH, onSubmitFinish);
       this.socket.on(EProofGenerationEvents.ERROR, onError);
 
       // Set timeout for proof generation (30 minutes)
