@@ -7,11 +7,20 @@ import { RainbowKitProvider, midnightTheme, type Theme } from '@rainbow-me/rainb
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import merge from 'lodash.merge';
 import { Toaster } from 'react-hot-toast';
-import { WagmiProvider } from 'wagmi';
+import { http, WagmiProvider } from 'wagmi';
 import BlockieAvatar from '../BlockieAvatar';
 import { config } from './wagmi';
+import { Porto } from 'porto';
 
 import '@rainbow-me/rainbowkit/styles.css';
+import { base } from 'wagmi/chains';
+
+// Inject Porto via EIP-6963 so it is discoverable by RainbowKit/Wagmi
+Porto.create(
+  {
+    authUrl: '/api/siwe'
+  }
+);
 
 const queryClient = new QueryClient();
 

@@ -3,6 +3,7 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
+import { usePollSeedJWT } from '@/hooks/usePollSeedJWT';
 import { DEFAULT_SG_DATA, ONE_HOUR_MS } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { getSignedupUserData } from '@/utils/subgraph';
@@ -21,11 +22,26 @@ interface ISigContext {
   generateKeypair: () => void;
   deleteKeypair: () => void;
   onSignup: () => Promise<void>;
+  // Poll-specific functions
+  generatePollKeypair: (pollId: string, pollEndDate: string) => Promise<Keypair | null>;
+  hasPollKeypair: (pollId: string) => Promise<boolean>;
+  isPollMode: boolean;
+  currentPollId?: string;
 }
 
 export const SigContext = createContext<ISigContext>({} as ISigContext);
 
-export default function SigContextProvider({ children }: { children: React.ReactNode }) {
+interface SigContextProviderProps {
+  children: React.ReactNode;
+  pollId?: string;
+  pollEndDate?: string;
+}
+
+export default function SigContextProvider({ 
+  children, 
+  pollId, 
+  pollEndDate 
+}: SigContextProviderProps) {
   const { address, isConnected } = useAccount();
   const [maciKeypair, setMaciKeypair] = useState<Keypair | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
@@ -38,6 +54,11 @@ export default function SigContextProvider({ children }: { children: React.React
   const privoteContract = usePrivoteContract();
   const { subgraphUrl } = useAppConstants();
   const { checkBalance } = useFaucetContext();
+  const { getOrCreatePollSeedJWT, getPollSeedJWT } = usePollSeedJWT();
+
+  // Poll mode when pollId is provided
+  const isPollMode = Boolean(pollId);
+  const currentPollId = pollId;
 
   // constants
   const CACHE_EXPIRY_HOURS = 72;
@@ -132,6 +153,102 @@ export default function SigContextProvider({ children }: { children: React.React
     }
   }, [address]);
 
+  // Generate poll-specific keypair from seed JWT
+  const generatePollKeypair = useCallback(async (
+    pollId: string, 
+    pollEndDate: string
+  ): Promise<Keypair | null> => {
+    if (!address || !isConnected) {
+      console.log('Cannot generate poll keypair: not connected or no address');
+      return null;
+    }
+
+    try {
+      console.log('Generating poll keypair for pollId:', pollId, 'endDate:', pollEndDate);
+      const result = await getOrCreatePollSeedJWT(pollId, pollEndDate);
+      console.log('getOrCreatePollSeedJWT result:', result);
+      
+      if (!result.signatureSeed) {
+        console.error('No signature seed returned from getOrCreatePollSeedJWT');
+        return null;
+      }
+
+            // Create keypair from poll-specific seed
+      const userKeyPair = new Keypair(new PrivateKey(BigInt(result.signatureSeed)));
+      setMaciKeypair(userKeyPair);
+        
+      console.log('Successfully generated poll keypair:', userKeyPair.publicKey.serialize());
+      
+      // Check registration status for this poll-specific keypair
+      try {
+        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+          subgraphUrl,
+          userKeyPair
+        );
+        // console.log('Poll keypair registration status:', _isRegistered, 'stateIndex:', _stateIndex);
+        // setIsRegistered(_isRegistered);
+        // setStateIndex(_stateIndex);
+      } catch (error) {
+        console.error('Error checking poll keypair registration:', error);
+        setIsRegistered(false);
+        setStateIndex(undefined);
+      }
+      
+      return userKeyPair;
+    } catch (error) {
+      console.error('Error generating poll keypair:', error);
+      return null;
+    }
+  }, [address, isConnected, getOrCreatePollSeedJWT, subgraphUrl]);
+
+  // Check if user has a poll-specific keypair
+  const hasPollKeypair = useCallback(async (pollId: string): Promise<boolean> => {
+    if (!address || !isConnected) return false;
+
+    try {
+      const pollSeed = await getPollSeedJWT(pollId);
+      return pollSeed.exists;
+    } catch (error) {
+      console.error('Error checking poll keypair:', error);
+      return false;
+    }
+  }, [address, isConnected, getPollSeedJWT]);
+
+  // Load poll-specific keypair if available
+  const loadPollKeypair = useCallback(async (pollId: string): Promise<Keypair | null> => {
+    if (!address || !isConnected) return null;
+
+    try {
+      const pollSeed = await getPollSeedJWT(pollId);
+      
+      if (!pollSeed.exists || !pollSeed.signatureSeed) return null;
+
+      // Create keypair from existing poll seed
+      const userKeyPair = new Keypair(new PrivateKey(BigInt(pollSeed.signatureSeed)));
+      setMaciKeypair(userKeyPair);
+      
+      // Check registration status for this poll keypair
+      try {
+        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+          subgraphUrl,
+          userKeyPair
+        );
+        console.log('Loaded poll keypair registration status:', _isRegistered, 'stateIndex:', _stateIndex);
+        setIsRegistered(_isRegistered);
+        setStateIndex(_stateIndex);
+      } catch (error) {
+        console.error('Error checking loaded poll keypair registration:', error);
+        setIsRegistered(false);
+        setStateIndex(undefined);
+      }
+      
+      return userKeyPair;
+    } catch (error) {
+      console.error('Error loading poll keypair:', error);
+      return null;
+    }
+  }, [address, isConnected, getPollSeedJWT, subgraphUrl]);
+
   const onSignup = useCallback(async () => {
     setError(undefined);
     setIsLoading(true);
@@ -191,9 +308,11 @@ export default function SigContextProvider({ children }: { children: React.React
 
     let isUserRegistered = false;
     try {
-      const { isRegistered: _isRegistered } = await getSignedupUserData(subgraphUrl, keypair);
+      console.log('keypair', keypair);
+      const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(subgraphUrl, keypair);
 
       isUserRegistered = _isRegistered;
+      setStateIndex(_stateIndex);
       setIsRegistered(_isRegistered);
     } catch (error) {
       setError('Error checking if user is registered');
@@ -223,6 +342,7 @@ export default function SigContextProvider({ children }: { children: React.React
       type: 'loading',
       id: notificationId
     });
+    console.log('maciKeypair?.publicKey.serialize()', maciKeypair?.publicKey.serialize());
     try {
       const { stateIndex: _stateIndex } = await signup({
         maciAddress: privoteContract.address,
@@ -257,7 +377,18 @@ export default function SigContextProvider({ children }: { children: React.React
       return;
     }
 
-    // Try to load existing keypair from localStorage
+    // In poll mode, try to load poll-specific keypair
+    if (isPollMode && pollId) {
+      (async () => {
+        const pollKeypair = await loadPollKeypair(pollId);
+        if (!pollKeypair) {
+          setMaciKeypair(null);
+        }
+      })();
+      return;
+    }
+
+    // Regular mode: try to load existing keypair from localStorage
     const existingKeypair = loadKeypairFromLocalStorage();
     if (existingKeypair) {
       setMaciKeypair(existingKeypair);
@@ -265,36 +396,23 @@ export default function SigContextProvider({ children }: { children: React.React
       setMaciKeypair(null);
       generateKeypair();
     }
-  }, [address, loadKeypairFromLocalStorage, generateKeypair]);
+  }, [address, isPollMode, pollId, loadKeypairFromLocalStorage, generateKeypair, loadPollKeypair]);
 
-  // check if user is registered
+  // Reset registration state when disconnected or no keypair
   useEffect(() => {
-    (async () => {
-      if (!isConnected) {
-        setIsRegistered(false);
-        return;
-      }
+    if (!isConnected || !maciKeypair) {
+      setIsRegistered(false);
+      setStateIndex(undefined);
+    }
+  }, [isConnected, maciKeypair]);
 
-      if (!maciKeypair) {
-        setIsRegistered(false);
-        setStateIndex(undefined);
-        return;
-      }
+  // Registration check is now handled by poll-specific functions only
+  // No general registration check needed since join poll flow handles everything
 
-      try {
-        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
-          subgraphUrl,
-          maciKeypair
-        );
-
-        setIsRegistered(_isRegistered);
-        setStateIndex(_stateIndex);
-      } catch (error) {
-        console.log(error);
-        setIsRegistered(false);
-      }
-    })();
-  }, [maciKeypair, isConnected, subgraphUrl]);
+  // Debug: Only log when providing poll-specific context
+  if (isPollMode) {
+    console.log(`🎯 Poll-specific SigContext - keypair: ${maciKeypair?.publicKey.serialize()}, isRegistered: ${isRegistered}, stateIndex: ${stateIndex}`);
+  }
 
   return (
     <SigContext.Provider
@@ -306,7 +424,11 @@ export default function SigContextProvider({ children }: { children: React.React
         error,
         generateKeypair,
         deleteKeypair,
-        onSignup
+        onSignup,
+        generatePollKeypair,
+        hasPollKeypair,
+        isPollMode,
+        currentPollId
       }}
     >
       {children}
@@ -314,4 +436,10 @@ export default function SigContextProvider({ children }: { children: React.React
   );
 }
 
-export const useSigContext = () => useContext(SigContext);
+export const useSigContext = () => {
+  const context = useContext(SigContext);
+  // if (context.isPollMode) {
+  //   console.log(`✅ PollContext accessing poll-specific SigContext - keypair: ${context.maciKeypair?.publicKey.serialize()}, isRegistered: ${context.isRegistered}`);
+  // }
+  return context;
+};

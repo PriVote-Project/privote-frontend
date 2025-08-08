@@ -18,6 +18,7 @@ export interface IJoinedUserData {
 
 export const getSignedupUserData = async (url: string, keyPair: Keypair) => {
   try {
+    console.log('keyPair publicKey', keyPair.publicKey.serialize())
     const data: { user: User } = await fetcher([
       url,
       GET_PRIVOTE_USER_QUERY,
@@ -27,7 +28,7 @@ export const getSignedupUserData = async (url: string, keyPair: Keypair) => {
     ]);
 
     if (!data.user) {
-      throw new Error('User not found');
+      throw new Error(`User with this public key not found: ${keyPair.publicKey.serialize()}`);
     }
 
     if (data.user.accounts.length > 0) {

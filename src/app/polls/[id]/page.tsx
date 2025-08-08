@@ -2,6 +2,7 @@
 import { PollHeader, VotingSection } from '@/components/Poll';
 import { EmptyState, ErrorState } from '@/components/shared';
 import { PollProvider } from '@/contexts/PollContext';
+import PollSigContextWrapper from '@/contexts/PollSigContextWrapper';
 import usePollContext from '@/hooks/usePollContext';
 import styles from '@/styles/poll.module.css';
 import Image from 'next/image';
@@ -17,14 +18,19 @@ const PollDetail: React.FC = () => {
     return <EmptyState title='Invalid Poll Id' description='Please try again with a valid poll id' />;
   }
 
+  return <UserPoll pollAddress={id} />;
+};
+
+const UserPoll = ({ pollAddress }: { pollAddress: string }) => {
+  // First, get basic poll info to set up context
   return (
-    <PollProvider pollAddress={id}>
-      <UserPoll />
+    <PollProvider pollAddress={pollAddress}>
+      <PollDataLoader />
     </PollProvider>
   );
 };
 
-const UserPoll = () => {
+const PollDataLoader = () => {
   const { pollError, pollLoading, poll } = usePollContext();
 
   if (pollLoading) {
@@ -64,6 +70,26 @@ const UserPoll = () => {
         />
       </div>
     );
+  }
+
+  // Convert endDate to ISO string for JWT expiry
+  const pollEndDate = new Date(parseInt(poll.endDate) * 1000).toISOString();
+
+  // Now wrap with poll-specific context and recreate PollProvider inside it
+  return (
+    <PollSigContextWrapper pollId={poll.pollId} pollEndDate={pollEndDate}>
+      <PollProvider pollAddress={poll.id}>
+        <UserPollContent />
+      </PollProvider>
+    </PollSigContextWrapper>
+  );
+};
+
+const UserPollContent = () => {
+  const { pollError, pollLoading, poll } = usePollContext();
+  
+  if (pollLoading || !poll) {
+    return <div className='spinner large'></div>;
   }
 
   return (

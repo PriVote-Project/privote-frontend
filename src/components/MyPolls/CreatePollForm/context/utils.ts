@@ -95,7 +95,7 @@ export function getPollArgs({
   const metadata = merkleTreeUrl
     ? JSON.stringify({ ...metadataOb, treeUrlVersion: '0.0.0', merkleTreeUrl })
     : JSON.stringify(metadataOb);
-
+  console.log('pollData.publicKey', pollData.publicKey);
   // Common base arguments used by all policy types
   const baseArgs = [
     pollData.title as string,

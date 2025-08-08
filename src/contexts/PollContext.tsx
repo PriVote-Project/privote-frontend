@@ -12,7 +12,7 @@ import { generateSignUpTreeFromKeys, isTallied, joinPoll } from '@maci-protocol/
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Hex, parseAbi } from 'viem';
-import { usePublicClient } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
 import { useSigContext } from './SigContext';
 import { type IPollContextType } from './types';
 import useFaucetContext from '@/hooks/useFaucetContext';
@@ -56,6 +56,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { maciKeypair, isRegistered, stateIndex } = useSigContext();
   const privoteContract = usePrivoteContract();
   const { checkBalance } = useFaucetContext();
+  const { address } = useAccount();
 
   // Compute dynamic poll status based on current time
   const computeDynamicPollStatus = useCallback(() => {
@@ -138,12 +139,16 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         return;
       }
       if (!isRegistered) {
+        console.log('❌ PollContext - Join poll failed - keypair:', maciKeypair.publicKey.serialize(), 'isRegistered:', isRegistered, 'stateIndex:', stateIndex);
         setError('User not registered');
         setIsLoading(false);
 
         notification.error('User not registered');
         return;
       }
+      
+      // Success - using correct registered keypair
+      console.log('✅ PollContext - Proceeding with registered keypair:', maciKeypair.publicKey.serialize(), 'stateIndex:', stateIndex);
       if (!stateIndex) {
         setError('State index not found');
         setIsLoading(false);
@@ -224,6 +229,19 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
           setIsLoading(false);
           return;
         }
+        console.log('params are :', {
+          maciAddress: privoteContract.address,
+          privateKey: maciKeypair.privateKey.serialize(),
+          signer,
+          pollId: BigInt(poll.pollId),
+          inclusionProof: inclusionProofDirect ?? undefined,
+          pollJoiningZkey: artifactsInternal.zKey as unknown as string,
+          pollWasm: artifactsInternal.wasm as unknown as string,
+          sgDataArg: signupData,
+          ivcpDataArg: DEFAULT_IVCP_DATA,
+          blocksPerBatch: 1000000,
+          useLatestStateIndex: true
+        })
         console.log('Error joining poll', error);
         errorMessage = 'Error joining poll';
         setError(errorMessage);

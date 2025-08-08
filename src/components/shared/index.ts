@@ -10,6 +10,7 @@ import LoadingPulse from './LoadingPulse';
 import MarkdownRenderer from './MarkdownRenderer';
 import Modal from './Modal';
 import Notification from './Notification';
+import PortoSignInButton from './PortoSignInButton';
 import Providers from './Providers';
 import ShareModal from './ShareModal';
 import FaucetModal from './FaucetModal';
@@ -27,6 +28,7 @@ export {
   MarkdownRenderer,
   Modal,
   Notification,
+  PortoSignInButton,
   Providers,
   ShareModal,
   FaucetModal

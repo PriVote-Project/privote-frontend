@@ -1,24 +1,28 @@
 import { supportedChains, transports } from '@/config/chains';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
+import { porto } from 'porto/wagmi';
 import { createConfig } from 'wagmi';
 
-export const connectors = connectorsForWallets(
-  [
+export const connectors = [
+  porto(),
+  ...connectorsForWallets(
+    [
+      {
+        groupName: 'Popular',
+        wallets: [injectedWallet, rainbowWallet]
+      },
+      {
+        groupName: 'Other',
+        wallets: [rainbowWallet]
+      }
+    ],
     {
-      groupName: 'Popular',
-      wallets: [injectedWallet, rainbowWallet]
-    },
-    {
-      groupName: 'Other',
-      wallets: [rainbowWallet]
+      appName: 'Privote',
+      projectId: 'ed72cdc1d051302a6b881988c7a991fb'
     }
-  ],
-  {
-    appName: 'Privote',
-    projectId: 'ed72cdc1d051302a6b881988c7a991fb'
-  }
-);
+  )
+];
 
 export const config = createConfig({
   connectors,
