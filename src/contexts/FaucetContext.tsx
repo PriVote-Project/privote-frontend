@@ -21,26 +21,27 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
   const [showFaucetModal, setShowFaucetModal] = useState(false);
 
   const checkBalance = () => {
-    if (!address) {
-      notification.error('Please connect your wallet');
-      return true;
-    }
-    const isSupportedChain = supportedChains.some(c => c.id === chainId);
+    return true
+    // if (!address) {
+    //   notification.error('Please connect your wallet');
+    //   return true;
+    // }
+    // const isSupportedChain = supportedChains.some(c => c.id === chainId);
 
-    if (!isSupportedChain) {
-      notification.error('Please connect to a supported network');
-      setShowFaucetModal(false);
-      return true;
-    }
+    // if (!isSupportedChain) {
+    //   notification.error('Please connect to a supported network');
+    //   setShowFaucetModal(false);
+    //   return true;
+    // }
 
-    if (!isLoading && balance && Number(balance.value) <= MIN_BALANCE) {
-      notification.error('Insufficient balance');
-      setShowFaucetModal(true);
+    // if (!isLoading && balance && Number(balance.value) <= MIN_BALANCE) {
+    //   notification.error('Insufficient balance');
+    //   setShowFaucetModal(true);
 
-      return true;
-    }
+    //   return true;
+    // }
 
-    return false;
+    // return false;
   };
 
   useEffect(() => {
