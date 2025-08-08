@@ -5,7 +5,13 @@ import { porto } from 'porto/wagmi';
 import { createConfig } from 'wagmi';
 
 export const connectors = [
-  porto(),
+  porto({
+      authUrl: {
+        logout: '/api/siwe/logout/',
+        nonce: '/api/siwe/nonce/',
+        verify: '/api/siwe/verify/',
+      },
+  }),
   ...connectorsForWallets(
     [
       {

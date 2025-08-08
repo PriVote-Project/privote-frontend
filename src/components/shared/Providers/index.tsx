@@ -10,17 +10,18 @@ import { Toaster } from 'react-hot-toast';
 import { http, WagmiProvider } from 'wagmi';
 import BlockieAvatar from '../BlockieAvatar';
 import { config } from './wagmi';
-import { Porto } from 'porto';
+// import { Porto } from 'porto';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import { base } from 'wagmi/chains';
 
 // Inject Porto via EIP-6963 so it is discoverable by RainbowKit/Wagmi
-Porto.create(
-  {
-    authUrl: '/api/siwe'
-  }
-);
+// Porto.create() is now handled via porto() connector configuration in wagmi.ts
+// Porto.create(
+//   {
+//     authUrl: '/api/siwe'
+//   }
+// );
 
 const queryClient = new QueryClient();
 

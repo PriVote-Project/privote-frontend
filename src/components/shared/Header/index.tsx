@@ -1,6 +1,6 @@
 'use client';
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
-import PortoSignInButton from '../PortoSignInButton';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+// import PortoSignInButton from '../PortoSignInButton';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -69,8 +69,8 @@ export default function Header() {
               </ul>
             </nav>
             <div className={styles.actions}>
-              {/* <ConnectButton /> */}
-              <PortoSignInButton />
+              <ConnectButton />
+              {/* <PortoSignInButton /> */}
             </div>
           </div>
         </header>
