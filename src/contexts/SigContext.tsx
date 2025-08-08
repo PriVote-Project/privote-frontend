@@ -191,9 +191,10 @@ export default function SigContextProvider({ children }: { children: React.React
 
     let isUserRegistered = false;
     try {
-      const { isRegistered: _isRegistered } = await getSignedupUserData(subgraphUrl, keypair);
+      const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(subgraphUrl, keypair);
 
       isUserRegistered = _isRegistered;
+      setStateIndex(_stateIndex);
       setIsRegistered(_isRegistered);
     } catch (error) {
       setError('Error checking if user is registered');
