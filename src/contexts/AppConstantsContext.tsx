@@ -20,7 +20,19 @@ const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
     return appConstants[effectiveChainId as (typeof supportedChains)[number]['id']] ?? appConstants[defaultChain.id];
   }, [connectedChainId]);
 
-  const subgraphUrl = `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
+  const subgraphUrl = useMemo(() => {
+    // Validate environment variables
+    if (!SUBGRAPH_PROJECT_ID || !SUBGRAPH_VERSION) {
+      console.error('Missing subgraph environment variables:', {
+        SUBGRAPH_PROJECT_ID: SUBGRAPH_PROJECT_ID ? 'set' : 'missing',
+        SUBGRAPH_VERSION: SUBGRAPH_VERSION ? 'set' : 'missing'
+      });
+      // Return a fallback or throw an error
+      throw new Error('Subgraph configuration is incomplete. Please check environment variables.');
+    }
+    
+    return `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
+  }, [constants.slugs.subgraph]);
 
   const isChainSupported = supportedChains.some(chain => chain.id === connectedChainId);
 
