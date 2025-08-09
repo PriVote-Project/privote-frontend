@@ -40,7 +40,7 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
   if (!isConnected) {
     return (
       <div className={styles.joinButtonWrapper}>
-        <ConnectButton />
+        <ConnectButton label='Login' />
       </div>
     );
   }

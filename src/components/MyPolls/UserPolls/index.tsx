@@ -26,7 +26,7 @@ const UserPolls: React.FC = () => {
         <h3>Connect Your Wallet</h3>
         <p>Please connect your wallet to view your polls</p>
         <div className={styles['connect-button']}>
-          <ConnectButton />
+          <ConnectButton label='Login' />
         </div>
       </div>
     );

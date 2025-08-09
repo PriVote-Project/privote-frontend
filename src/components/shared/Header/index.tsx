@@ -68,7 +68,7 @@ export default function Header() {
               </ul>
             </nav>
             <div className={styles.actions}>
-              <ConnectButton />
+              <ConnectButton label='Login' />
             </div>
           </div>
         </header>
