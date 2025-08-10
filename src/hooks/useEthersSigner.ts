@@ -9,9 +9,7 @@ function wrapTransportAsEip1193Provider(transport: unknown) {
   return {
     request: async ({ method, params }: { method: string; params?: any }) => {
       const normalizedParams =
-        params === undefined || (Array.isArray(params) && params.length === 0)
-          ? undefined
-          : params;
+        params === undefined || (Array.isArray(params) && params.length === 0) ? undefined : params;
       return t.request({ method, params: normalizedParams });
     },
     on: t.on?.bind(t),

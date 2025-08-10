@@ -494,7 +494,8 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -514,12 +515,12 @@
   .policyCard {
     width: 100%;
   }
-  
+
   .addressCount {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .invalidAddressesList {
     max-height: 100px;
   }

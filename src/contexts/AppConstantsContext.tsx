@@ -30,7 +30,7 @@ const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
       // Return a fallback or throw an error
       throw new Error('Subgraph configuration is incomplete. Please check environment variables.');
     }
-    
+
     return `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
   }, [constants.slugs.subgraph]);
 

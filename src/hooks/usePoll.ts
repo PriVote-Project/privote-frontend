@@ -76,7 +76,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
         for (const chain of supportedChains) {
           const chainConstants = appConstants[chain.id];
           const alternativeUrl = `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${chainConstants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
-          
+
           // Skip if this is the same URL we already tried
           if (alternativeUrl === subgraphUrl) continue;
 

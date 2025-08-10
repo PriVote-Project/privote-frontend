@@ -11,7 +11,7 @@ export interface TreeUrlConfig {
 
 export class TreeUrlResolver {
   private static readonly VERSION_HANDLERS: Record<string, (config: TreeUrlConfig) => string> = {
-    '0.0.0': TreeUrlResolver.handleV000,
+    '0.0.0': TreeUrlResolver.handleV000
     // Future versions can be added here:
     // '1.0.0': TreeUrlResolver.handleV100, // Could handle IPFS CIDs
     // '2.0.0': TreeUrlResolver.handleV200, // Could handle different storage providers
@@ -22,7 +22,7 @@ export class TreeUrlResolver {
    */
   static resolveTreeUrl(version: string, baseUrl: string, metadata?: Record<string, any>): string {
     const config: TreeUrlConfig = { version, baseUrl, metadata };
-    
+
     const handler = this.VERSION_HANDLERS[version];
     if (!handler) {
       // Fallback to latest known version handler
@@ -48,14 +48,14 @@ export class TreeUrlResolver {
    */
   private static handleV100(config: TreeUrlConfig): string {
     const { baseUrl, metadata } = config;
-    
+
     // Check if baseUrl is an IPFS CID (starts with 'Qm' or 'bafy')
     if (baseUrl.match(/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|bafy[a-z0-9]{55})$/)) {
       // Use IPFS gateway
       const gateway = metadata?.ipfsGateway || 'https://ipfs.io/ipfs/';
       return `${gateway}${baseUrl}`;
     }
-    
+
     // Fallback to direct URL
     return baseUrl;
   }
@@ -66,10 +66,10 @@ export class TreeUrlResolver {
    */
   private static handleV200(config: TreeUrlConfig): string {
     const { baseUrl, metadata } = config;
-    
+
     // Could handle different storage providers based on metadata
     const provider = metadata?.storageProvider || 'direct';
-    
+
     switch (provider) {
       case 'ipfs':
         return this.handleV100(config); // Reuse IPFS logic
@@ -95,15 +95,15 @@ export class TreeUrlResolver {
   private static compareVersions(a: string, b: string): number {
     const aParts = a.split('.').map(Number);
     const bParts = b.split('.').map(Number);
-    
+
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
       const aPart = aParts[i] || 0;
       const bPart = bParts[i] || 0;
-      
+
       if (aPart > bPart) return 1;
       if (aPart < bPart) return -1;
     }
-    
+
     return 0;
   }
 
