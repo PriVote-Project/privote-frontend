@@ -53,6 +53,10 @@
   gap: 16px;
 }
 
+.connect-btn-wrapper {
+  display: none;
+}
+
 .create-poll {
   display: flex;
   padding: 12px 32px 12px 32px;
@@ -84,6 +88,14 @@
 
   .hero {
     padding-top: 100px;
+  }
+
+  .connect-btn-wrapper {
+    display: flex;
+  }
+
+  .create-poll {
+    display: none;
   }
 }
 

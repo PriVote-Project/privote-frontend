@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styles from './index.module.css';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface HeroProps {
   title?: string;
@@ -23,6 +24,9 @@ export const Hero = ({
       <h1 className={styles.heading}>{title}</h1>
       <p className={styles.description}>{description}</p>
       <div className={styles.actions}>
+        <div className={styles['connect-btn-wrapper']}>
+          <ConnectButton label='Login' />
+        </div>
         <Link className={styles['create-poll']} href='/my-polls'>
           <p>Create Poll</p>
         </Link>

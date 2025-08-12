@@ -14,6 +14,8 @@ const Trending: React.FC = () => {
 
   const polls = data?.pages.flat().slice(0, 3) || [];
 
+  if (!isLoading && !isError && polls.length === 0) return null;
+
   return (
     <div className={styles.container}>
       <div className={styles.heading}>
