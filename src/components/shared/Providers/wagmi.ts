@@ -4,16 +4,38 @@ import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets';
 import { porto } from 'porto/wagmi';
 import { createConfig } from 'wagmi';
 
+// Custom passkey connector ( uses porto connector )
+const passkeyConnector = (config: any) => {
+  const connector = porto()(config);
+
+  // Override the read-only name and id properties
+  Object.defineProperty(connector, 'name', {
+    value: 'Passkey',
+    writable: false,
+    enumerable: true,
+    configurable: true
+  });
+
+  Object.defineProperty(connector, 'id', {
+    value: 'Passkey',
+    writable: false,
+    enumerable: true,
+    configurable: true
+  });
+
+  return connector;
+};
+
 export const connectors = [
-  porto(),
+  passkeyConnector,
   ...connectorsForWallets(
     [
       {
-        groupName: 'Popular',
-        wallets: [injectedWallet, rainbowWallet]
+        groupName: 'Recommended',
+        wallets: [injectedWallet]
       },
       {
-        groupName: 'Other',
+        groupName: 'Popular',
         wallets: [rainbowWallet]
       }
     ],
