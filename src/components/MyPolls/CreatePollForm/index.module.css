@@ -122,6 +122,48 @@
   background: #141414;
 }
 
+.box > button {
+  width: 16px;
+  background: transparent;
+  cursor: pointer;
+  --webkit-appearance: button;
+}
+
+.box > input {
+  background: #0b0c0f;
+  padding: 6px 8px;
+  color: #fff;
+  border-radius: 8px;
+  outline: 1px solid #535861;
+  max-width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.box > input.invalid,
+.box > input.invalid:focus {
+  outline: 1px solid #dc3545;
+}
+
+.box > input {
+  text-align: center;
+  outline: none;
+}
+
+.box > input:focus {
+  outline: 1px solid #fff;
+}
+
+.box > input::-webkit-outer-spin-button,
+.box > input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* .weightInput[type='number'] {
+  -moz-appearance: textfield;
+} */
+
 .actions {
   display: flex;
   justify-content: center;

@@ -119,15 +119,15 @@ const CreatePollForm = ({ onClose }: CreatePollFormProps) => {
             if (action === 'add') {
               setPollData(prev => ({
                 ...prev,
-                maxVotePerPerson: prev.maxVotePerPerson + 1
+                maxVotePerPerson: BigInt(prev.maxVotePerPerson) + 1n
               }));
             } else if (action === 'remove') {
               setPollData(prev => ({
                 ...prev,
-                maxVotePerPerson: prev.maxVotePerPerson - 1
+                maxVotePerPerson: BigInt(prev.maxVotePerPerson) - 1n
               }));
             } else {
-              const value = typeof e === 'number' ? e : parseInt(e.target.value);
+              const value = typeof e === 'number' ? BigInt(e) : BigInt(e.target.value);
               setPollData(prev => ({
                 ...prev,
                 maxVotePerPerson: value

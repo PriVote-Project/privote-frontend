@@ -2,7 +2,7 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollPolicyType, PollType } from '@/types';
-import { ONE_HOUR_MS, ONE_MINUTE_MS, PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
+import { DEFAULT_VOICE_CREDITS, ONE_HOUR_MS, ONE_MINUTE_MS, PUBLIC_COORDINATOR_SERVICE_URL } from '@/utils/constants';
 import { makeCoordinatorServicePostRequest } from '@/utils/coordinator';
 import { getWrapperFunctionName } from '@/utils/getWrapperFunctionName';
 import { uploadFileToLighthouse } from '@/utils/lighthouse';
@@ -23,7 +23,7 @@ const initialPollData: IPollData = {
   description: '',
   startTime: new Date(Date.now() + 10 * ONE_MINUTE_MS),
   endTime: new Date(Date.now() + ONE_HOUR_MS + 10 * ONE_MINUTE_MS),
-  maxVotePerPerson: 1,
+  maxVotePerPerson: DEFAULT_VOICE_CREDITS,
   pollType: PollType.NOT_SELECTED,
   mode: null,
   options: [

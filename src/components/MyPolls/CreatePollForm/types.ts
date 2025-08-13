@@ -10,7 +10,7 @@ export interface IPollData {
   description: string;
   startTime: Date;
   endTime: Date;
-  maxVotePerPerson: number;
+  maxVotePerPerson: bigint;
   pollType: PollType;
   mode: EMode | null;
   options: PollOption[];

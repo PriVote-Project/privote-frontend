@@ -12,7 +12,8 @@ export const SUBGRAPH_VERSION = process.env.NEXT_PUBLIC_SUBGRAPH_VERSION;
 export const PUBLIC_COORDINATOR_SERVICE_URL = process.env.NEXT_PUBLIC_COORDINATOR_SERVICE_URL;
 export const INFURA_API_KEY = process.env.NEXT_PUBLIC_INFURA_API_KEY;
 
-export const DEFAULT_VOICE_CREDITS = 99n;
+export const DEFAULT_VOICE_CREDITS = 1n;
+export const MAX_VOICE_CREDITS = 100n;
 export const DEFAULT_SG_DATA = '0x';
 export const DEFAULT_IVCP_DATA = '0x';
 

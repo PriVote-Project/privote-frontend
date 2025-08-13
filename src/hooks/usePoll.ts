@@ -10,8 +10,7 @@ import { getPollStatus } from './usePolls';
 const pollTypeIndexToString: Record<number, keyof typeof PollType> = {
   0: 'NOT_SELECTED',
   1: 'SINGLE_VOTE',
-  2: 'MULTIPLE_VOTE',
-  3: 'WEIGHTED_MULTIPLE_VOTE'
+  2: 'MULTIPLE_VOTE'
 };
 
 // Map numeric indices back to string modes

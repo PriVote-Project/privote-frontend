@@ -73,7 +73,7 @@ export const getJoinedUserData = async (url: string, pollAddress: string, keyPai
 
     return {
       isJoined: false,
-      voiceCredits: undefined,
+      voiceCredits: 0,
       pollStateIndex: undefined
     };
   }

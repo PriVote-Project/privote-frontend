@@ -30,7 +30,6 @@ export interface RawPoll {
   coordinatorPublicKey?: bigint[];
   policyData?: Hex;
   options?: PollOption[];
-  maxVotePerPerson?: string;
   pollType?: string;
   mode?: string;
   totalSignups?: string;
@@ -68,8 +67,7 @@ export interface PollAccount extends Account {
 export const PollType = {
   NOT_SELECTED: 'NOT_SELECTED',
   SINGLE_VOTE: 'SINGLE_VOTE',
-  MULTIPLE_VOTE: 'MULTIPLE_VOTE',
-  WEIGHTED_MULTIPLE_VOTE: 'WEIGHTED_MULTIPLE_VOTE'
+  MULTIPLE_VOTE: 'MULTIPLE_VOTE'
 } as const;
 
 export const PollPolicyType = {

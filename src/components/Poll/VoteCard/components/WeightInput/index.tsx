@@ -31,7 +31,6 @@ const WeightInput = ({
     <div className={styles['mw']}>
       <div className={styles.box}>
         <button
-          type='button'
           onClick={() => {
             if (Number(votes) > 0) {
               // setShowInitial(false);
@@ -39,6 +38,7 @@ const WeightInput = ({
               handleWeightedVoteChange(votes.toString(), newValue.toString(), index);
             }
           }}
+          className={styles['minus-button']}
         >
           <Image src='/minus.svg' alt='minus' width={16} height={16} />
         </button>
@@ -58,7 +58,6 @@ const WeightInput = ({
           className={`${styles.weightInput} ${isInvalid ? styles.invalid : ''}`}
         />
         <button
-          type='button'
           onClick={() => {
             const newValue = Number(votes) + 5;
             if (!maxVotePerPerson || Number(newValue) <= maxVotePerPerson) {
@@ -66,6 +65,7 @@ const WeightInput = ({
               handleWeightedVoteChange(votes.toString(), newValue.toString(), index);
             }
           }}
+          className={styles['plus-button']}
         >
           <Image src='/plus.svg' alt='plus' width={16} height={16} />
         </button>
