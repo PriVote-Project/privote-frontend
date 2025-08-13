@@ -15,7 +15,6 @@ interface UseVotingProps {
   coordinatorPubKey?: bigint[];
   keypair?: Keypair | null;
   pollId?: bigint;
-  maxVotePerPerson?: number;
   mode?: EMode;
 }
 
@@ -27,7 +26,6 @@ const useVoting = ({
   coordinatorPubKey,
   keypair,
   pollId,
-  maxVotePerPerson,
   mode
 }: UseVotingProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +102,7 @@ const useVoting = ({
     }
   };
 
-  const castVote = async () => {
+  const castVote = async (maxVotePerPerson: number) => {
     if (
       pollAddress == null ||
       pollId == null ||
@@ -156,7 +154,7 @@ const useVoting = ({
     }
 
     if (
-      pollType === PollType.WEIGHTED_MULTIPLE_VOTE &&
+      pollType === PollType.MULTIPLE_VOTE &&
       maxVotePerPerson &&
       updatedVotes.reduce((a, b) => a + b.votes, 0) > maxVotePerPerson
     ) {
@@ -164,7 +162,7 @@ const useVoting = ({
       return;
     }
 
-    if (pollType === PollType.WEIGHTED_MULTIPLE_VOTE && mode === EMode.QV) {
+    if (pollType === PollType.MULTIPLE_VOTE && mode === EMode.QV) {
       updatedVotes = votes.map(v => ({
         index: v.index,
         votes: Math.floor(Math.sqrt(parseInt(v.votes)))

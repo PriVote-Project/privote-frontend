@@ -19,8 +19,7 @@ import {
 const pollTypeToIndex = {
   [PollType.NOT_SELECTED]: 0,
   [PollType.SINGLE_VOTE]: 1,
-  [PollType.MULTIPLE_VOTE]: 2,
-  [PollType.WEIGHTED_MULTIPLE_VOTE]: 3
+  [PollType.MULTIPLE_VOTE]: 2
 };
 
 /**
@@ -58,7 +57,6 @@ interface GetPollArgsParams {
   encodedOptions: Hex[];
   startTime: bigint;
   endTime: bigint;
-  voiceCredits?: bigint;
   merkleTreeUrl?: string;
 }
 
@@ -82,14 +80,13 @@ export function getPollArgs({
   encodedOptions,
   startTime,
   endTime,
-  voiceCredits = DEFAULT_VOICE_CREDITS,
   merkleTreeUrl
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: GetPollArgsParams): readonly any[] {
+  const voiceCredits = pollData.maxVotePerPerson ?? DEFAULT_VOICE_CREDITS; // override voice credits with maxVotePerPerson if provided
   // Create poll metadata
   const metadataOb = {
     pollType: getPollTypeIndex(pollData.pollType),
-    maxVotePerPerson: pollData.maxVotePerPerson,
     description: pollData.description?.trim()
   };
   const metadata = merkleTreeUrl
@@ -197,13 +194,12 @@ export const getCoordinatorPollArgs = ({
   startTime,
   endTime,
   chain,
-  privoteAddress,
-  voiceCredits = DEFAULT_VOICE_CREDITS
+  privoteAddress
 }: GetCoordinatorPollArgsParams): IDeployPollArgs => {
   // Create poll metadata
+  const voiceCredits = pollData.maxVotePerPerson ?? DEFAULT_VOICE_CREDITS;
   const metadata = JSON.stringify({
     pollType: getPollTypeIndex(pollData.pollType),
-    maxVotePerPerson: pollData.maxVotePerPerson,
     description: pollData.description
   });
 

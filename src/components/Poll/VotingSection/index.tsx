@@ -7,7 +7,6 @@ import useVoting from '@/hooks/useVoting';
 import { PollStatus, PollType } from '@/types';
 import { notification } from '@/utils/notification';
 import { canPerformAction } from '@/utils/pollStatus';
-import { PublicKey } from '@maci-protocol/domainobjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -29,7 +28,13 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const descriptionRef = useRef<HTMLParagraphElement>(null);
 
   const { isConnected, address: userAddress } = useAccount();
-  const { poll, pollStateIndex, hasJoinedPoll: isUserJoined, dynamicPollStatus } = usePollContext();
+  const {
+    poll,
+    initialVoiceCredits: maxVotePerPerson,
+    pollStateIndex,
+    hasJoinedPoll: isUserJoined,
+    dynamicPollStatus
+  } = usePollContext();
   const { maciKeypair } = useSigContext();
   const { data: resultData, isLoading: loadingPollResults } = usePollResults();
   const {
@@ -37,7 +42,6 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     pollType,
     name: pollTitle,
     description: pollDescription,
-    maxVotePerPerson,
     options,
     status: originalPollStatus,
     owner: pollDeployer,
@@ -68,7 +72,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     isVotesInvalid,
     setIsVotesInvalid,
     voteUpdated: onVoteUpdate,
-    castVote: onVote,
+    castVote,
     isPending: isSubmittingVotes
   } = useVoting({
     coordinatorPubKey: coordinatorPublicKey ?? coordinatorPubKey,
@@ -78,9 +82,12 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     status: poll?.status,
     keypair: maciKeypair,
     pollId: BigInt(poll?.pollId || 0),
-    stateIndex: Number(pollStateIndex),
-    maxVotePerPerson: Number(poll?.maxVotePerPerson || 0)
+    stateIndex: Number(pollStateIndex)
   });
+
+  const onVote = useCallback(() => {
+    castVote(Number(maxVotePerPerson));
+  }, [castVote, maxVotePerPerson]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -255,7 +262,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
       </VoteSummarySection>
       {canVote && (
         <div className={styles.col}>
-          {pollType !== PollType.WEIGHTED_MULTIPLE_VOTE && (
+          {pollType !== PollType.MULTIPLE_VOTE && (
             <button
               className={styles['poll-btn']}
               onClick={onVote}

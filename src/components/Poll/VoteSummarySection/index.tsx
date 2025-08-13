@@ -52,7 +52,7 @@ const VoteSummarySection = ({
 
   return (
     <div className={`${styles.container} ${showSummary ? styles.show : ''}`}>
-      {showSummary && pollType === PollType.WEIGHTED_MULTIPLE_VOTE && (
+      {showSummary && pollType === PollType.MULTIPLE_VOTE && (
         <div className={styles['left-wrapper']}>
           <div className={styles.leftColumn}>
             <div className={styles.header}>

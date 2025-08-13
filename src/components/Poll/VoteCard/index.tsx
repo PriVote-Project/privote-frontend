@@ -66,10 +66,9 @@ const VoteCard = ({
       if (isChecked) {
         switch (pollType) {
           case PollType.SINGLE_VOTE:
-          case PollType.MULTIPLE_VOTE:
             onVoteChange(index, '1');
             break;
-          case PollType.WEIGHTED_MULTIPLE_VOTE:
+          case PollType.MULTIPLE_VOTE:
             // For weighted votes, we'll handle the vote count in a separate input
             onInvalidStatusChange(true);
             break;
@@ -135,12 +134,12 @@ const VoteCard = ({
         </div>
         {pollOpen && (
           <div className={styles.voteControls}>
-            {pollType !== PollType.WEIGHTED_MULTIPLE_VOTE && (
+            {pollType !== PollType.MULTIPLE_VOTE && (
               <div className={styles['vote-label-container']}>
                 <input
-                  type={pollType === PollType.SINGLE_VOTE ? 'radio' : 'checkbox'}
+                  type={'radio'}
                   id={`candidate-votes-${index}`}
-                  name={pollType === PollType.SINGLE_VOTE ? 'candidate-votes' : `candidate-votes-${index}`}
+                  name={'candidate-votes'}
                   style={{ display: 'none' }}
                   checked={Number(votes) !== 0}
                   onChange={handleVoteChange}
@@ -148,7 +147,7 @@ const VoteCard = ({
               </div>
             )}
 
-            {pollType === PollType.WEIGHTED_MULTIPLE_VOTE && (
+            {pollType === PollType.MULTIPLE_VOTE && (
               <WeightInput
                 index={index}
                 isQv={mode}
