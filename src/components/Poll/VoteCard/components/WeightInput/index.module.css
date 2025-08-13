@@ -9,13 +9,17 @@
   background: #141414;
 }
 
-.box > button {
+.plus-button,
+.minus-button {
   width: 16px;
+  background: transparent;
+  cursor: pointer;
+  --webkit-appearance: button;
 }
 
 .box > input {
   background: #0b0c0f;
-  padding: 4px 4px;
+  padding: 6px 8px;
   color: #fff;
   border-radius: 8px;
   outline: 1px solid #535861;
@@ -41,10 +45,6 @@
 .weightInput::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-.weightInput[type='number'] {
-  -moz-appearance: textfield;
 }
 
 .mw {
