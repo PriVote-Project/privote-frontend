@@ -12,12 +12,13 @@ import styles from './index.module.css';
 interface JoinPollButtonProps {
   policyType: PollPolicyType;
   policyData?: Hex;
+  buttonStyle?: 'default' | 'solidPink' | 'enhancedGlass'; // For testing different styles
 }
 
 /**
  * A simplified button component for joining polls that opens a step-by-step modal
  */
-export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, policyData }) => {
+export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, policyData, buttonStyle = 'default' }) => {
   const { isConnected } = useAccount();
   const { hasJoinedPoll, isCheckingUserJoinedPoll, isJoiningPoll: isLoading } = usePollContext();
 
@@ -50,7 +51,7 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
     <div className={styles.joinButtonWrapper}>
       <button
         onClick={handleOpenModal}
-        className={`${styles.joinButton} ${isCheckingUserJoinedPoll ? styles.checking : ''}`}
+        className={`${styles.joinButton} ${buttonStyle !== 'default' ? styles[buttonStyle] : ''} ${isCheckingUserJoinedPoll ? styles.checking : ''}`}
         disabled={isLoading}
       >
         {isCheckingUserJoinedPoll ? (
