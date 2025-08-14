@@ -1,5 +1,5 @@
 'use client';
-import { defaultChain, supportedChains } from '@/config/chains';
+import { supportedChains } from '@/config/chains';
 import { type ChainConstants, appConstants } from '@/config/constants';
 import { SUBGRAPH_PROJECT_ID, SUBGRAPH_VERSION } from '@/utils/constants';
 import { createContext, useMemo } from 'react';
@@ -16,8 +16,10 @@ const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
   const connectedChainId = useChainId();
 
   const constants = useMemo(() => {
-    const effectiveChainId = connectedChainId ?? defaultChain.id;
-    return appConstants[effectiveChainId as (typeof supportedChains)[number]['id']] ?? appConstants[defaultChain.id];
+    const effectiveChainId = connectedChainId ?? supportedChains[0].id;
+    return (
+      appConstants[effectiveChainId as (typeof supportedChains)[number]['id']] ?? appConstants[supportedChains[0].id]
+    );
   }, [connectedChainId]);
 
   const subgraphUrl = useMemo(() => {
