@@ -21,7 +21,7 @@
         "multiformats": "^13.3.7",
         "next": "15.3.4",
         "pinata": "^2.4.9",
-        "porto": "^0.0.65",
+        "porto": "^0.0.81",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-hot-toast": "^2.5.2",
@@ -1868,7 +1868,7 @@
 
     "pony-cause": ["pony-cause@2.1.11", "", {}, "sha512-M7LhCsdNbNgiLYiP4WjsfLUuFmCfnjdF6jKe2R9NKl4WFN+HZPGHJZ9lnLP7f9ZnKe3U9nuWD0szirmj+migUg=="],
 
-    "porto": ["porto@0.0.65", "", { "dependencies": { "effect": "^3.16.12", "idb-keyval": "^6.2.1", "mipd": "^0.0.7", "open": "^10.1.0", "ox": "^0.8.4", "zustand": "^5.0.1" }, "peerDependencies": { "@tanstack/react-query": ">=5.59.0", "@wagmi/core": ">=2.16.3", "react": ">=18", "typescript": ">=5.4.0", "viem": ">=2.33.0", "wagmi": ">=2.0.0" }, "optionalPeers": ["@tanstack/react-query", "react", "typescript", "wagmi"], "bin": { "porto": "_dist/cli/bin/index.js" } }, "sha512-MdxdGsc2UgnMfdlAKcP+8zbYY0piAsfgswrQlMFuEusqhgGlzdEvJudPck5ymvdkK1S5DGbQ6XRIrRHGqEROng=="],
+    "porto": ["porto@0.0.81", "", { "dependencies": { "effect": "^3.16.12", "idb-keyval": "^6.2.1", "mipd": "^0.0.7", "open": "^10.1.0", "ox": "^0.8.4", "zustand": "^5.0.1" }, "peerDependencies": { "@tanstack/react-query": ">=5.59.0", "@wagmi/core": ">=2.16.3", "react": ">=18", "typescript": ">=5.4.0", "viem": ">=2.33.0", "wagmi": ">=2.0.0" }, "optionalPeers": ["@tanstack/react-query", "react", "typescript", "wagmi"], "bin": { "porto": "_dist/cli/bin/index.js" } }, "sha512-5M+be897DSfWusQZH0cnZDhx6GGZEnyHWVhFZgebWAi2k0B0nQPwzU4gWE7X4thYVoylvAX2+8dT/F3rhNJ5pQ=="],
 
     "poseidon-lite": ["poseidon-lite@0.3.0", "", {}, "sha512-ilJj4MIve4uBEG7SrtPqUUNkvpJ/pLVbndxa0WvebcQqeIhe+h72JR4g0EvwchUzm9sOQDlOjiDNmRAgxNZl4A=="],
 
