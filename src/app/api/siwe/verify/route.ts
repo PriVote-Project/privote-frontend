@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
-import { Porto, ServerActions } from 'porto';
-import { ServerClient } from 'porto/viem';
-import { hashMessage } from 'viem';
-import { parseSiweMessage } from 'viem/siwe';
+import { Porto } from 'porto';
+import { RelayClient } from 'porto/viem';
+import { parseSiweMessage, verifySiweMessage } from 'viem/siwe';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 
@@ -52,11 +51,10 @@ export async function POST(request: NextRequest) {
 
     // Create Porto client and verify signature
     const porto = Porto.create();
-    const client = ServerClient.fromPorto(porto, { chainId });
+    const client = RelayClient.fromPorto(porto, { chainId });
 
-    const valid = await ServerActions.verifySignature(client, {
-      address,
-      digest: hashMessage(message),
+    const valid = await verifySiweMessage(client, {
+      message,
       signature
     });
 
