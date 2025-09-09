@@ -3,14 +3,17 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { DEFAULT_SG_DATA, ONE_HOUR_MS } from '@/utils/constants';
+import { DEFAULT_SG_DATA, DOMAIN, ONE_HOUR_MS, SIWE_MESSAGE_VERSION, URI } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { getSignedupUserData } from '@/utils/subgraph';
 import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
 import { signup } from '@maci-protocol/sdk/browser';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { keccak256 } from 'viem';
-import { useAccount, useSignMessage } from 'wagmi';
+import { Hex, keccak256 } from 'viem';
+import { createSiweMessage } from 'viem/siwe';
+import { useAccount, useChainId, useSignMessage } from 'wagmi';
+import { generateKeypairFromSeed } from '@/utils/keypair';
+import { createPollSeedJWT, getNonce, getPollSeedJWT, verify } from '@/utils/porto';
 
 interface ISigContext {
   maciKeypair: Keypair | null;
@@ -26,7 +29,8 @@ interface ISigContext {
 export const SigContext = createContext<ISigContext>({} as ISigContext);
 
 export default function SigContextProvider({ children }: { children: React.ReactNode }) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
+  const chainId = useChainId();
   const [maciKeypair, setMaciKeypair] = useState<Keypair | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [stateIndex, setStateIndex] = useState<string | undefined>(undefined);
@@ -44,6 +48,7 @@ export default function SigContextProvider({ children }: { children: React.React
   const appName = 'PRIVOTE';
   const purpose = 'This signature will be used to generate your secure MACI private key.';
   const signatureMessage = `Welcome to ${appName}! ${purpose}`;
+  const isPorto = connector?.name === 'Porto';
 
   // Function to load keypair from localStorage
   const loadKeypairFromLocalStorage = useCallback(() => {
@@ -103,6 +108,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
   const generateKeypair = useCallback(async () => {
     if (!address) return null;
+    if (isPorto) return generateKeypairForPorto();
 
     try {
       const signature = await signMessageAsync({ message: signatureMessage });
@@ -131,6 +137,44 @@ export default function SigContextProvider({ children }: { children: React.React
       console.error('Error deleting keypair from localStorage:', error);
     }
   }, [address]);
+
+  const generateKeypairForPorto = useCallback(async (pollId?: string, pollEndDate?: string) => {
+    if (!pollId || !pollEndDate || !address) return;
+    try {
+      let keypair: Keypair;
+      const pollSeedResult = await getPollSeedJWT(pollId);
+
+      if (!pollSeedResult.exists) {
+        const siweMessage = createSiweMessage({
+          address,
+          chainId,
+          domain: DOMAIN,
+          nonce: await getNonce(),
+          uri: URI,
+          version: SIWE_MESSAGE_VERSION
+        });
+
+        const signature = await signMessageAsync({ message: siweMessage });
+        const signatureSeed = keccak256(signature);
+
+        await verify(siweMessage, signature);
+
+        const createPollSeedJWTResult = await createPollSeedJWT(pollId, pollEndDate, signatureSeed);
+        if (!createPollSeedJWTResult.success) {
+          throw new Error('Failed to create poll seed JWT');
+        }
+
+        keypair = generateKeypairFromSeed(createPollSeedJWTResult.signatureSeed! as Hex);
+      }
+
+      keypair = generateKeypairFromSeed(pollSeedResult.signatureSeed! as Hex);
+      setMaciKeypair(keypair);
+
+      return keypair;
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const onSignup = useCallback(async () => {
     setError(undefined);

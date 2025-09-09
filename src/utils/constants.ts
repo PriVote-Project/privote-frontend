@@ -33,3 +33,7 @@ export const POLICY_ICONS = {
   [PollPolicyType.Token]: '/icons/nft-icon.svg'
   // [PollPolicyType.Zupass]: '/icons/zupass-icon.png'
 };
+
+export const DOMAIN = 'privote.live';
+export const SIWE_MESSAGE_VERSION = '1';
+export const URI = 'https://privote.live';
