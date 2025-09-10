@@ -2,6 +2,7 @@
 import { useSigContext } from '@/contexts/SigContext';
 import React from 'react';
 import styles from './JoinPollModal.module.css';
+import usePollContext from '@/hooks/usePollContext';
 
 interface StepOneProps {
   onNext: () => void;
@@ -9,9 +10,11 @@ interface StepOneProps {
 
 export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   const { isRegistered, isLoading, onSignup, maciKeypair, deleteKeypair } = useSigContext();
+  const { poll } = usePollContext();
+
   const handleSignup = async () => {
     try {
-      await onSignup();
+      await onSignup(poll?.pollId, poll?.endDate);
     } catch (error) {
       console.error('Error during signup:', error);
     }

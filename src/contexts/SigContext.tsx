@@ -3,17 +3,15 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
-import { DEFAULT_SG_DATA, DOMAIN, ONE_HOUR_MS, SIWE_MESSAGE_VERSION, URI } from '@/utils/constants';
+import { DEFAULT_SG_DATA, ONE_HOUR_MS } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { getSignedupUserData } from '@/utils/subgraph';
 import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
 import { signup } from '@maci-protocol/sdk/browser';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Hex, keccak256 } from 'viem';
-import { createSiweMessage } from 'viem/siwe';
-import { useAccount, useChainId, useSignMessage } from 'wagmi';
+import { keccak256 } from 'viem';
+import { useAccount, useChainId, usePublicClient, useSignMessage } from 'wagmi';
 import { generateKeypairFromSeed } from '@/utils/keypair';
-import { createPollSeedJWT, getNonce, getPollSeedJWT, verify } from '@/utils/porto';
 
 interface ISigContext {
   maciKeypair: Keypair | null;
@@ -23,7 +21,7 @@ interface ISigContext {
   error: string | undefined;
   generateKeypair: () => void;
   deleteKeypair: () => void;
-  onSignup: () => Promise<void>;
+  onSignup: (pollId?: string, pollEndDate?: string) => Promise<void>;
 }
 
 export const SigContext = createContext<ISigContext>({} as ISigContext);
@@ -42,6 +40,7 @@ export default function SigContextProvider({ children }: { children: React.React
   const privoteContract = usePrivoteContract();
   const { subgraphUrl } = useAppConstants();
   const { checkBalance } = useFaucetContext();
+  const publicClient = usePublicClient();
 
   // constants
   const CACHE_EXPIRY_HOURS = 72;
@@ -51,40 +50,42 @@ export default function SigContextProvider({ children }: { children: React.React
   const isPorto = connector?.name === 'Porto';
 
   // Function to load keypair from localStorage
-  const loadKeypairFromLocalStorage = useCallback(() => {
-    if (!address) return null;
+  const loadKeypairFromLocalStorage = useCallback(
+    (storageKey: string) => {
+      if (!address) return null;
 
-    const storageKey = `maciKeypair-${address}`;
-    try {
-      const storedKeypair = window.localStorage.getItem(storageKey);
-      if (storedKeypair) {
-        // parse the stored keypair
-        const { privateKey, timestamp } = JSON.parse(storedKeypair);
+      try {
+        const storedKeypair = window.localStorage.getItem(storageKey);
+        if (storedKeypair) {
+          // parse the stored keypair
+          const { privateKey, timestamp } = JSON.parse(storedKeypair);
 
-        // check if privateKey & timestamp are valid
-        if (!PrivateKey.isValidSerialized(privateKey) || !timestamp) {
-          console.log('Invalid private key, clearing cache');
-          window.localStorage.removeItem(storageKey);
-          return null;
+          // check if privateKey & timestamp are valid
+          if (!PrivateKey.isValidSerialized(privateKey) || !timestamp) {
+            console.log('Invalid private key, clearing cache');
+            window.localStorage.removeItem(storageKey);
+            return null;
+          }
+
+          // check if the cache has expired
+          const now = Date.now();
+          const expiryTime = timestamp + CACHE_EXPIRY_HOURS * ONE_HOUR_MS;
+          if (now > expiryTime) {
+            console.log('Cached artifacts expired, clearing cache');
+            window.localStorage.removeItem(storageKey);
+            return null;
+          }
+
+          // return the keypair
+          return new Keypair(PrivateKey.deserialize(privateKey));
         }
-
-        // check if the cache has expired
-        const now = Date.now();
-        const expiryTime = timestamp + CACHE_EXPIRY_HOURS * ONE_HOUR_MS;
-        if (now > expiryTime) {
-          console.log('Cached artifacts expired, clearing cache');
-          window.localStorage.removeItem(storageKey);
-          return null;
-        }
-
-        // return the keypair
-        return new Keypair(PrivateKey.deserialize(privateKey));
+      } catch (error) {
+        console.error('Error reading keypair from localStorage:', error);
       }
-    } catch (error) {
-      console.error('Error reading keypair from localStorage:', error);
-    }
-    return null;
-  }, [address]);
+      return null;
+    },
+    [address]
+  );
 
   // Function to save keypair to localStorage
   const saveKeypairToLocalStorage = useCallback(
@@ -106,25 +107,47 @@ export default function SigContextProvider({ children }: { children: React.React
     [address]
   );
 
-  const generateKeypair = useCallback(async () => {
-    if (!address) return null;
-    if (isPorto) return generateKeypairForPorto();
+  const savePortoKeypairToLocalStorage = useCallback(
+    (keypair: Keypair, pollId: string, pollEndDate: string) => {
+      if (!address) return;
 
-    try {
-      const signature = await signMessageAsync({ message: signatureMessage });
-      const seed = keccak256(signature);
-      const userKeyPair = new Keypair(new PrivateKey(BigInt(seed)));
+      const storedKey = `maciKeypair-poll-${pollId}-${address}`;
+      try {
+        const privateKeyHex = keypair.privateKey.serialize();
+        const value = {
+          privateKey: privateKeyHex,
+          timestamp: Number(pollEndDate) * 1000
+        };
+        window.localStorage.setItem(storedKey, JSON.stringify(value));
+      } catch (error) {
+        console.error('Error saving keypair to localStorage:', error);
+      }
+    },
+    [address]
+  );
 
-      // Save to localStorage
-      saveKeypairToLocalStorage(userKeyPair);
-      setMaciKeypair(userKeyPair);
+  const generateKeypair = useCallback(
+    async (pollId?: string, pollEndDate?: string) => {
+      if (!address) return null;
+      if (isPorto) return generateKeypairForPorto(pollId, pollEndDate);
 
-      return userKeyPair;
-    } catch (err) {
-      console.error('Error generating keypair:', err);
-      return null;
-    }
-  }, [address, signMessageAsync, signatureMessage, saveKeypairToLocalStorage]);
+      try {
+        const signature = await signMessageAsync({ message: signatureMessage });
+        const seed = keccak256(signature);
+        const userKeyPair = generateKeypairFromSeed(seed);
+
+        // Save to localStorage
+        saveKeypairToLocalStorage(userKeyPair);
+        setMaciKeypair(userKeyPair);
+
+        return userKeyPair;
+      } catch (err) {
+        console.error('Error generating keypair:', err);
+        return null;
+      }
+    },
+    [address, signMessageAsync, signatureMessage, saveKeypairToLocalStorage]
+  );
 
   const deleteKeypair = useCallback(() => {
     if (!address) return;
@@ -139,35 +162,39 @@ export default function SigContextProvider({ children }: { children: React.React
   }, [address]);
 
   const generateKeypairForPorto = useCallback(async (pollId?: string, pollEndDate?: string) => {
-    if (!pollId || !pollEndDate || !address) return;
+    if (!pollId || !pollEndDate || !address) {
+      console.log('Missing pollId, pollEndDate or address- ByPassing...');
+      return;
+    }
+
+    if (!isPorto) {
+      notification.error('Porto not enabled');
+      return;
+    }
+
     try {
-      let keypair: Keypair;
-      const pollSeedResult = await getPollSeedJWT(pollId);
+      const storageKey = `maciKeypair-poll-${pollId}-${address}`;
+      const pastKeypair = loadKeypairFromLocalStorage(storageKey);
 
-      if (!pollSeedResult.exists) {
-        const siweMessage = createSiweMessage({
-          address,
-          chainId,
-          domain: DOMAIN,
-          nonce: await getNonce(),
-          uri: URI,
-          version: SIWE_MESSAGE_VERSION
-        });
-
-        const signature = await signMessageAsync({ message: siweMessage });
-        const signatureSeed = keccak256(signature);
-
-        await verify(siweMessage, signature);
-
-        const createPollSeedJWTResult = await createPollSeedJWT(pollId, pollEndDate, signatureSeed);
-        if (!createPollSeedJWTResult.success) {
-          throw new Error('Failed to create poll seed JWT');
-        }
-
-        keypair = generateKeypairFromSeed(createPollSeedJWTResult.signatureSeed! as Hex);
+      if (pastKeypair) {
+        setMaciKeypair(pastKeypair);
+        return pastKeypair;
       }
 
-      keypair = generateKeypairFromSeed(pollSeedResult.signatureSeed! as Hex);
+      const signature = await signMessageAsync({ message: signatureMessage, account: address });
+      const signatureSeed = keccak256(signature);
+
+      const valid = await publicClient?.verifyMessage({
+        address,
+        message: signatureMessage,
+        signature
+      });
+
+      if (!valid) {
+        throw new Error("Couldn't validate signature!");
+      }
+      const keypair = generateKeypairFromSeed(signatureSeed);
+      savePortoKeypairToLocalStorage(keypair, pollId, pollEndDate);
       setMaciKeypair(keypair);
 
       return keypair;
@@ -176,134 +203,143 @@ export default function SigContextProvider({ children }: { children: React.React
     }
   }, []);
 
-  const onSignup = useCallback(async () => {
-    setError(undefined);
-    setIsLoading(true);
+  const onSignup = useCallback(
+    async (pollId?: string, pollEndDate?: string) => {
+      setError(undefined);
+      setIsLoading(true);
 
-    if (!isConnected) {
-      setError('Wallet not connected');
-      setIsLoading(false);
-
-      notification.error('Wallet not connected');
-      return;
-    }
-
-    if (isRegistered) {
-      setError('Already registered');
-      setIsLoading(false);
-
-      notification.error('Already registered');
-      return;
-    }
-
-    if (!privoteContract) {
-      setError('Privote contract not found');
-      setIsLoading(false);
-
-      notification.error('Privote contract not found! Connect to a supported chain');
-      return;
-    }
-
-    if (!signer) {
-      setError('Signer not found');
-      setIsLoading(false);
-
-      notification.error('Signer not found');
-      return;
-    }
-
-    if (checkBalance()) {
-      setIsLoading(false);
-      return;
-    }
-
-    let keypair = maciKeypair;
-    if (!keypair) {
-      try {
-        keypair = (await generateKeypair()) as Keypair;
-      } catch (error) {
-        setError('Error creating keypair');
+      if (!isConnected) {
+        setError('Wallet not connected');
         setIsLoading(false);
 
-        notification.error('Error creating keypair');
-        console.log('Error creating keypair:', error);
+        notification.error('Wallet not connected');
         return;
       }
-    }
 
-    let notificationId = notification.loading('Checking if user is registered...');
+      if (isRegistered) {
+        setError('Already registered');
+        setIsLoading(false);
 
-    let isUserRegistered = false;
-    try {
-      const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(subgraphUrl, keypair);
+        notification.error('Already registered');
+        return;
+      }
 
-      isUserRegistered = _isRegistered;
-      setStateIndex(_stateIndex);
-      setIsRegistered(_isRegistered);
-    } catch (error) {
-      setError('Error checking if user is registered');
-      setIsLoading(false);
+      if (!privoteContract) {
+        setError('Privote contract not found');
+        setIsLoading(false);
 
-      handleNotice({
-        message: 'Error checking if user is registered',
-        type: 'error',
-        id: notificationId
-      });
-      console.log('Error checking if user is registered:', error);
-      return;
-    }
+        notification.error('Privote contract not found! Connect to a supported chain');
+        return;
+      }
 
-    if (isUserRegistered) {
-      setIsLoading(false);
-      handleNotice({
-        message: "You're already signed up to MACI contract",
-        type: 'success',
-        id: notificationId
-      });
-      return;
-    }
+      if (!signer) {
+        setError('Signer not found');
+        setIsLoading(false);
 
-    notificationId = handleNotice({
-      message: 'Signing up...',
-      type: 'loading',
-      id: notificationId
-    });
-    try {
-      const { stateIndex: _stateIndex } = await signup({
-        maciAddress: privoteContract.address,
-        maciPublicKey: maciKeypair?.publicKey.serialize() as string,
-        sgData: DEFAULT_SG_DATA,
-        signer
-      });
-      setStateIndex(_stateIndex);
-      setIsRegistered(true);
-      setIsLoading(false);
+        notification.error('Signer not found');
+        return;
+      }
+
+      if (checkBalance()) {
+        setIsLoading(false);
+        return;
+      }
+
+      let keypair = maciKeypair;
+      if (!keypair) {
+        try {
+          keypair = (await generateKeypair(pollId, pollEndDate)) as Keypair;
+        } catch (error) {
+          setError('Error creating keypair');
+          setIsLoading(false);
+
+          notification.error('Error creating keypair');
+          console.log('Error creating keypair:', error);
+          return;
+        }
+      }
+
+      console.log(keypair);
+
+      let notificationId = notification.loading('Checking if user is registered...');
+
+      let isUserRegistered = false;
+      try {
+        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+          subgraphUrl,
+          keypair
+        );
+
+        isUserRegistered = _isRegistered;
+        setStateIndex(_stateIndex);
+        setIsRegistered(_isRegistered);
+      } catch (error) {
+        setError('Error checking if user is registered');
+        setIsLoading(false);
+
+        handleNotice({
+          message: 'Error checking if user is registered',
+          type: 'error',
+          id: notificationId
+        });
+        console.log('Error checking if user is registered:', error);
+        return;
+      }
+
+      if (isUserRegistered) {
+        setIsLoading(false);
+        handleNotice({
+          message: "You're already signed up to MACI contract",
+          type: 'success',
+          id: notificationId
+        });
+        return;
+      }
+
       notificationId = handleNotice({
-        message: 'Signed up to PRIVOTE contract',
-        type: 'success',
+        message: 'Signing up...',
+        type: 'loading',
         id: notificationId
       });
-    } catch (error) {
-      console.log('Signup error', error);
-      setError('Error signing up');
-      setIsLoading(false);
-      handleNotice({
-        message: 'Error signing up',
-        type: 'error',
-        id: notificationId
-      });
-    }
-  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair, subgraphUrl]);
+      try {
+        const { stateIndex: _stateIndex } = await signup({
+          maciAddress: privoteContract.address,
+          maciPublicKey: maciKeypair?.publicKey.serialize() as string,
+          sgData: DEFAULT_SG_DATA,
+          signer
+        });
+        setStateIndex(_stateIndex);
+        setIsRegistered(true);
+        setIsLoading(false);
+        notificationId = handleNotice({
+          message: 'Signed up to PRIVOTE contract',
+          type: 'success',
+          id: notificationId
+        });
+      } catch (error) {
+        console.log('Signup error', error);
+        setError('Error signing up');
+        setIsLoading(false);
+        handleNotice({
+          message: 'Error signing up',
+          type: 'error',
+          id: notificationId
+        });
+      }
+    },
+    [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair, subgraphUrl]
+  );
 
   useEffect(() => {
     // Reset keypair when wallet disconnects
-    if (!address) {
+    if (!address || isPorto) {
       setMaciKeypair(null);
       return;
     }
 
     // Try to load existing keypair from localStorage
-    const existingKeypair = loadKeypairFromLocalStorage();
+    const storageKey = `maciKeypair-${address}`;
+    const existingKeypair = loadKeypairFromLocalStorage(storageKey);
     if (existingKeypair) {
       setMaciKeypair(existingKeypair);
     } else {
