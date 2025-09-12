@@ -4,27 +4,35 @@ import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollStatus } from '@/types';
-import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA } from '@/utils/constants';
+import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { computePollStatus, notifyStatusChange, shouldNotifyStatusChange } from '@/utils/pollStatus';
-import { getJoinedUserData, getKeys } from '@/utils/subgraph';
-import { generateSignUpTreeFromKeys, isTallied, joinPoll } from '@maci-protocol/sdk/browser';
+import { getJoinedUserData, getKeys, getSignedupUserData } from '@/utils/subgraph';
+import { Keypair } from '@maci-protocol/domainobjs';
+import { generateSignUpTreeFromKeys, isTallied, joinPoll, signup } from '@maci-protocol/sdk/browser';
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { Hex, parseAbi } from 'viem';
-import { usePublicClient } from 'wagmi';
-import { useSigContext } from './SigContext';
+import { Hex, parseAbi, keccak256 } from 'viem';
+import { usePublicClient, useAccount, useSignMessage } from 'wagmi';
 import { type IPollContextType } from './types';
 import useFaucetContext from '@/hooks/useFaucetContext';
+import { useSigContext } from './SigContext';
+import { generateKeypairFromSeed } from '@/utils/keypair';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 
 export const PollProvider = ({ pollAddress, children }: { pollAddress: string; children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSignupLoading, setIsSignupLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>();
 
   // MACI contract
   const [inclusionProof, setInclusionProof] = useState<LeanIMTMerkleProof | null>(null);
+
+  // variables for porto
+  const [portoMaciKeypair, setPortoMaciKeypair] = useState<Keypair | null>(null);
+  const [portoMaciStateIndex, setPortoMaciStateIndex] = useState<string | undefined>(undefined);
+  const [portoIsRegistered, setPortoIsRegistered] = useState<boolean>(false);
 
   // Poll contract
   const [hasJoinedPoll, setHasJoinedPoll] = useState<boolean>(false);
@@ -40,8 +48,10 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { artifacts, error: artifactsError, loadArtifacts } = usePollArtifacts(!hasJoinedPoll);
 
   // Wallet variables
+  const { signMessageAsync } = useSignMessage();
   const signer = useEthersSigner();
   const client = usePublicClient();
+  const { address, isConnected, connector } = useAccount();
 
   // Poll
   const {
@@ -53,9 +63,31 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   } = usePoll({ pollAddress });
 
   const { subgraphUrl } = useAppConstants();
-  const { maciKeypair, isRegistered, stateIndex } = useSigContext();
   const privoteContract = usePrivoteContract();
+  const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
+    useSigContext();
   const { checkBalance } = useFaucetContext();
+  const isPorto = connector?.name === 'Porto';
+
+  // temp variables
+  const unifiedState = useMemo(() => {
+    if (isPorto) {
+      return {
+        maciKeypair: portoMaciKeypair,
+        isRegistered: portoIsRegistered,
+        stateIndex: portoMaciStateIndex
+      };
+    }
+
+    return {
+      maciKeypair,
+      isRegistered,
+      stateIndex
+    };
+  }, [isPorto]);
+  const tempMaciKeypair = unifiedState.maciKeypair;
+  const tempStateIndex = unifiedState.stateIndex;
+  const tempIsRegistered = unifiedState.isRegistered;
 
   // Compute dynamic poll status based on current time
   const computeDynamicPollStatus = useCallback(() => {
@@ -97,10 +129,10 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
   // Functions
   const getInclusionProof = useCallback(async () => {
-    if (!stateIndex) {
+    if (!tempStateIndex) {
       return;
     }
-    if (!maciKeypair) {
+    if (!tempMaciKeypair) {
       return;
     }
     try {
@@ -108,7 +140,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       const signupTree = generateSignUpTreeFromKeys(keys);
 
       // Find the leaf's index directly from the tree to compare
-      const treeIndex = signupTree.indexOf(maciKeypair.publicKey.hash());
+      const treeIndex = signupTree.indexOf(tempMaciKeypair.publicKey.hash());
       const inclusionProof = treeIndex !== -1 ? signupTree.generateProof(treeIndex) : null;
       setInclusionProof(inclusionProof);
 
@@ -116,7 +148,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     } catch (error) {
       console.error('Error getting inclusion proof', error);
     }
-  }, [maciKeypair, stateIndex, subgraphUrl]);
+  }, [tempMaciKeypair, tempStateIndex, subgraphUrl]);
 
   const onJoinPoll = useCallback(
     async (signupData: string = DEFAULT_SG_DATA) => {
@@ -130,21 +162,21 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         notification.error('Signer not found');
         return;
       }
-      if (!maciKeypair) {
+      if (!tempMaciKeypair) {
         setError('Keypair not found');
         setIsLoading(false);
 
         notification.error('Keypair not found');
         return;
       }
-      if (!isRegistered) {
+      if (!tempIsRegistered) {
         setError('User not registered');
         setIsLoading(false);
 
         notification.error('User not registered');
         return;
       }
-      if (!stateIndex) {
+      if (!tempStateIndex) {
         setError('State index not found');
         setIsLoading(false);
 
@@ -206,7 +238,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       let errorMessage: string = '';
       const joinedPoll = await joinPoll({
         maciAddress: privoteContract.address,
-        privateKey: maciKeypair.privateKey.serialize(),
+        privateKey: tempMaciKeypair.privateKey.serialize(),
         signer,
         pollId: BigInt(poll.pollId),
         inclusionProof: inclusionProofDirect ?? undefined,
@@ -255,17 +287,145 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       artifacts,
       hasJoinedPoll,
       inclusionProof,
-      isRegistered,
-      maciKeypair,
+      tempIsRegistered,
+      tempMaciKeypair,
       signer,
-      stateIndex,
+      tempStateIndex,
       poll,
       getInclusionProof,
       privoteContract,
       loadArtifacts,
-      artifactsError
+      artifactsError,
+      checkBalance
     ]
   );
+
+  const onSignup = useCallback(async () => {
+    setError(undefined);
+    setIsSignupLoading(true);
+
+    if (!isConnected) {
+      setError('Wallet not connected');
+      setIsSignupLoading(false);
+
+      notification.error('Wallet not connected');
+      return;
+    }
+
+    if (tempIsRegistered) {
+      setError('Already registered');
+      setIsSignupLoading(false);
+
+      notification.error('Already registered');
+      return;
+    }
+
+    if (!privoteContract) {
+      setError('Privote contract not found');
+      setIsSignupLoading(false);
+
+      notification.error('Privote contract not found! Connect to a supported chain');
+      return;
+    }
+
+    if (!signer) {
+      setError('Signer not found');
+      setIsSignupLoading(false);
+
+      notification.error('Signer not found');
+      return;
+    }
+
+    if (checkBalance()) {
+      setIsSignupLoading(false);
+      return;
+    }
+
+    let keypair = tempMaciKeypair;
+    if (!keypair) {
+      try {
+        keypair = isPorto
+          ? ((await generateKeypairForPorto(pollAddress, poll?.endDate)) as Keypair)
+          : ((await generateKeypair()) as Keypair);
+      } catch (error) {
+        setError('Error creating keypair');
+        setIsSignupLoading(false);
+
+        notification.error('Error creating keypair');
+        console.log('Error creating keypair:', error);
+        return;
+      }
+    }
+
+    let notificationId = notification.loading('Checking if user is registered...');
+
+    let isUserRegistered = false;
+    try {
+      const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(subgraphUrl, keypair);
+
+      isUserRegistered = _isRegistered;
+      if (isPorto) {
+        updatePortoStatus(_isRegistered, _stateIndex);
+      } else {
+        updateStatus(_isRegistered, _stateIndex);
+      }
+    } catch (error) {
+      setError('Error checking if user is registered');
+      setIsSignupLoading(false);
+
+      handleNotice({
+        message: 'Error checking if user is registered',
+        type: 'error',
+        id: notificationId
+      });
+      console.log('Error checking if user is registered:', error);
+      return;
+    }
+
+    if (isUserRegistered) {
+      setIsSignupLoading(false);
+      handleNotice({
+        message: "You're already signed up to MACI contract",
+        type: 'success',
+        id: notificationId
+      });
+      return;
+    }
+
+    notificationId = handleNotice({
+      message: 'Signing up...',
+      type: 'loading',
+      id: notificationId
+    });
+    try {
+      const { stateIndex: _stateIndex } = await signup({
+        maciAddress: privoteContract.address,
+        maciPublicKey: maciKeypair?.publicKey.serialize() as string,
+        sgData: DEFAULT_SG_DATA,
+        signer
+      });
+      if (isPorto) {
+        updatePortoStatus(true, _stateIndex);
+      } else {
+        updateStatus(true, _stateIndex);
+      }
+      setIsSignupLoading(false);
+      notificationId = handleNotice({
+        message: 'Signed up to PRIVOTE contract',
+        type: 'success',
+        id: notificationId
+      });
+    } catch (error) {
+      console.log('Signup error', error);
+      setError('Error signing up');
+      setIsSignupLoading(false);
+      handleNotice({
+        message: 'Error signing up',
+        type: 'error',
+        id: notificationId
+      });
+    }
+  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair, subgraphUrl]);
 
   const checkIsTallied = useCallback(async () => {
     if (!privoteContract || !signer || !poll) {
@@ -301,6 +461,127 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     }
   }, [client, pollAddress]);
 
+  const savePortoKeypairToLocalStorage = useCallback(
+    (keypair: Keypair, address: Hex, pollAddress: string, pollEndDate: string) => {
+      if (!address) return;
+
+      const storedKey = `maciKeypair-poll-${pollAddress}-${address}`;
+      try {
+        const privateKeyHex = keypair.privateKey.serialize();
+        const value = {
+          privateKey: privateKeyHex,
+          timestamp: Number(pollEndDate) * 1000
+        };
+        window.localStorage.setItem(storedKey, JSON.stringify(value));
+      } catch (error) {
+        console.error('Error saving keypair to localStorage:', error);
+      }
+    },
+    []
+  );
+
+  const generateKeypairForPorto = useCallback(
+    async (pollAddress?: string, pollEndDate?: string) => {
+      if (!address || !pollAddress || !pollEndDate) {
+        console.log('Missing pollAddress or pollEndDate- ByPassing...');
+        return;
+      }
+
+      if (!isPorto) {
+        notification.error('Porto not enabled');
+        return;
+      }
+
+      try {
+        const storageKey = `maciKeypair-poll-${pollAddress}-${address}`;
+        const pastKeypair = loadKeypairFromLocalStorage(storageKey);
+
+        if (pastKeypair) {
+          setPortoMaciKeypair(pastKeypair);
+          return pastKeypair;
+        }
+
+        const signature = await signMessageAsync({ message: SIGNATURE_MESSAGE });
+        const signatureSeed = keccak256(signature);
+
+        const valid = await client?.verifyMessage({
+          address: address,
+          message: SIGNATURE_MESSAGE,
+          signature
+        });
+
+        if (!valid) {
+          throw new Error("Couldn't validate signature!");
+        }
+        const keypair = generateKeypairFromSeed(signatureSeed);
+        savePortoKeypairToLocalStorage(keypair, address, pollAddress, pollEndDate);
+        setPortoMaciKeypair(keypair);
+
+        return keypair;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [address, isPorto]
+  );
+
+  const updatePortoStatus = useCallback((isRegistered: boolean, stateIndex: string | undefined) => {
+    setPortoIsRegistered(isRegistered);
+    setPortoMaciStateIndex(stateIndex);
+  }, []);
+
+  //
+  useEffect(() => {
+    if (!address || !isPorto) {
+      setPortoMaciKeypair(null);
+      return;
+    }
+
+    // Try to load existing keypair from localStorage
+    const storageKey = `maciKeypair-poll-${pollAddress}-${address}`;
+    const existingKeypair = loadKeypairFromLocalStorage(storageKey);
+    if (existingKeypair) {
+      setPortoMaciKeypair(existingKeypair);
+    } else {
+      setPortoMaciKeypair(null);
+      generateKeypairForPorto(pollAddress, poll?.endDate);
+    }
+  }, [address, isPorto, pollAddress]);
+
+  useEffect(() => {
+    (async () => {
+      if (!isPorto) {
+        setPortoIsRegistered(false);
+        setPortoMaciStateIndex(undefined);
+        return;
+      }
+
+      if (!isConnected) {
+        setPortoIsRegistered(false);
+        return;
+      }
+
+      if (!portoMaciKeypair) {
+        setPortoIsRegistered(false);
+        setPortoMaciStateIndex(undefined);
+        return;
+      }
+
+      try {
+        const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+          subgraphUrl,
+          portoMaciKeypair
+        );
+
+        setPortoIsRegistered(_isRegistered);
+        setPortoMaciStateIndex(_stateIndex);
+      } catch (error) {
+        console.log(error);
+        setPortoIsRegistered(false);
+      }
+    })();
+  }, [portoMaciKeypair, isConnected, subgraphUrl, isPorto]);
+
   // // generate maci state tree locally
   useEffect(() => {
     (async () => {
@@ -309,12 +590,12 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         return;
       }
 
-      if (!maciKeypair) {
+      if (!tempMaciKeypair) {
         setInclusionProof(null);
         return;
       }
 
-      if (!isRegistered) {
+      if (!tempIsRegistered) {
         setInclusionProof(null);
         return;
       }
@@ -329,7 +610,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setInclusionProof(null);
       }
     })();
-  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, getInclusionProof]);
+  }, [tempMaciKeypair, tempIsRegistered, tempStateIndex, pollAddress, signer, getInclusionProof]);
 
   // check poll user data
   useEffect(() => {
@@ -344,12 +625,12 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         return;
       }
 
-      if (!maciKeypair) {
+      if (!tempMaciKeypair) {
         setIsCheckingUserJoinedPoll(false);
         return;
       }
 
-      if (!isRegistered) {
+      if (!tempIsRegistered) {
         setIsCheckingUserJoinedPoll(false);
         return;
       }
@@ -364,7 +645,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         const { isJoined, voiceCredits, pollStateIndex } = await getJoinedUserData(
           subgraphUrl,
           pollAddress,
-          maciKeypair
+          tempMaciKeypair
         );
 
         setHasJoinedPoll(isJoined);
@@ -377,7 +658,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setIsCheckingUserJoinedPoll(false);
       }
     })();
-  }, [isRegistered, maciKeypair, pollAddress, signer, stateIndex, subgraphUrl]);
+  }, [tempIsRegistered, tempStateIndex, tempMaciKeypair, pollAddress, signer, subgraphUrl]);
 
   const value = useMemo<IPollContextType>(
     () => ({
@@ -386,16 +667,19 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       poll: poll ? { ...poll, status: dynamicPollStatus || poll.status } : poll,
       pollLoading,
       isPollError,
+      isPorto,
       pollError,
       hasJoinedPoll,
       initialVoiceCredits,
       pollStateIndex,
-      stateIndex,
+      tempStateIndex,
       onJoinPoll,
+      onSignup,
       refetchPoll,
       checkMergeStatus,
       checkIsTallied,
       dynamicPollStatus,
+      isSignupLoading,
       isCheckingTallied,
       isCheckingUserJoinedPoll
     }),
@@ -406,15 +690,18 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       dynamicPollStatus,
       pollLoading,
       isPollError,
+      isPorto,
       pollError,
       hasJoinedPoll,
       initialVoiceCredits,
       pollStateIndex,
-      stateIndex,
+      tempStateIndex,
       onJoinPoll,
+      onSignup,
       refetchPoll,
       checkMergeStatus,
       checkIsTallied,
+      isSignupLoading,
       isCheckingTallied,
       isCheckingUserJoinedPoll
     ]

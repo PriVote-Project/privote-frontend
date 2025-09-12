@@ -9,12 +9,12 @@ interface StepOneProps {
 }
 
 export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
-  const { isRegistered, isLoading, onSignup, maciKeypair, deleteKeypair } = useSigContext();
-  const { poll } = usePollContext();
+  const { isRegistered, maciKeypair, deleteKeypair } = useSigContext();
+  const { onSignup, isSignupLoading, isPorto } = usePollContext();
 
   const handleSignup = async () => {
     try {
-      await onSignup(poll?.pollId, poll?.endDate);
+      await onSignup();
     } catch (error) {
       console.error('Error during signup:', error);
     }
@@ -71,7 +71,7 @@ export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
         )}
 
         {/* Keypair management section */}
-        {maciKeypair && (
+        {maciKeypair && !isPorto && (
           <div
             style={{
               padding: '16px',
@@ -128,8 +128,12 @@ export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             </svg>
           </button>
         ) : (
-          <button className={`${styles.button} ${styles.primaryButton}`} onClick={handleSignup} disabled={isLoading}>
-            {isLoading ? (
+          <button
+            className={`${styles.button} ${styles.primaryButton}`}
+            onClick={handleSignup}
+            disabled={isSignupLoading}
+          >
+            {isSignupLoading ? (
               <>
                 <div className={styles.loader}></div>
                 Registering...

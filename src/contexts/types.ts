@@ -52,11 +52,14 @@ export interface IPollContextType {
   maciKeypair?: Keypair;
   stateIndex?: string;
   onJoinPoll: (signupData?: string) => Promise<void>;
+  onSignup: () => Promise<void>;
   checkIsTallied: () => Promise<boolean>;
   checkMergeStatus: () => Promise<boolean>;
   refetchPoll: (options?: RefetchOptions) => Promise<QueryObserverResult<TransformedPoll | null, Error>>;
   dynamicPollStatus: PollStatus | null;
   isJoiningPoll: boolean;
+  isSignupLoading: boolean;
+  isPorto: boolean;
   isCheckingTallied: boolean;
   isCheckingUserJoinedPoll: boolean;
 }
