@@ -84,7 +84,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       isRegistered,
       stateIndex
     };
-  }, [isPorto]);
+  }, [isPorto, portoMaciKeypair, portoIsRegistered, portoMaciStateIndex, maciKeypair, isRegistered, stateIndex]);
   const tempMaciKeypair = unifiedState.maciKeypair;
   const tempStateIndex = unifiedState.stateIndex;
   const tempIsRegistered = unifiedState.isRegistered;
@@ -336,6 +336,14 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
 
+    if (isPorto && !poll) {
+      setError('Poll not found');
+      setIsSignupLoading(false);
+
+      notification.error('Poll not found!');
+      return;
+    }
+
     if (checkBalance()) {
       setIsSignupLoading(false);
       return;
@@ -400,7 +408,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     try {
       const { stateIndex: _stateIndex } = await signup({
         maciAddress: privoteContract.address,
-        maciPublicKey: maciKeypair?.publicKey.serialize() as string,
+        maciPublicKey: keypair.publicKey.serialize() as string,
         sgData: DEFAULT_SG_DATA,
         signer
       });
@@ -532,7 +540,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
   //
   useEffect(() => {
-    if (!address || !isPorto) {
+    if (!address || !isPorto || !poll) {
       setPortoMaciKeypair(null);
       return;
     }
@@ -544,9 +552,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setPortoMaciKeypair(existingKeypair);
     } else {
       setPortoMaciKeypair(null);
-      generateKeypairForPorto(pollAddress, poll?.endDate);
+      generateKeypairForPorto(pollAddress, poll.endDate);
     }
-  }, [address, isPorto, pollAddress]);
+  }, [address, isPorto, pollAddress, poll]);
 
   useEffect(() => {
     (async () => {
@@ -665,6 +673,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       isJoiningPoll: isLoading,
       error: error,
       poll: poll ? { ...poll, status: dynamicPollStatus || poll.status } : poll,
+      isRegistered: tempIsRegistered,
+      maciKeypair: tempMaciKeypair,
       pollLoading,
       isPollError,
       isPorto,
@@ -688,6 +698,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       error,
       poll,
       dynamicPollStatus,
+      tempIsRegistered,
+      tempMaciKeypair,
       pollLoading,
       isPollError,
       isPorto,

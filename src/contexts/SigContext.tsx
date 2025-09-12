@@ -22,13 +22,14 @@ interface ISigContext {
 export const SigContext = createContext<ISigContext>({} as ISigContext);
 
 export default function SigContextProvider({ children }: { children: React.ReactNode }) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const [maciKeypair, setMaciKeypair] = useState<Keypair | null>(null);
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [stateIndex, setStateIndex] = useState<string | undefined>(undefined);
 
   const { signMessageAsync } = useSignMessage();
   const { subgraphUrl } = useAppConstants();
+  const isPorto = connector?.name === 'Porto';
 
   // constants
   const CACHE_EXPIRY_HOURS = 72;
@@ -129,7 +130,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
   useEffect(() => {
     // Reset keypair when wallet disconnects
-    if (!address) {
+    if (!address || isPorto) {
       setMaciKeypair(null);
       return;
     }
@@ -154,6 +155,12 @@ export default function SigContextProvider({ children }: { children: React.React
       }
 
       if (!maciKeypair) {
+        setIsRegistered(false);
+        setStateIndex(undefined);
+        return;
+      }
+
+      if (isPorto) {
         setIsRegistered(false);
         setStateIndex(undefined);
         return;

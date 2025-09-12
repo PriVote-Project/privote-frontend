@@ -49,7 +49,7 @@ export interface IPollContextType {
   initialVoiceCredits: number;
   pollStateIndex?: string;
   isRegistered?: boolean;
-  maciKeypair?: Keypair;
+  maciKeypair?: Keypair | null;
   stateIndex?: string;
   onJoinPoll: (signupData?: string) => Promise<void>;
   onSignup: () => Promise<void>;

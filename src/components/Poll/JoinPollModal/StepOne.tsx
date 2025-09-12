@@ -9,8 +9,8 @@ interface StepOneProps {
 }
 
 export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
-  const { isRegistered, maciKeypair, deleteKeypair } = useSigContext();
-  const { onSignup, isSignupLoading, isPorto } = usePollContext();
+  const { maciKeypair, deleteKeypair } = useSigContext();
+  const { onSignup, isSignupLoading, isPorto, isRegistered } = usePollContext();
 
   const handleSignup = async () => {
     try {
