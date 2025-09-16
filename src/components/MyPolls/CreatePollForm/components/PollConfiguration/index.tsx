@@ -4,10 +4,13 @@ import WithoutImageInput from '../WithoutImageInput';
 import styles from './index.module.css';
 import { useSigContext } from '@/contexts/SigContext';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyChange }: PollConfigurationProps) => {
   const { maciKeypair, deleteKeypair, generateKeypair } = useSigContext();
-  const [keyOption, setKeyOption] = useState<'wallet' | 'manual'>('wallet');
+  const { connector } = useAccount();
+  const isPorto = connector?.name === 'Porto';
+  const [keyOption, setKeyOption] = useState<'wallet' | 'manual'>(() => (isPorto ? 'manual' : 'wallet'));
 
   useEffect(() => {
     if (keyOption === 'wallet' && maciKeypair && pollConfig === 1) {
@@ -30,23 +33,25 @@ const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyC
                 <div className={styles['public-input-container']}>
                   <div className={styles['key-option-selector']}>
                     <div className={styles['option-group']}>
-                      <label className={styles['radio-option']}>
-                        <input
-                          type='radio'
-                          name='keyOption'
-                          value='wallet'
-                          checked={keyOption === 'wallet'}
-                          onChange={e => {
-                            setKeyOption('wallet');
-                            if (maciKeypair) {
-                              handlePubKeyChange({
-                                target: { value: maciKeypair.publicKey.serialize() }
-                              } as React.ChangeEvent<HTMLInputElement>);
-                            }
-                          }}
-                        />
-                        <span className={styles['radio-label']}>Use Connected Wallet Keypair</span>
-                      </label>
+                      {!isPorto && (
+                        <label className={styles['radio-option']}>
+                          <input
+                            type='radio'
+                            name='keyOption'
+                            value='wallet'
+                            checked={keyOption === 'wallet'}
+                            onChange={e => {
+                              setKeyOption('wallet');
+                              if (maciKeypair) {
+                                handlePubKeyChange({
+                                  target: { value: maciKeypair.publicKey.serialize() }
+                                } as React.ChangeEvent<HTMLInputElement>);
+                              }
+                            }}
+                          />
+                          <span className={styles['radio-label']}>Use Connected Wallet Keypair</span>
+                        </label>
+                      )}
                       <label className={styles['radio-option']}>
                         <input
                           type='radio'
@@ -65,7 +70,7 @@ const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyC
                     </div>
                   </div>
 
-                  {keyOption === 'wallet' && (
+                  {keyOption === 'wallet' && !isPorto && (
                     <div className={styles['wallet-key-section']}>
                       {maciKeypair ? (
                         <div className={styles['key-details']}>
