@@ -31,9 +31,9 @@ const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyC
               <p className={styles.text}>We dont trust you 🤨, we have coordinator public key</p>
               {pollConfig === 1 && (
                 <div className={styles['public-input-container']}>
-                  <div className={styles['key-option-selector']}>
-                    <div className={styles['option-group']}>
-                      {!isPorto && (
+                  {!isPorto && (
+                    <div className={styles['key-option-selector']}>
+                      <div className={styles['option-group']}>
                         <label className={styles['radio-option']}>
                           <input
                             type='radio'
@@ -51,24 +51,24 @@ const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyC
                           />
                           <span className={styles['radio-label']}>Use Connected Wallet Keypair</span>
                         </label>
-                      )}
-                      <label className={styles['radio-option']}>
-                        <input
-                          type='radio'
-                          name='keyOption'
-                          value='manual'
-                          checked={keyOption === 'manual'}
-                          onChange={e => {
-                            setKeyOption('manual');
-                            handlePubKeyChange({
-                              target: { value: '' }
-                            } as React.ChangeEvent<HTMLInputElement>);
-                          }}
-                        />
-                        <span className={styles['radio-label']}>Enter Manually</span>
-                      </label>
+                        <label className={styles['radio-option']}>
+                          <input
+                            type='radio'
+                            name='keyOption'
+                            value='manual'
+                            checked={keyOption === 'manual'}
+                            onChange={e => {
+                              setKeyOption('manual');
+                              handlePubKeyChange({
+                                target: { value: '' }
+                              } as React.ChangeEvent<HTMLInputElement>);
+                            }}
+                          />
+                          <span className={styles['radio-label']}>Enter Manually</span>
+                        </label>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {keyOption === 'wallet' && !isPorto && (
                     <div className={styles['wallet-key-section']}>
