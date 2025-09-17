@@ -49,14 +49,17 @@ export interface IPollContextType {
   initialVoiceCredits: number;
   pollStateIndex?: string;
   isRegistered?: boolean;
-  maciKeypair?: Keypair;
+  maciKeypair?: Keypair | null;
   stateIndex?: string;
   onJoinPoll: (signupData?: string) => Promise<void>;
+  onSignup: () => Promise<void>;
   checkIsTallied: () => Promise<boolean>;
   checkMergeStatus: () => Promise<boolean>;
   refetchPoll: (options?: RefetchOptions) => Promise<QueryObserverResult<TransformedPoll | null, Error>>;
   dynamicPollStatus: PollStatus | null;
   isJoiningPoll: boolean;
+  isSignupLoading: boolean;
+  isPorto: boolean;
   isCheckingTallied: boolean;
   isCheckingUserJoinedPoll: boolean;
 }

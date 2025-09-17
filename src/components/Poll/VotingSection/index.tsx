@@ -33,9 +33,9 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     initialVoiceCredits: maxVotePerPerson,
     pollStateIndex,
     hasJoinedPoll: isUserJoined,
-    dynamicPollStatus
+    dynamicPollStatus,
+    maciKeypair
   } = usePollContext();
-  const { maciKeypair } = useSigContext();
   const { data: resultData, isLoading: loadingPollResults } = usePollResults();
   const {
     mode,

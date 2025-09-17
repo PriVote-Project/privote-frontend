@@ -2,13 +2,16 @@
 import { useSigContext } from '@/contexts/SigContext';
 import React from 'react';
 import styles from './JoinPollModal.module.css';
+import usePollContext from '@/hooks/usePollContext';
 
 interface StepOneProps {
   onNext: () => void;
 }
 
 export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
-  const { isRegistered, isLoading, onSignup, maciKeypair, deleteKeypair } = useSigContext();
+  const { maciKeypair, deleteKeypair } = useSigContext();
+  const { onSignup, isSignupLoading, isPorto, isRegistered } = usePollContext();
+
   const handleSignup = async () => {
     try {
       await onSignup();
@@ -68,7 +71,7 @@ export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
         )}
 
         {/* Keypair management section */}
-        {maciKeypair && (
+        {maciKeypair && !isPorto && (
           <div
             style={{
               padding: '16px',
@@ -125,8 +128,12 @@ export const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             </svg>
           </button>
         ) : (
-          <button className={`${styles.button} ${styles.primaryButton}`} onClick={handleSignup} disabled={isLoading}>
-            {isLoading ? (
+          <button
+            className={`${styles.button} ${styles.primaryButton}`}
+            onClick={handleSignup}
+            disabled={isSignupLoading}
+          >
+            {isSignupLoading ? (
               <>
                 <div className={styles.loader}></div>
                 Registering...
