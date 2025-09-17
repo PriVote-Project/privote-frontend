@@ -3,7 +3,7 @@ import type { GenericContractsDeclaration } from './types';
 const deployedContracts = {
   11155420: {
     privote: {
-      address: '0x6dfF303122c144a897938c1296aA85e857D2026E',
+      address: '0x250c7341E5651A3DF276A9f4fC6f9070226FeB32',
       abi: [
         {
           inputs: [
@@ -988,7 +988,7 @@ const deployedContracts = {
   },
   534351: {
     privote: {
-      address: '0xf9546331e90f7Ea41bfF3bC20c17752795a3D152',
+      address: '0x1a79b1998E7700Fc868f69a2a8230f06F1FDaB49',
       abi: [
         {
           inputs: [
@@ -1973,7 +1973,7 @@ const deployedContracts = {
   },
   84532: {
     privote: {
-      address: '0xd2e1877CaeD10750901993405A4096B5A11f3998',
+      address: '0x30d7DAd5D256C9df17C134e1524Ba8f0c3bB1268',
       abi: [
         {
           inputs: [
