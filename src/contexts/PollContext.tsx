@@ -546,7 +546,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     setPortoMaciStateIndex(stateIndex);
   }, []);
 
-  //
   useEffect(() => {
     if (!address || !isPorto || !poll) {
       setPortoMaciKeypair(null);
@@ -560,7 +559,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setPortoMaciKeypair(existingKeypair);
     } else {
       setPortoMaciKeypair(null);
-      generateKeypairForPorto(pollAddress, poll.endDate);
     }
   }, [address, isPorto, pollAddress, poll]);
 
