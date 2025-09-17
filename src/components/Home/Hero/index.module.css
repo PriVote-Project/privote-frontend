@@ -94,8 +94,8 @@
     display: flex;
   }
 
-  .create-poll {
-    display: none;
+  .actions {
+    flex-direction: column;
   }
 }
 
