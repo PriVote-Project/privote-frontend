@@ -340,7 +340,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setError('Poll not found');
       setIsSignupLoading(false);
 
-      notification.error('Poll not found!');
+      notification.error('Poll not found! Please refresh the page');
       return;
     }
 
@@ -433,7 +433,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         id: notificationId
       });
     }
-  }, [isConnected, isRegistered, maciKeypair, signer, privoteContract, generateKeypair, subgraphUrl]);
+  }, [isConnected, tempIsRegistered, tempMaciKeypair, poll, signer, privoteContract, generateKeypair, subgraphUrl]);
 
   const checkIsTallied = useCallback(async () => {
     if (!privoteContract || !signer || !poll) {
@@ -530,7 +530,15 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         console.log(err);
       }
     },
-    [address, isPorto]
+    [
+      address,
+      isPorto,
+      loadKeypairFromLocalStorage,
+      signMessageAsync,
+      client,
+      savePortoKeypairToLocalStorage,
+      setPortoMaciKeypair
+    ]
   );
 
   const updatePortoStatus = useCallback((isRegistered: boolean, stateIndex: string | undefined) => {
