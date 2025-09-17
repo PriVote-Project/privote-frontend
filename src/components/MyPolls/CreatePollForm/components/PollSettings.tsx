@@ -93,25 +93,24 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
         </div>
       )}
 
-      <div className={styles['input-field-container']}>
-        <label className={styles.label}>Select Vote Type</label>
-        <select
-          value={pollData.mode === null ? '' : pollData.mode}
-          onChange={onModeChange}
-          required
-          disabled={isVoteTypeDisabled}
-          style={{ opacity: isVoteTypeDisabled ? 0.6 : 1 }}
-        >
-          <option value=''>
-            {pollData.pollType === PollType.SINGLE_VOTE ? 'Full mode (automatically selected)' : 'Select Vote Type'}
-          </option>
-          {availableVoteTypes.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {pollData.pollType !== PollType.SINGLE_VOTE && (
+        <div className={styles['input-field-container']}>
+          <label className={styles.label}>Select Vote Type</label>
+          <select
+            value={pollData.mode === null ? '' : pollData.mode}
+            onChange={onModeChange}
+            required
+            disabled={isVoteTypeDisabled}
+            style={{ opacity: isVoteTypeDisabled ? 0.6 : 1 }}
+          >
+            {availableVoteTypes.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </>
   );
 };
