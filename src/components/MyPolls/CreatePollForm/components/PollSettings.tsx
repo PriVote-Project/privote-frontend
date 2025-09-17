@@ -103,6 +103,7 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
             disabled={isVoteTypeDisabled}
             style={{ opacity: isVoteTypeDisabled ? 0.6 : 1 }}
           >
+            <option value=''>Select Vote Type</option>
             {availableVoteTypes.map(({ value, label }) => (
               <option key={value} value={value}>
                 {label}
