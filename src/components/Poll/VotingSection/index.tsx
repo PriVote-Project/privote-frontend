@@ -20,7 +20,6 @@ interface VotingSectionProps {
 }
 
 export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
-  // const [AnonAadhaar] = useAnonAadhaar()
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isContentOverflowing, setIsContentOverflowing] = useState(false);
@@ -94,24 +93,16 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Check initially
     checkIfMobile();
-
-    // Add event listener for window resize
     window.addEventListener('resize', checkIfMobile);
-
-    // Cleanup
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   useEffect(() => {
     const checkOverflow = () => {
       if (descriptionRef.current) {
-        // Get the line height from computed styles
-        const lineHeight = parseInt(window.getComputedStyle(descriptionRef.current).lineHeight);
-        const maxHeight = lineHeight * 4; // Height for 4 lines
+        const maxHeight = 94;
 
-        // Check if content height is greater than max height
         setIsContentOverflowing(descriptionRef.current.scrollHeight > maxHeight);
       }
     };
@@ -169,6 +160,8 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     setCoordinatorPubKey([result[0], result[1]]);
   }, [coordinatorPubKeyResult]);
 
+  console.log(isMobile, isExpanded, isContentOverflowing);
+
   return (
     <div className={styles['candidate-container']}>
       <div className={styles.content}>
@@ -186,7 +179,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
                   isMobile ? (isExpanded ? pollDescription : pollDescription.substring(0, 220)) : pollDescription
                 }
               />
-              {isMobile && (
+              {isMobile && isContentOverflowing && (
                 <span className={styles.showMoreButton} onClick={() => setIsExpanded(!isExpanded)}>
                   {' '}
                   {isExpanded ? 'Show less' : '...read more'}

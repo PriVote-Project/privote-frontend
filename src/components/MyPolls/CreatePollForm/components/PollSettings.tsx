@@ -53,8 +53,8 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
         <label className={styles.label}>Select Poll Type</label>
         <select required value={pollData.pollType || ''} onChange={onPollTypeChange}>
           <option value=''>Select Poll Type</option>
-          <option value={PollType.SINGLE_VOTE}>Single Candidate Select</option>
-          <option value={PollType.MULTIPLE_VOTE}>Multiple Candidate Select</option>
+          <option value={PollType.SINGLE_VOTE}>Single Choice</option>
+          <option value={PollType.MULTIPLE_VOTE}>Multiple Choice</option>
         </select>
       </div>
 
@@ -93,7 +93,7 @@ export const PollSettings = ({ pollData, onPollTypeChange, onModeChange, onMaxVo
         </div>
       )}
 
-      {pollData.pollType !== PollType.SINGLE_VOTE && (
+      {pollData.pollType === PollType.MULTIPLE_VOTE && (
         <div className={styles['input-field-container']}>
           <label className={styles.label}>Select Vote Type</label>
           <select

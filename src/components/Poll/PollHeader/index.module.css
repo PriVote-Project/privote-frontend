@@ -193,3 +193,15 @@
   flex-direction: row;
   gap: 24px;
 }
+
+@media (max-width: 600px) {
+  .end {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .status {
+    width: 225px;
+  }
+}

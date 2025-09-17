@@ -136,3 +136,11 @@
 .joinButton:disabled::before {
   opacity: 0;
 }
+
+@media (max-width: 600px) {
+  .joinButton {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-width: 120px;
+  }
+}

@@ -862,6 +862,12 @@
   box-shadow: 0 0 8px rgba(250, 117, 248, 0.6);
 }
 
+.nextStepsTitle,
+.summaryTitle {
+  display: flex;
+  align-items: center;
+}
+
 /* Animations */
 @keyframes subtleFloat {
   0%,
@@ -1160,13 +1166,12 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .modalContent {
-    padding: 24px 20px;
-    margin: -20px;
+    padding: 20px 16px;
     min-height: 450px;
   }
 
   .modalHeader {
-    padding: 24px 20px 20px 20px;
+    padding: 20px 16px 16px 16px;
     margin: -24px -20px 0 -20px;
   }
 
@@ -1180,14 +1185,14 @@
   }
 
   .stepIndicator {
+    margin-top: 20px;
     margin-bottom: 32px;
   }
 
   .stepFooter {
     flex-direction: column;
     gap: 16px;
-    margin-top: 32px;
-    padding-top: 24px;
+    padding-top: 14px;
   }
 
   .button {
@@ -1222,13 +1227,17 @@
     margin-bottom: 20px;
   }
 
+  .policyWrapper {
+    margin-bottom: 0px;
+  }
+
   .statusIcon {
     width: 28px;
     height: 28px;
   }
 
   .statusText {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .requirementsTitle {
@@ -1240,19 +1249,30 @@
   }
 
   .summaryText {
-    font-size: 15px;
+    font-size: 14px;
+  }
+
+  .nextStepsTitle {
+    font-size: 18px;
+  }
+
+  .nextStepsList {
+    font-size: 14px;
+  }
+
+  .nextStepsSection {
+    padding: 16px 20px;
   }
 }
 
 @media (max-width: 480px) {
   .modalContent {
-    padding: 20px 16px;
-    margin: -16px;
+    padding: 16px 12px;
     min-height: 400px;
   }
 
   .modalHeader {
-    padding: 20px 16px 16px 16px;
+    padding: 16px 12px 12px 12px;
     margin: -20px -16px 0 -16px;
   }
 
@@ -1288,7 +1308,7 @@
   .eligibilityStatus,
   .joinSummary,
   .policyWrapper {
-    padding: 14px 16px;
+    padding: 8px 10px;
   }
 
   .statusIcon {
@@ -1296,8 +1316,24 @@
     height: 24px;
   }
 
+  .nextStepsList,
+  .statusText,
+  .summaryText {
+    font-size: 12px;
+  }
+
+  .requirementsTitle,
+  .summaryTitle,
+  .nextStepsTitle {
+    font-size: 16px;
+  }
+
   .eligibilityIcon {
     width: 20px;
     height: 20px;
+  }
+
+  .nextStepsSection {
+    padding: 8px 12px;
   }
 }

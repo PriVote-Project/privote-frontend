@@ -53,7 +53,7 @@ const WithImageInput = ({
             <div className={styles['selected-file']}>
               {preview ? (
                 <div className={styles['file-preview']}>
-                  <Image src={preview} alt='Preview' className={styles['image-preview']} />
+                  <img src={preview} alt='Preview' className={styles['image-preview']} />
                   <button onClick={onFileRemove} className={styles['remove-file-btn']} type='button'>
                     <IoMdClose size={16} />
                   </button>
