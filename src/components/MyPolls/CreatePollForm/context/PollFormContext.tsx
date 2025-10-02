@@ -76,7 +76,7 @@ export const PollFormProvider = ({ children }: { children: ReactNode }) => {
   const [files, setFiles] = useState<(File | null)[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [candidateSelection, setCandidateSelection] = useState<'none' | 'withImage' | 'withoutImage'>('none');
-  const [pollConfig, setPollConfig] = useState(0);
+  const [pollConfig, setPollConfig] = useState(2);
 
   const { slugs } = useAppConstants();
   const { checkBalance } = useFaucetContext();
