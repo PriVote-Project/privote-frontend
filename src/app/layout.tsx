@@ -11,14 +11,12 @@ const satoshiRegular = localFont({
   weight: '400'
 });
 
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : `http://localhost:${process.env.PORT || 3000}`;
-const imageUrl = `${baseUrl}/logo.svg`;
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${process.env.PORT || 3000}`);
 
 const title = 'Privote';
 const titleTemplate = '%s | Privote';
-const description = 'Privote: The all new way of voting through MACI';
+const description = 'Privote: The all new way of voting through MACI. Private, secure, and verifiable voting for web3.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -27,30 +25,48 @@ export const metadata: Metadata = {
     template: titleTemplate
   },
   description,
+  keywords: ['voting', 'MACI', 'privacy', 'blockchain', 'web3', 'polls', 'governance', 'zero-knowledge'],
+  authors: [{ name: 'Privote' }],
+  creator: 'Privote',
   openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: baseUrl,
+    siteName: 'Privote',
     title: {
       default: title,
       template: titleTemplate
     },
     description,
-    images: [
-      {
-        url: imageUrl
-      }
-    ]
+    // opengraph-image.tsx will be automatically used
   },
   twitter: {
     card: 'summary_large_image',
-    images: [imageUrl],
     title: {
       default: title,
       template: titleTemplate
     },
-    description
+    description,
+    creator: '@privote',
+    site: '@privote',
+    // opengraph-image.tsx will be used for Twitter as well
   },
   icons: {
-    icon: '/logo.svg'
-  }
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
