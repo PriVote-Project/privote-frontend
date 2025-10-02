@@ -6,7 +6,7 @@ import { Keypair, PrivateKey } from '@maci-protocol/domainobjs';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { keccak256 } from 'viem';
 import { useAccount, useSignMessage } from 'wagmi';
-import { SIGNATURE_MESSAGE } from '@/utils/constants';
+import { SIGNATURE_MESSAGE, PORTO_CONNECTOR_NAME } from '@/utils/constants';
 import { generateKeypairFromSeed } from '@/utils/keypair';
 
 interface ISigContext {
@@ -29,7 +29,7 @@ export default function SigContextProvider({ children }: { children: React.React
 
   const { signMessageAsync } = useSignMessage();
   const { subgraphUrl } = useAppConstants();
-  const isPorto = connector?.name === 'Porto';
+  const isPorto = connector?.name === PORTO_CONNECTOR_NAME;
 
   // constants
   const CACHE_EXPIRY_HOURS = 72;
