@@ -86,7 +86,7 @@ const UserPoll = () => {
 
   return (
     <div className={styles['main-container']}>
-      <div>
+      <div className={styles['poll-container']}>
         <PollHeader />
         <VotingSection pollAddress={poll.id} />
       </div>
