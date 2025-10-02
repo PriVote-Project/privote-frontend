@@ -1,4 +1,5 @@
 import { Background, Header, Providers } from '@/components/shared';
+import { Analytics } from '@vercel/analytics/next';
 import '@rainbow-me/rainbowkit/styles.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
@@ -11,7 +12,8 @@ const satoshiRegular = localFont({
   weight: '400'
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${process.env.PORT || 3000}`);
 
 const title = 'Privote';
@@ -37,7 +39,7 @@ export const metadata: Metadata = {
       default: title,
       template: titleTemplate
     },
-    description,
+    description
     // opengraph-image.tsx will be automatically used
   },
   twitter: {
@@ -48,7 +50,7 @@ export const metadata: Metadata = {
     },
     description,
     creator: '@privote',
-    site: '@privote',
+    site: '@privote'
     // opengraph-image.tsx will be used for Twitter as well
   },
   icons: {
@@ -64,9 +66,9 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+      'max-snippet': -1
+    }
+  }
 };
 
 export default function RootLayout({
@@ -88,6 +90,7 @@ export default function RootLayout({
           <Header />
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
