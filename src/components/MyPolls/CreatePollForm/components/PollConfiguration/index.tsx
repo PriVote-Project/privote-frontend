@@ -5,12 +5,11 @@ import styles from './index.module.css';
 import { useSigContext } from '@/contexts/SigContext';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { PORTO_CONNECTOR_NAME } from '@/utils/constants';
 
 const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyChange }: PollConfigurationProps) => {
   const { maciKeypair, deleteKeypair, generateKeypair } = useSigContext();
   const { connector } = useAccount();
-  const isPorto = connector?.name === PORTO_CONNECTOR_NAME;
+  const isPorto = connector?.name === 'Porto';
   const [keyOption, setKeyOption] = useState<'wallet' | 'manual'>(() => (isPorto ? 'manual' : 'wallet'));
 
   useEffect(() => {
