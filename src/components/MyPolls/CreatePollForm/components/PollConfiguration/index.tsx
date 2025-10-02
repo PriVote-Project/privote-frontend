@@ -3,13 +3,14 @@ import { type PollConfigurationProps } from '../../types';
 import WithoutImageInput from '../WithoutImageInput';
 import styles from './index.module.css';
 import { useSigContext } from '@/contexts/SigContext';
+import { PORTO_CONNECTOR_ID } from '@/utils/constants';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const PollConfiguration = ({ setPollConfig, pollConfig, publicKey, handlePubKeyChange }: PollConfigurationProps) => {
   const { maciKeypair, deleteKeypair, generateKeypair } = useSigContext();
   const { connector } = useAccount();
-  const isPorto = connector?.name === 'Porto';
+  const isPorto = connector?.id === PORTO_CONNECTOR_ID;
   const [keyOption, setKeyOption] = useState<'wallet' | 'manual'>(() => (isPorto ? 'manual' : 'wallet'));
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
 import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollStatus } from '@/types';
-import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE } from '@/utils/constants';
+import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE, PORTO_CONNECTOR_ID } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
 import { computePollStatus, notifyStatusChange, shouldNotifyStatusChange } from '@/utils/pollStatus';
 import { getJoinedUserData, getKeys, getSignedupUserData } from '@/utils/subgraph';
@@ -67,7 +67,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
     useSigContext();
   const { checkBalance } = useFaucetContext();
-  const isPorto = connector?.name === 'Porto';
+  const isPorto = connector?.id === PORTO_CONNECTOR_ID;
 
   // temp variables
   const unifiedState = useMemo(() => {
