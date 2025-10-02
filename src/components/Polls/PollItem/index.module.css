@@ -46,20 +46,31 @@
 .container {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
   width: 100%;
 }
 
-.left,
+.left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0; /* Allow flex item to shrink below content size */
+}
+
 .right {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0; /* Prevent right section from shrinking */
+  min-width: fit-content;
 }
 
 .heading {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0; /* Allow heading to shrink */
+  width: 100%;
 }
 
 .heading > h2 {
@@ -74,6 +85,8 @@
   -webkit-line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0; /* Required for text-overflow: ellipsis to work in flex container */
 }
 .left > p,
 .right > p {
