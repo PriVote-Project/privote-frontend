@@ -2,6 +2,7 @@
 import { FaucetModal } from '@/components/shared';
 import { supportedChains } from '@/config/chains';
 import { notification } from '@/utils/notification';
+import { PORTO_CONNECTOR_NAME } from '@/utils/constants';
 import { createContext, useEffect, useState } from 'react';
 import { useAccount, useBalance, useChainId } from 'wagmi';
 import { IFaucetContext } from './types';
@@ -22,7 +23,7 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkBalance = () => {
     // Always return true for Porto connector
-    if (connector?.name === 'Porto') {
+    if (connector?.name === PORTO_CONNECTOR_NAME) {
       console.log('Porto connector detected');
       return false;
     }

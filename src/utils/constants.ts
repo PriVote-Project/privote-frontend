@@ -24,6 +24,9 @@ export const DEFAULT_IVCP_DATA = '0x';
 export const ONE_MINUTE_MS = 60 * 1000;
 export const ONE_HOUR_MS = 60 * 60 * 1000;
 
+// Wallet connector names
+export const PORTO_CONNECTOR_NAME = 'Email or Device Key';
+
 export const POLICY_ICONS = {
   [PollPolicyType.AnonAadhaar]: '/icons/aadhaar-icon.svg',
   [PollPolicyType.EAS]: '/icons/eas-icon.png',
