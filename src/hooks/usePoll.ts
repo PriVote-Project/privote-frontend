@@ -5,6 +5,7 @@ import { fetcher } from '@/utils/fetcher';
 import { useQuery } from '@tanstack/react-query';
 import useAppConstants from './useAppConstants';
 import { getPollStatus } from './usePolls';
+import { Hex } from 'viem';
 
 // Map numeric indices back to string types
 const pollTypeIndexToString: Record<number, keyof typeof PollType> = {
@@ -102,7 +103,8 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
         status: getPollStatus(data.poll),
         pollType: pollTypeString,
         mode: modeString,
-        coordinatorPublicKey: pubKey ? [BigInt(pubKey[0]), BigInt(pubKey[1])] : undefined
+        coordinatorPublicKey: pubKey ? [BigInt(pubKey[0]), BigInt(pubKey[1])] : undefined,
+        privoteContractAddress: data.poll.maci.id as Hex
       };
 
       return transformedPoll;

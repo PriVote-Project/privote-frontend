@@ -17,6 +17,10 @@ export type PollOption = {
   cid: string;
 };
 
+export interface IMACI {
+  id: string;
+}
+
 export interface RawPoll {
   id: string;
   pollId: string;
@@ -35,6 +39,7 @@ export interface RawPoll {
   totalSignups?: string;
   numMessages?: string;
   pollUsers?: PollUser[];
+  maci: IMACI;
 }
 
 export interface Poll extends RawPoll {
@@ -99,4 +104,5 @@ export type TransformedPoll = RawPoll & {
   status: PollStatus;
   pollType: PollType;
   mode: EMode;
+  privoteContractAddress: Hex;
 };

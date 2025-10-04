@@ -2,7 +2,6 @@ import useAppConstants from '@/hooks/useAppConstants';
 import useEthersSigner from '@/hooks/useEthersSigner';
 import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
-import usePrivoteContract from '@/hooks/usePrivoteContract';
 import { PollStatus } from '@/types';
 import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE, PORTO_CONNECTOR_ID } from '@/utils/constants';
 import { handleNotice, notification } from '@/utils/notification';
@@ -63,7 +62,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   } = usePoll({ pollAddress });
 
   const { subgraphUrl } = useAppConstants();
-  const privoteContract = usePrivoteContract();
+  const privoteContractAddress = poll?.privoteContractAddress;
   const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
     useSigContext();
   const { checkBalance } = useFaucetContext();
@@ -155,11 +154,11 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setError(undefined);
       setIsLoading(true);
 
-      if (!signer) {
-        setError('Signer not found');
+      if (!signer || !isConnected) {
+        setError('Wallet not connected');
         setIsLoading(false);
 
-        notification.error('Signer not found');
+        notification.error('Wallet not connected');
         return;
       }
       if (!tempMaciKeypair) {
@@ -183,7 +182,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         notification.error('State index not found! Register with privote first');
         return;
       }
-      if (!privoteContract) {
+      if (!privoteContractAddress) {
         setError('Privote contract not found');
         setIsLoading(false);
 
@@ -237,7 +236,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
       let errorMessage: string = '';
       const joinedPoll = await joinPoll({
-        maciAddress: privoteContract.address,
+        maciAddress: privoteContractAddress,
         privateKey: tempMaciKeypair.privateKey.serialize(),
         signer,
         pollId: BigInt(poll.pollId),
@@ -293,7 +292,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       tempStateIndex,
       poll,
       getInclusionProof,
-      privoteContract,
+      privoteContractAddress,
       loadArtifacts,
       artifactsError,
       checkBalance
@@ -320,7 +319,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
 
-    if (!privoteContract) {
+    if (!privoteContractAddress) {
       setError('Privote contract not found');
       setIsSignupLoading(false);
 
@@ -407,7 +406,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     });
     try {
       const { stateIndex: _stateIndex } = await signup({
-        maciAddress: privoteContract.address,
+        maciAddress: privoteContractAddress,
         maciPublicKey: keypair.publicKey.serialize() as string,
         sgData: DEFAULT_SG_DATA,
         signer
@@ -433,17 +432,26 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         id: notificationId
       });
     }
-  }, [isConnected, tempIsRegistered, tempMaciKeypair, poll, signer, privoteContract, generateKeypair, subgraphUrl]);
+  }, [
+    isConnected,
+    tempIsRegistered,
+    tempMaciKeypair,
+    poll,
+    signer,
+    privoteContractAddress,
+    generateKeypair,
+    subgraphUrl
+  ]);
 
   const checkIsTallied = useCallback(async () => {
-    if (!privoteContract || !signer || !poll) {
+    if (!privoteContractAddress || !signer || !poll) {
       return false;
     }
 
     setIsCheckingTallied(true);
     try {
       const isPollTallied = await isTallied({
-        maciAddress: privoteContract.address,
+        maciAddress: privoteContractAddress,
         pollId: poll.pollId.toString(),
         signer
       });
@@ -451,7 +459,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     } finally {
       setIsCheckingTallied(false);
     }
-  }, [privoteContract, signer, poll]);
+  }, [privoteContractAddress, signer, poll]);
 
   const checkMergeStatus = useCallback(async () => {
     if (!client) return false;

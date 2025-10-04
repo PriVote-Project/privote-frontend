@@ -58,6 +58,9 @@ export const GET_POLL_QUERY = gql`
           createdAt
         }
       }
+      maci {
+        id
+      }
     }
   }
 `;

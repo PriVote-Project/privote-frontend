@@ -160,8 +160,6 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     setCoordinatorPubKey([result[0], result[1]]);
   }, [coordinatorPubKeyResult]);
 
-  console.log(isMobile, isExpanded, isContentOverflowing);
-
   return (
     <div className={styles['candidate-container']}>
       <div className={styles.content}>

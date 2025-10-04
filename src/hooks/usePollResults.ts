@@ -2,14 +2,13 @@ import { getResults, type IResult } from '@maci-protocol/sdk/browser';
 import { useQuery, type Query } from '@tanstack/react-query';
 import useEthersSigner from './useEthersSigner';
 import usePollContext from './usePollContext';
-import usePrivoteContract from './usePrivoteContract';
 import { EMode } from '@/types';
 import { DEFAULT_VOICE_CREDITS } from '@/utils/constants';
 
 const usePollResults = () => {
   const { poll, checkIsTallied, dynamicPollStatus } = usePollContext();
   const signer = useEthersSigner();
-  const privoteContractAddress = usePrivoteContract()?.address;
+  const privoteContractAddress = poll?.privoteContractAddress;
   const { pollId, mode } = poll || {};
   const status = dynamicPollStatus || poll?.status;
 
@@ -62,11 +61,6 @@ const usePollResults = () => {
         results,
         total
       };
-    },
-    // refetch every 10 seconds if the vote is not ended
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    refetchInterval: ({ state }: Query<any, any, any, any>) => {
-      return state?.data?.voteEnded ? false : 10000;
     },
     refetchOnWindowFocus: true
   });

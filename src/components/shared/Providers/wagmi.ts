@@ -1,9 +1,11 @@
-import { supportedChains, transports } from '@/config/chains';
+import { supportedChains } from '@/config/chains';
 import { PORTO_CONNECTOR_ID, PORTO_CONNECTOR_NAME } from '@/utils/constants';
+import { getInfuraHttpUrl } from '@/utils/networks';
 import { connectorsForWallets, Wallet, type WalletDetailsParams } from '@rainbow-me/rainbowkit';
-import { injectedWallet, rainbowWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
+import { injectedWallet, rainbowWallet, metaMaskWallet } from '@rainbow-me/rainbowkit/wallets';
 import { porto } from 'porto/wagmi';
 import { createConfig, createConnector } from 'wagmi';
+import { createClient, fallback, http } from 'viem';
 
 // Custom Porto wallet configuration for proper RainbowKit integration
 const portoWallet = (): Wallet => ({
@@ -42,5 +44,18 @@ export const connectors = connectorsForWallets(
 export const config = createConfig({
   connectors,
   chains: supportedChains,
-  transports: transports
+  client({ chain }) {
+    let rpcFallbacks = [http()];
+
+    const infuraHttpUrl = getInfuraHttpUrl(chain.id);
+    if (infuraHttpUrl) {
+      rpcFallbacks = [http(), http(infuraHttpUrl)];
+    }
+
+    return createClient({
+      chain,
+      transport: fallback(rpcFallbacks),
+      pollingInterval: 30000
+    });
+  }
 });
