@@ -46,14 +46,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   // Artifacts from custom hook (lazy loading - only load when user hasn't joined the poll)
   const { artifacts, error: artifactsError, loadArtifacts } = usePollArtifacts(!hasJoinedPoll);
 
-  // Wallet variables
-  const { signMessageAsync } = useSignMessage();
-  const chainId = useChainId();
-  const { switchChain, switchChainAsync } = useSwitchChain();
-  const signer = useEthersSigner();
-  const client = usePublicClient();
-  const { address, isConnected, connector } = useAccount();
-
   // Poll
   const {
     data: poll,
@@ -63,8 +55,16 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     refetch: refetchPoll
   } = usePoll({ pollAddress });
 
-  const { subgraphUrl } = useAppConstants();
+  // Wallet variables
+  const { signMessageAsync } = useSignMessage();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
+  const client = usePublicClient();
+  const { address, isConnected, connector } = useAccount();
+
   const privoteContractAddress = poll?.privoteContractAddress;
+  const { shadowChain, subgraphUrl } = useAppConstants();
+  const signer = useEthersSigner({ chainId: shadowChain });
   const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
     useSigContext();
   const { checkBalance } = useFaucetContext();
@@ -147,7 +147,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         console.log('Switched chain', result);
 
         // Wait for wallet state to fully synchronize after chain switch
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         return true;
       } catch (error) {
@@ -161,12 +161,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   );
 
   const getInclusionProof = useCallback(async () => {
-    if (!tempStateIndex) {
-      return;
-    }
-    if (!tempMaciKeypair) {
-      return;
-    }
+    if (!tempStateIndex) return;
+    if (!tempMaciKeypair) return;
+    if (!subgraphUrl) return;
     try {
       const keys = await getKeys(subgraphUrl);
       const signupTree = generateSignUpTreeFromKeys(keys);
@@ -202,8 +199,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         return;
       }
 
-      if (poll.chainId && poll.chainId !== chainId) {
-        const switchSuccess = await handleChainSwitch(poll.chainId);
+      if (shadowChain !== chainId) {
+        const switchSuccess = await handleChainSwitch(shadowChain);
         if (!switchSuccess) {
           setIsLoading(false);
           return;
@@ -371,8 +368,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
 
-    if (poll.chainId && poll.chainId !== chainId) {
-      const switchSuccess = await handleChainSwitch(poll.chainId);
+    if (shadowChain !== chainId) {
+      const switchSuccess = await handleChainSwitch(shadowChain);
       if (!switchSuccess) {
         setIsSignupLoading(false);
         return;

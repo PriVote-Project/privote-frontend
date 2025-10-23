@@ -2,25 +2,28 @@
 import { supportedChains } from '@/config/chains';
 import { type ChainConstants, appConstants } from '@/config/constants';
 import { SUBGRAPH_PROJECT_ID, SUBGRAPH_VERSION } from '@/utils/constants';
-import { createContext, useMemo } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { useChainId } from 'wagmi';
 
 export interface IAppConstantsContext extends ChainConstants {
   isChainSupported: boolean;
   subgraphUrl: string;
+  shadowChain: number;
+  updateChain: (chainId: number) => void;
 }
 
 export const AppConstantsContext = createContext<IAppConstantsContext | null>(null);
 
 const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
-  const connectedChainId = useChainId();
+  const currentChainId = useChainId();
+  const [shadowChain, setShadowChain] = useState(currentChainId);
 
   const constants = useMemo(() => {
-    const effectiveChainId = connectedChainId ?? supportedChains[0].id;
+    const effectiveChainId = shadowChain ?? supportedChains[0].id;
     return (
       appConstants[effectiveChainId as (typeof supportedChains)[number]['id']] ?? appConstants[supportedChains[0].id]
     );
-  }, [connectedChainId]);
+  }, [shadowChain]);
 
   const subgraphUrl = useMemo(() => {
     // Validate environment variables
@@ -36,10 +39,20 @@ const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
     return `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
   }, [constants.slugs.subgraph]);
 
-  const isChainSupported = supportedChains.some(chain => chain.id === connectedChainId);
+  const isChainSupported = supportedChains.some(chain => chain.id === shadowChain);
+
+  const updateChain = (chainId: number) => {
+    if (supportedChains.some(chain => chain.id === chainId)) {
+      setShadowChain(chainId);
+    }
+  };
+
+  useEffect(() => {
+    if (shadowChain !== currentChainId) setShadowChain(currentChainId);
+  }, [currentChainId]);
 
   return (
-    <AppConstantsContext.Provider value={{ ...constants, isChainSupported, subgraphUrl }}>
+    <AppConstantsContext.Provider value={{ ...constants, isChainSupported, shadowChain, subgraphUrl, updateChain }}>
       {children}
     </AppConstantsContext.Provider>
   );
