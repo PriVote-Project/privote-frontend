@@ -736,14 +736,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     })();
   }, [tempIsRegistered, tempStateIndex, tempMaciKeypair, pollAddress, signer, subgraphUrl]);
 
-  // Check if poll is on the same chain as the user
-  useEffect(() => {
-    if (!poll || !poll.chainId) return;
-    if (poll.chainId !== chainId) {
-      switchChain({ chainId: poll.chainId });
-    }
-  }, [poll, chainId]);
-
   const value = useMemo<IPollContextType>(
     () => ({
       isJoiningPoll: isLoading,
