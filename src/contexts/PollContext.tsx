@@ -145,6 +145,10 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         }
 
         console.log('Switched chain', result);
+
+        // Wait for wallet state to fully synchronize after chain switch
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
         return true;
       } catch (error) {
         console.log('Error switching chain:', error);
