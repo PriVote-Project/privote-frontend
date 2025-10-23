@@ -129,6 +129,33 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   }, [poll, computeDynamicPollStatus, dynamicPollStatus]);
 
   // Functions
+  const handleChainSwitch = useCallback(
+    async (targetChainId: number): Promise<boolean> => {
+      if (targetChainId === chainId) {
+        return true;
+      }
+
+      try {
+        const result = await switchChainAsync({ chainId: targetChainId });
+
+        if (result.id !== targetChainId) {
+          setError('Error switching chain');
+          notification.error('Error switching chain');
+          return false;
+        }
+
+        console.log('Switched chain', result);
+        return true;
+      } catch (error) {
+        console.log('Error switching chain:', error);
+        setError('Error switching chain');
+        notification.error('Error switching chain');
+        return false;
+      }
+    },
+    [chainId, switchChainAsync]
+  );
+
   const getInclusionProof = useCallback(async () => {
     if (!tempStateIndex) {
       return;
@@ -172,23 +199,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       }
 
       if (poll.chainId && poll.chainId !== chainId) {
-        try {
-          const result = await switchChainAsync({ chainId: poll.chainId });
-
-          if (result.id !== poll.chainId) {
-            setError('Error switching chain');
-            setIsLoading(false);
-
-            notification.error('Error switching chain');
-            return;
-          }
-          console.log('Switched chain', result);
-        } catch (error) {
-          console.log('Error switching chain:', error);
-          setError('Error switching chain');
+        const switchSuccess = await handleChainSwitch(poll.chainId);
+        if (!switchSuccess) {
           setIsLoading(false);
-
-          notification.error('Error switching chain');
           return;
         }
       }
@@ -320,7 +333,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       privoteContractAddress,
       loadArtifacts,
       artifactsError,
-      checkBalance
+      checkBalance,
+      handleChainSwitch,
+      chainId
     ]
   );
 
@@ -353,16 +368,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     }
 
     if (poll.chainId && poll.chainId !== chainId) {
-      try {
-        const result = await switchChainAsync({ chainId: poll.chainId });
-
-        console.log('Switched chain', result);
-      } catch (error) {
-        console.log('Error switching chain:', error);
-        setError('Error switching chain');
+      const switchSuccess = await handleChainSwitch(poll.chainId);
+      if (!switchSuccess) {
         setIsSignupLoading(false);
-
-        notification.error('Error switching chain');
         return;
       }
     }
@@ -480,7 +488,13 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     signer,
     privoteContractAddress,
     generateKeypair,
-    subgraphUrl
+    subgraphUrl,
+    handleChainSwitch,
+    chainId,
+    checkBalance,
+    isPorto,
+    pollAddress,
+    updateStatus
   ]);
 
   const checkIsTallied = useCallback(async () => {
