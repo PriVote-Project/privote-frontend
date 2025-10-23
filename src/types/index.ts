@@ -105,4 +105,5 @@ export type TransformedPoll = RawPoll & {
   pollType: PollType;
   mode: EMode;
   privoteContractAddress: Hex;
+  chainId?: number;
 };

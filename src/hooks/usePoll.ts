@@ -33,6 +33,7 @@ export function getEModeString(modeIndex: number): EMode {
 
 interface PollData {
   poll: RawPoll;
+  chainId?: number;
 }
 
 interface UsePollParams {
@@ -40,7 +41,7 @@ interface UsePollParams {
 }
 
 const usePoll = ({ pollAddress }: UsePollParams) => {
-  const { subgraphUrl } = useAppConstants();
+  const { subgraphUrl, chain } = useAppConstants();
   return useQuery<TransformedPoll | null>({
     queryKey: ['poll', pollAddress],
     queryFn: async () => {
@@ -65,6 +66,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
 
       // First try the primary subgraph URL
       let data = await tryFetchFromSubgraph(subgraphUrl);
+      if (data) data.chainId = chain.id;
 
       // If not found and we're using a specific chain, try all other chains
       if (!data?.poll) {
@@ -82,6 +84,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
 
           data = await tryFetchFromSubgraph(alternativeUrl);
           if (data?.poll) {
+            data.chainId = chain.id;
             console.log(`Poll found on ${chain.name} subgraph`);
             break;
           }
@@ -104,7 +107,8 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
         pollType: pollTypeString,
         mode: modeString,
         coordinatorPublicKey: pubKey ? [BigInt(pubKey[0]), BigInt(pubKey[1])] : undefined,
-        privoteContractAddress: data.poll.maci.id as Hex
+        privoteContractAddress: data.poll.maci.id as Hex,
+        chainId: data.chainId
       };
 
       return transformedPoll;

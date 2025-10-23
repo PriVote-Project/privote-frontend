@@ -12,7 +12,7 @@ import { generateSignUpTreeFromKeys, isTallied, joinPoll, signup } from '@maci-p
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Hex, parseAbi, keccak256 } from 'viem';
-import { usePublicClient, useAccount, useSignMessage } from 'wagmi';
+import { usePublicClient, useAccount, useSignMessage, useChainId, useSwitchChain } from 'wagmi';
 import { type IPollContextType } from './types';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import { useSigContext } from './SigContext';
@@ -48,6 +48,8 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
   // Wallet variables
   const { signMessageAsync } = useSignMessage();
+  const chainId = useChainId();
+  const { switchChain, switchChainAsync } = useSwitchChain();
   const signer = useEthersSigner();
   const client = usePublicClient();
   const { address, isConnected, connector } = useAccount();
@@ -161,6 +163,36 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         notification.error('Wallet not connected');
         return;
       }
+
+      if (!poll || !poll.pollId) {
+        setIsLoading(false);
+
+        notification.error('Poll not found');
+        return;
+      }
+
+      if (poll.chainId && poll.chainId !== chainId) {
+        try {
+          const result = await switchChainAsync({ chainId: poll.chainId });
+
+          if (result.id !== poll.chainId) {
+            setError('Error switching chain');
+            setIsLoading(false);
+
+            notification.error('Error switching chain');
+            return;
+          }
+          console.log('Switched chain', result);
+        } catch (error) {
+          console.log('Error switching chain:', error);
+          setError('Error switching chain');
+          setIsLoading(false);
+
+          notification.error('Error switching chain');
+          return;
+        }
+      }
+
       if (!tempMaciKeypair) {
         setError('Keypair not found');
         setIsLoading(false);
@@ -187,13 +219,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setIsLoading(false);
 
         notification.error('Privote contract not found! Connect to a supported chain');
-        return;
-      }
-
-      if (!poll || !poll.pollId) {
-        setIsLoading(false);
-
-        notification.error('Poll not found');
         return;
       }
 
@@ -311,23 +336,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
 
-    if (tempIsRegistered) {
-      setError('Already registered');
-      setIsSignupLoading(false);
-
-      notification.error('Already registered');
-      return;
-    }
-
-    if (!privoteContractAddress) {
-      setError('Privote contract not found');
-      setIsSignupLoading(false);
-
-      notification.error('Privote contract not found! Connect to a supported chain');
-      return;
-    }
-
-    if (!signer) {
+    if (!signer || !poll) {
       setError('Signer not found');
       setIsSignupLoading(false);
 
@@ -340,6 +349,37 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setIsSignupLoading(false);
 
       notification.error('Poll not found! Please refresh the page');
+      return;
+    }
+
+    if (poll.chainId && poll.chainId !== chainId) {
+      try {
+        const result = await switchChainAsync({ chainId: poll.chainId });
+
+        console.log('Switched chain', result);
+      } catch (error) {
+        console.log('Error switching chain:', error);
+        setError('Error switching chain');
+        setIsSignupLoading(false);
+
+        notification.error('Error switching chain');
+        return;
+      }
+    }
+
+    if (!privoteContractAddress) {
+      setError('Privote contract not found');
+      setIsSignupLoading(false);
+
+      notification.error('Privote contract not found! Connect to a supported chain');
+      return;
+    }
+
+    if (tempIsRegistered) {
+      setError('Already registered');
+      setIsSignupLoading(false);
+
+      notification.error('Already registered');
       return;
     }
 
@@ -681,6 +721,14 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       }
     })();
   }, [tempIsRegistered, tempStateIndex, tempMaciKeypair, pollAddress, signer, subgraphUrl]);
+
+  // Check if poll is on the same chain as the user
+  useEffect(() => {
+    if (!poll || !poll.chainId) return;
+    if (poll.chainId !== chainId) {
+      switchChain({ chainId: poll.chainId });
+    }
+  }, [poll, chainId]);
 
   const value = useMemo<IPollContextType>(
     () => ({

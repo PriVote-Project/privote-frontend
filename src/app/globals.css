@@ -140,4 +140,5 @@ button:hover {
 .description a {
   text-decoration: underline;
   color: #7f58b7;
+  word-break: break-all;
 }
