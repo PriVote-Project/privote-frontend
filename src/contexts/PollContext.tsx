@@ -12,7 +12,7 @@ import { generateSignUpTreeFromKeys, isTallied, joinPoll, signup } from '@maci-p
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Hex, parseAbi, keccak256 } from 'viem';
-import { usePublicClient, useAccount, useSignMessage } from 'wagmi';
+import { usePublicClient, useAccount, useSignMessage, useChainId, useSwitchChain } from 'wagmi';
 import { type IPollContextType } from './types';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import { useSigContext } from './SigContext';
@@ -46,12 +46,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   // Artifacts from custom hook (lazy loading - only load when user hasn't joined the poll)
   const { artifacts, error: artifactsError, loadArtifacts } = usePollArtifacts(!hasJoinedPoll);
 
-  // Wallet variables
-  const { signMessageAsync } = useSignMessage();
-  const signer = useEthersSigner();
-  const client = usePublicClient();
-  const { address, isConnected, connector } = useAccount();
-
   // Poll
   const {
     data: poll,
@@ -61,8 +55,16 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     refetch: refetchPoll
   } = usePoll({ pollAddress });
 
-  const { subgraphUrl } = useAppConstants();
+  // Wallet variables
+  const { signMessageAsync } = useSignMessage();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
+  const client = usePublicClient();
+  const { address, isConnected, connector } = useAccount();
+
   const privoteContractAddress = poll?.privoteContractAddress;
+  const { shadowChain, subgraphUrl } = useAppConstants();
+  const signer = useEthersSigner({ chainId: shadowChain });
   const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
     useSigContext();
   const { checkBalance } = useFaucetContext();
@@ -127,13 +129,41 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   }, [poll, computeDynamicPollStatus, dynamicPollStatus]);
 
   // Functions
+  const handleChainSwitch = useCallback(
+    async (targetChainId: number): Promise<boolean> => {
+      if (targetChainId === chainId) {
+        return true;
+      }
+
+      try {
+        const result = await switchChainAsync({ chainId: targetChainId });
+
+        if (result.id !== targetChainId) {
+          setError('Error switching chain');
+          notification.error('Error switching chain');
+          return false;
+        }
+
+        console.log('Switched chain', result);
+
+        // Wait for wallet state to fully synchronize after chain switch
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        return true;
+      } catch (error) {
+        console.log('Error switching chain:', error);
+        setError('Error switching chain');
+        notification.error('Error switching chain');
+        return false;
+      }
+    },
+    [chainId, switchChainAsync]
+  );
+
   const getInclusionProof = useCallback(async () => {
-    if (!tempStateIndex) {
-      return;
-    }
-    if (!tempMaciKeypair) {
-      return;
-    }
+    if (!tempStateIndex) return;
+    if (!tempMaciKeypair) return;
+    if (!subgraphUrl) return;
     try {
       const keys = await getKeys(subgraphUrl);
       const signupTree = generateSignUpTreeFromKeys(keys);
@@ -161,6 +191,22 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         notification.error('Wallet not connected');
         return;
       }
+
+      if (!poll || !poll.pollId) {
+        setIsLoading(false);
+
+        notification.error('Poll not found');
+        return;
+      }
+
+      if (shadowChain !== chainId) {
+        const switchSuccess = await handleChainSwitch(shadowChain);
+        if (!switchSuccess) {
+          setIsLoading(false);
+          return;
+        }
+      }
+
       if (!tempMaciKeypair) {
         setError('Keypair not found');
         setIsLoading(false);
@@ -187,13 +233,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         setIsLoading(false);
 
         notification.error('Privote contract not found! Connect to a supported chain');
-        return;
-      }
-
-      if (!poll || !poll.pollId) {
-        setIsLoading(false);
-
-        notification.error('Poll not found');
         return;
       }
 
@@ -295,7 +334,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       privoteContractAddress,
       loadArtifacts,
       artifactsError,
-      checkBalance
+      checkBalance,
+      handleChainSwitch,
+      chainId
     ]
   );
 
@@ -311,23 +352,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       return;
     }
 
-    if (tempIsRegistered) {
-      setError('Already registered');
-      setIsSignupLoading(false);
-
-      notification.error('Already registered');
-      return;
-    }
-
-    if (!privoteContractAddress) {
-      setError('Privote contract not found');
-      setIsSignupLoading(false);
-
-      notification.error('Privote contract not found! Connect to a supported chain');
-      return;
-    }
-
-    if (!signer) {
+    if (!signer || !poll) {
       setError('Signer not found');
       setIsSignupLoading(false);
 
@@ -340,6 +365,30 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setIsSignupLoading(false);
 
       notification.error('Poll not found! Please refresh the page');
+      return;
+    }
+
+    if (shadowChain !== chainId) {
+      const switchSuccess = await handleChainSwitch(shadowChain);
+      if (!switchSuccess) {
+        setIsSignupLoading(false);
+        return;
+      }
+    }
+
+    if (!privoteContractAddress) {
+      setError('Privote contract not found');
+      setIsSignupLoading(false);
+
+      notification.error('Privote contract not found! Connect to a supported chain');
+      return;
+    }
+
+    if (tempIsRegistered) {
+      setError('Already registered');
+      setIsSignupLoading(false);
+
+      notification.error('Already registered');
       return;
     }
 
@@ -440,7 +489,13 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     signer,
     privoteContractAddress,
     generateKeypair,
-    subgraphUrl
+    subgraphUrl,
+    handleChainSwitch,
+    chainId,
+    checkBalance,
+    isPorto,
+    pollAddress,
+    updateStatus
   ]);
 
   const checkIsTallied = useCallback(async () => {

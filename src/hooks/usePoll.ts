@@ -40,7 +40,7 @@ interface UsePollParams {
 }
 
 const usePoll = ({ pollAddress }: UsePollParams) => {
-  const { subgraphUrl } = useAppConstants();
+  const { subgraphUrl, updateChain } = useAppConstants();
   return useQuery<TransformedPoll | null>({
     queryKey: ['poll', pollAddress],
     queryFn: async () => {
@@ -82,6 +82,7 @@ const usePoll = ({ pollAddress }: UsePollParams) => {
 
           data = await tryFetchFromSubgraph(alternativeUrl);
           if (data?.poll) {
+            updateChain(chain.id);
             console.log(`Poll found on ${chain.name} subgraph`);
             break;
           }
