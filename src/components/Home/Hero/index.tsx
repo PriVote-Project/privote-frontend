@@ -1,6 +1,8 @@
+'use client';
 import Link from 'next/link';
 import styles from './index.module.css';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 
 interface HeroProps {
   title?: string;
@@ -9,10 +11,11 @@ interface HeroProps {
 }
 
 export const Hero = ({
-  title = 'Revolutionizing the Future of Voting',
   description = 'Create polls, participate in elections, and make your voice heard in a Private and Decentralized way.',
   status = 'Privote: The all new way of voting through'
 }: HeroProps) => {
+  const { isConnected } = useAccount();
+
   return (
     <div className={styles.hero}>
       <div className={styles.status}>
@@ -21,15 +24,21 @@ export const Hero = ({
           MACI
         </Link>
       </div>
-      <h1 className={styles.heading}>{title}</h1>
+      <h1 className={styles.heading}>
+        The Future of<br />Voting is Private
+      </h1>
       <p className={styles.description}>{description}</p>
       <div className={styles.actions}>
-        <div className={styles['connect-btn-wrapper']}>
-          <ConnectButton label='Login' />
-        </div>
-        <Link className={styles['create-poll']} href='/my-polls'>
-          <p>Create Poll</p>
-        </Link>
+        {!isConnected && (
+          <div className={styles['connect-btn-wrapper']}>
+            <ConnectButton label='Login' />
+          </div>
+        )}
+        {isConnected && (
+          <Link className={styles['create-poll']} href='/my-polls?create=true'>
+            <p>Create Poll</p>
+          </Link>
+        )}
       </div>
     </div>
   );

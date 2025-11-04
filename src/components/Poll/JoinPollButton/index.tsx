@@ -60,7 +60,7 @@ export const JoinPollButton: React.FC<JoinPollButtonProps> = ({ policyType, poli
           <LoadingPulse size='small' variant='primary' text='Joining...' />
         ) : (
           <>
-            <TiPlus size={20} color='#fff' />
+            {/* <TiPlus size={20} color='#fff' /> */}
             <span>Join Poll</span>
           </>
         )}

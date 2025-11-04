@@ -3,12 +3,16 @@ import { CreatePollForm, UserPolls } from '@/components/MyPolls';
 import { PollFormProvider } from '@/components/MyPolls/CreatePollForm/context';
 import { Button } from '@/components/shared';
 import styles from '@/styles/admin.module.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useAccount } from 'wagmi';
+import { useSearchParams } from 'next/navigation';
 
-const MyPollsPage: React.FC = () => {
-  const [showCreatePoll, setShowCreatePoll] = React.useState(false);
+const MyPollsContent: React.FC = () => {
+  const searchParams = useSearchParams();
+  const shouldShowCreate = searchParams.get('create') === 'true';
+  const [showCreatePoll, setShowCreatePoll] = React.useState(shouldShowCreate);
   const { isConnected } = useAccount();
+
   return (
     <PollFormProvider>
       <div className={styles.wrapper}>
@@ -25,6 +29,14 @@ const MyPollsPage: React.FC = () => {
         </div>
       </div>
     </PollFormProvider>
+  );
+};
+
+const MyPollsPage: React.FC = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MyPollsContent />
+    </Suspense>
   );
 };
 

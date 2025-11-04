@@ -1,6 +1,5 @@
 import pollAbi from '@/abi/Poll';
 import { LoadingPulse, MarkdownRenderer } from '@/components/shared';
-import { useSigContext } from '@/contexts/SigContext';
 import usePollContext from '@/hooks/usePollContext';
 import usePollResults from '@/hooks/usePollResults';
 import useVoting from '@/hooks/useVoting';
@@ -11,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
+import { JoinPollButton } from '../JoinPollButton';
 import VoteCard from '../VoteCard';
 import VoteSummarySection from '../VoteSummarySection';
 import styles from './index.module.css';
@@ -44,7 +44,9 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
     options,
     status: originalPollStatus,
     owner: pollDeployer,
-    coordinatorPublicKey
+    coordinatorPublicKey,
+    policyTrait,
+    policyData
   } = poll!;
 
   // Use dynamic status if available, otherwise fall back to original status
@@ -54,6 +56,7 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
   const pollResults = resultData?.results;
 
   // Check if user can perform various actions
+  const canJoin = canPerformAction('join', pollStatus, userAddress, pollDeployer, isUserJoined);
   const canVote = canPerformAction('vote', pollStatus, userAddress, pollDeployer, isUserJoined);
   const canPublish = canPerformAction('publish', pollStatus, userAddress, pollDeployer, undefined, isTallied);
 
@@ -251,22 +254,26 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
             ))}
         </ul>
       </VoteSummarySection>
-      {canVote && (
+      {(canJoin || canVote) && (
         <div className={styles.col}>
-          {pollType !== PollType.MULTIPLE_VOTE && (
-            <button
-              className={styles['poll-btn']}
-              onClick={onVote}
-              disabled={isSubmittingVotes || Object.values(isVotesInvalid).some(v => v)}
-            >
-              {isSubmittingVotes ? (
-                <span className={styles.loadingContainer}>
-                  <LoadingPulse size='small' variant='primary' text='Submitting...' />
-                </span>
-              ) : (
-                <p>Vote Now</p>
-              )}
-            </button>
+          {canJoin ? (
+            <JoinPollButton policyType={policyTrait} policyData={policyData} />
+          ) : (
+            canVote && pollType !== PollType.MULTIPLE_VOTE && (
+              <button
+                className={styles['poll-btn']}
+                onClick={onVote}
+                disabled={isSubmittingVotes || Object.values(isVotesInvalid).some(v => v)}
+              >
+                {isSubmittingVotes ? (
+                  <span className={styles.loadingContainer}>
+                    <LoadingPulse size='small' variant='primary' text='Submitting...' />
+                  </span>
+                ) : (
+                  <p>Vote Now</p>
+                )}
+              </button>
+            )
           )}
         </div>
       )}

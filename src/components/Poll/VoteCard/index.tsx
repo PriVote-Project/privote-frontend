@@ -83,6 +83,25 @@ const VoteCard = ({
 
   const votePercentage = totalVotes > 0 && isTallied ? Math.round((Number(votes) / totalVotes) * 100) : 0;
 
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent) => {
+      // Only handle clicks when poll is not open
+      if (!pollOpen) {
+        // Prevent default label behavior
+        e.preventDefault();
+
+        if (!isConnected) {
+          notification.error('Please connect your wallet first!');
+        } else if (!isUserRegistered) {
+          notification.error('Please Join Poll first to Vote!');
+        } else {
+          notification.info('Please wait for poll to start');
+        }
+      }
+    },
+    [pollOpen, isConnected, isUserRegistered]
+  );
+
   return (
     <>
       <label
@@ -90,6 +109,7 @@ const VoteCard = ({
         className={`${styles.card} ${!isTallied && Number(votes) !== 0 ? styles.selected : ''} ${
           isWinner ? styles.winner : ''
         } ${!option.description && styles.noDescription}`}
+        onClick={handleCardClick}
       >
         {option.cid && option.cid !== '0x' && option.cid.length > 2 && (
           <div className={styles.image}>
