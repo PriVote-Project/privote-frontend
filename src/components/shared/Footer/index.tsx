@@ -10,7 +10,7 @@ const socialMedia = [
   },
   {
     icon: Telegram,
-    link: 'https://t.me/privote'
+    link: 'https://t.me/+MBIz8ZBIllExZDQ1'
   },
   {
     icon: X,
