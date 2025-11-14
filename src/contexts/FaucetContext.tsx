@@ -1,6 +1,7 @@
 'use client';
 import { FaucetModal } from '@/components/shared';
 import { supportedChains } from '@/config/chains';
+import { appConstants } from '@/config/constants';
 import { notification } from '@/utils/notification';
 import { PORTO_CONNECTOR_ID } from '@/utils/constants';
 import { createContext, useEffect, useState } from 'react';
@@ -39,9 +40,15 @@ const FaucetProvider = ({ children }: { children: React.ReactNode }) => {
       return true;
     }
 
+    const chainConstants = appConstants[chainId as (typeof supportedChains)[number]['id']];
+    const isTestnet = chainConstants?.isTestnet ?? false;
+
     if (!isLoading && balance && Number(balance.value) <= MIN_BALANCE) {
       notification.error('Insufficient balance');
-      setShowFaucetModal(true);
+      // Only show faucet modal for testnet chains
+      if (isTestnet) {
+        setShowFaucetModal(true);
+      }
 
       return true;
     }
