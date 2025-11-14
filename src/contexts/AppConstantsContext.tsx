@@ -1,7 +1,7 @@
 'use client';
 import { supportedChains } from '@/config/chains';
 import { type ChainConstants, appConstants } from '@/config/constants';
-import { SUBGRAPH_PROJECT_ID, SUBGRAPH_VERSION } from '@/utils/constants';
+import { SUBGRAPH_VERSION } from '@/utils/constants';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { useChainId } from 'wagmi';
 
@@ -27,17 +27,17 @@ const AppConstantsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const subgraphUrl = useMemo(() => {
     // Validate environment variables
-    if (!SUBGRAPH_PROJECT_ID || !SUBGRAPH_VERSION) {
+    if (!constants.subgraphProjectId || !SUBGRAPH_VERSION) {
       console.error('Missing subgraph environment variables:', {
-        SUBGRAPH_PROJECT_ID: SUBGRAPH_PROJECT_ID ? 'set' : 'missing',
+        subgraphProjectId: constants.subgraphProjectId ? 'set' : 'missing',
         SUBGRAPH_VERSION: SUBGRAPH_VERSION ? 'set' : 'missing'
       });
       // Return a fallback or throw an error
       throw new Error('Subgraph configuration is incomplete. Please check environment variables.');
     }
 
-    return `https://api.goldsky.com/api/public/${SUBGRAPH_PROJECT_ID}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
-  }, [constants.slugs.subgraph]);
+    return `https://api.goldsky.com/api/public/${constants.subgraphProjectId}/subgraphs/privote-${constants.slugs.subgraph}/${SUBGRAPH_VERSION}/gn`;
+  }, [constants.subgraphProjectId, constants.slugs.subgraph]);
 
   const isChainSupported = supportedChains.some(chain => chain.id === shadowChain);
 

@@ -1,7 +1,7 @@
 import { supportedChains } from '@/config/chains';
 import { PollPolicyType } from '@/types';
 import { Hex } from 'viem';
-import { baseSepolia, optimismSepolia, scrollSepolia } from 'viem/chains';
+import { baseSepolia, optimism, optimismSepolia, scrollSepolia } from 'viem/chains';
 
 export interface FaucetProvider {
   name: string;
@@ -22,11 +22,43 @@ export type ChainConstants = {
     infura: string;
     subgraph: string;
   };
+  subgraphProjectId: string;
+  isTestnet: boolean;
   supportedPolicies: PollPolicyType[];
-  faucets: FaucetProvider[];
+  faucets?: FaucetProvider[];
 };
 
 export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainConstants> = {
+  // Mainnet
+  [optimism.id]: {
+    chain: optimism,
+    contracts: {
+      eas: '0x4200000000000000000000000000000000000021',
+      anonAadhaarVerifier: '0x45Db2e8649eaEB4D4c047bc790bd30Bc9e6C09f4',
+      semaphore: '0x',
+      gitcoinPassportDecoder: '0x5558D441779Eca04A329BcD6b47830D2C6607769'
+    },
+    slugs: {
+      eas: 'optimism',
+      coordinator: 'optimism',
+      infura: 'optimism',
+      subgraph: 'optimism'
+    },
+    subgraphProjectId: process.env.NEXT_PUBLIC_OPTIMISM_SUBGRAPH_PROJECT_ID || '',
+    isTestnet: false,
+    supportedPolicies: [
+      PollPolicyType.FreeForAll,
+      PollPolicyType.AnonAadhaar,
+      PollPolicyType.EAS,
+      PollPolicyType.ERC20,
+      PollPolicyType.ERC20Votes,
+      PollPolicyType.GitcoinPassport,
+      PollPolicyType.MerkleProof,
+      PollPolicyType.Token
+    ]
+  },
+
+  // Testnets
   [optimismSepolia.id]: {
     chain: optimismSepolia,
     contracts: {
@@ -41,6 +73,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       infura: 'optimism-sepolia',
       subgraph: 'optimism-sepolia'
     },
+    subgraphProjectId: process.env.NEXT_PUBLIC_SUBGRAPH_PROJECT_ID || '',
+    isTestnet: true,
     supportedPolicies: [
       PollPolicyType.FreeForAll,
       PollPolicyType.AnonAadhaar,
@@ -76,6 +110,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       infura: 'base-sepolia',
       subgraph: 'base-sepolia'
     },
+    subgraphProjectId: process.env.NEXT_PUBLIC_SUBGRAPH_PROJECT_ID || '',
+    isTestnet: true,
     supportedPolicies: [
       PollPolicyType.FreeForAll,
       PollPolicyType.AnonAadhaar,
@@ -110,6 +146,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       infura: 'scroll-sepolia',
       subgraph: 'scroll-sepolia'
     },
+    subgraphProjectId: process.env.NEXT_PUBLIC_SUBGRAPH_PROJECT_ID || '',
+    isTestnet: true,
     supportedPolicies: [
       PollPolicyType.FreeForAll,
       PollPolicyType.AnonAadhaar,
