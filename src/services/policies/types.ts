@@ -45,7 +45,7 @@ export interface PolicyProps {
 export interface ICommonProps {
   canJoin: boolean;
   isLoading: boolean;
-  requirementsDescription: string;
+  requirementsDescription: string | React.ReactNode;
   onNext: () => void;
   onBack: () => void;
   children: React.ReactNode;

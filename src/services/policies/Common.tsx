@@ -16,37 +16,7 @@ const Common = ({ isLoading, requirementsDescription, canJoin, onNext, onBack, c
         {/* Requirements Description */}
         <div className={styles.requirementsSection}>
           <h4 className={styles.requirementsTitle}>Eligibility Requirements</h4>
-          <p className={styles.requirementsText}>{requirementsDescription}</p>
-        </div>
-
-        {/* Eligibility Status */}
-        <div className={`${styles.eligibilityStatus} ${canJoin ? styles.eligible : styles.notEligible}`}>
-          <div className={styles.eligibilityIcon}>
-            {canJoin ? (
-              <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
-                <path
-                  d='M16.25 6.25L7.5 15L3.75 11.25'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            ) : (
-              <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
-                <path
-                  d='M15 5L5 15M5 5L15 15'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            )}
-          </div>
-          <span>
-            {canJoin ? 'You meet all requirements for this poll' : "You don't meet the requirements for this poll"}
-          </span>
+          <div className={styles.requirementsText}>{requirementsDescription}</div>
         </div>
 
         {/* Policy-Specific Component */}

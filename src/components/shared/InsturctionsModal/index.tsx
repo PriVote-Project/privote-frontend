@@ -18,8 +18,8 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
         <ol>
           <li>Connect your wallet.</li>
           <li>
-            Get funds for gas on the Arbitrum Sepolia testnet if needed (use a faucet like{' '}
-            <Link href='https://faucet.quicknode.com/arbitrum/sepolia'>this</Link>
+            Get funds for gas on the Optimism network if needed (use a faucet like{' '}
+            <Link href='https://www.optimism.io/apps/bridges'>this</Link>
             ).
           </li>
           <li>Login to the mAadhaar app with your Aadhaar credentials and generate a QR code. Save it.</li>
