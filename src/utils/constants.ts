@@ -38,6 +38,6 @@ export const POLICY_ICONS = {
   // [PollPolicyType.Hats]: null,
   [PollPolicyType.MerkleProof]: '/icons/merkle-icon.svg',
   // [PollPolicyType.Semaphore]: '/icons/semaphore-icon.svg',
-  [PollPolicyType.Token]: '/icons/nft-icon.svg'
-  // [PollPolicyType.Zupass]: '/icons/zupass-icon.png'
+  [PollPolicyType.Token]: '/icons/nft-icon.svg',
+  [PollPolicyType.Zupass]: '/icons/zupass-icon.png'
 };

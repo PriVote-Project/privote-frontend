@@ -34,12 +34,12 @@ export class DecodeService {
         return 'address token, uint256 snapshotBlock, uint256 threshold';
       case PollPolicyType.GitcoinPassport:
         return 'address passportDecoder, uint256 thresholdScore';
-      case PollPolicyType.Hats:
-        return 'address hats, uint256[] criterionHats';
+      // case PollPolicyType.Hats:
+      //   return 'address hats, uint256[] criterionHats';
       case PollPolicyType.MerkleProof:
         return '(bytes32 merkleRoot, string merkleTreeVersion, string merkleTreeUrl)';
-      case PollPolicyType.Semaphore:
-        return 'address semaphore, uint256 groupId';
+      // case PollPolicyType.Semaphore:
+      //   return 'address semaphore, uint256 groupId';
       case PollPolicyType.Token:
         return 'address token';
       case PollPolicyType.Zupass:
@@ -135,13 +135,13 @@ export class DecodeService {
           } as GitcoinPassportPolicyData;
         }
 
-        case PollPolicyType.Hats: {
-          const [hats, criterionHats] = decodedValues as [Hex, bigint[]];
-          return {
-            hats,
-            criterionHats
-          } as HatsPolicyData;
-        }
+        // case PollPolicyType.Hats: {
+        //   const [hats, criterionHats] = decodedValues as [Hex, bigint[]];
+        //   return {
+        //     hats,
+        //     criterionHats
+        //   } as HatsPolicyData;
+        // }
 
         case PollPolicyType.MerkleProof: {
           const [merkleData] = decodedValues as [{ merkleRoot: Hex; merkleTreeVersion: string; merkleTreeUrl: string }];
@@ -152,13 +152,13 @@ export class DecodeService {
           } as MerklePolicyData;
         }
 
-        case PollPolicyType.Semaphore: {
-          const [semaphore, groupId] = decodedValues as [Hex, bigint];
-          return {
-            semaphore,
-            groupId
-          } as SemaphorePolicyData;
-        }
+        // case PollPolicyType.Semaphore: {
+        //   const [semaphore, groupId] = decodedValues as [Hex, bigint];
+        //   return {
+        //     semaphore,
+        //     groupId
+        //   } as SemaphorePolicyData;
+        // }
 
         case PollPolicyType.Token: {
           const [tokenAddress] = decodedValues as [Hex];

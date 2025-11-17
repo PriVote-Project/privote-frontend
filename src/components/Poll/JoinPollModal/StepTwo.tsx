@@ -8,7 +8,8 @@ import {
   GitcoinPolicy,
   // SemaphorePolicy,
   TokenPolicy,
-  MerkleProofPolicy
+  MerkleProofPolicy,
+  ZupassPolicy
 } from '@/services/policies';
 import { PollPolicyType } from '@/types';
 import React from 'react';
@@ -108,6 +109,15 @@ export const StepTwo: React.FC<StepTwoProps> = ({
       )} */}
       {policyType === PollPolicyType.Token && (
         <TokenPolicy
+          policyData={policyData}
+          signupState={signupState}
+          setSignupState={setSignupState}
+          onNext={onNext}
+          onBack={onBack}
+        />
+      )}
+      {policyType === PollPolicyType.Zupass && (
+        <ZupassPolicy
           policyData={policyData}
           signupState={signupState}
           setSignupState={setSignupState}

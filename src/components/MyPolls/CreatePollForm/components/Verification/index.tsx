@@ -15,6 +15,7 @@ import ERC20VotesConfig from './ERC20VotesConfig';
 import MerkleProofPolicyConfig from './MerkleProofPolicyConfig';
 import useAppConstants from '@/hooks/useAppConstants';
 import { Tooltip } from 'react-tooltip';
+import ZupassPolicyConfig from './ZupassPolicyConfig';
 
 // Display names for each policy
 const POLICY_NAMES = {
@@ -27,8 +28,8 @@ const POLICY_NAMES = {
   // [PollPolicyType.Hats]: 'Hats',
   [PollPolicyType.MerkleProof]: 'Whitelist',
   // [PollPolicyType.Semaphore]: 'Semaphore',
-  [PollPolicyType.Token]: 'NFT'
-  // [PollPolicyType.Zupass]: 'Zupass'
+  [PollPolicyType.Token]: 'NFT',
+  [PollPolicyType.Zupass]: 'Devcon / Zupass'
 };
 
 // Define which policies require additional configuration
@@ -41,9 +42,9 @@ const POLICIES_WITH_CONFIG: Record<PollPolicyType, boolean> = {
   [PollPolicyType.EAS]: true,
   [PollPolicyType.GitcoinPassport]: true,
   // [PollPolicyType.Hats]: true,
-  [PollPolicyType.MerkleProof]: true
+  [PollPolicyType.MerkleProof]: true,
   // [PollPolicyType.Semaphore]: true
-  // [PollPolicyType.Zupass]: true
+  [PollPolicyType.Zupass]: true
 };
 
 /**
@@ -73,8 +74,8 @@ const getPolicyConfigComponent = (
       return <MerkleProofPolicyConfig config={config} onConfigChange={onConfigChange} />;
     // case PollPolicyType.Semaphore:
     //   return <SemaphorePolicyConfig config={config} onConfigChange={onConfigChange} />;
-    // case PollPolicyType.Zupass:
-    //   return <ZupassPolicyConfig config={config} onConfigChange={onConfigChange} />;
+    case PollPolicyType.Zupass:
+      return <ZupassPolicyConfig config={config} onConfigChange={onConfigChange} />;
     default:
       return null;
   }

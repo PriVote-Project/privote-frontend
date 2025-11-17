@@ -85,8 +85,8 @@ export const PollPolicyType = {
   // Hats: 'Hats',
   MerkleProof: 'MerkleProof',
   // Semaphore: 'Semaphore',
-  Token: 'Token'
-  // Zupass: 'Zupass'
+  Token: 'Token',
+  Zupass: 'Zupass'
 } as const;
 
 export const EMode = {

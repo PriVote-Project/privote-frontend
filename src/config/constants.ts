@@ -15,6 +15,7 @@ export type ChainConstants = {
     anonAadhaarVerifier: Hex;
     semaphore: Hex;
     gitcoinPassportDecoder: Hex;
+    zupassVerifier: Hex;
   };
   slugs: {
     eas: string;
@@ -36,7 +37,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       eas: '0x4200000000000000000000000000000000000021',
       anonAadhaarVerifier: '0x45Db2e8649eaEB4D4c047bc790bd30Bc9e6C09f4',
       semaphore: '0x',
-      gitcoinPassportDecoder: '0x5558D441779Eca04A329BcD6b47830D2C6607769'
+      gitcoinPassportDecoder: '0x5558D441779Eca04A329BcD6b47830D2C6607769',
+      zupassVerifier: '0x4d14A9e85C556Fd29491b35CCC89ea3710E9FD1e'
     },
     slugs: {
       eas: 'optimism',
@@ -54,7 +56,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.ERC20Votes,
       PollPolicyType.GitcoinPassport,
       PollPolicyType.MerkleProof,
-      PollPolicyType.Token
+      PollPolicyType.Token,
+      PollPolicyType.Zupass
     ]
   },
 
@@ -65,7 +68,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       eas: '0x4200000000000000000000000000000000000021',
       anonAadhaarVerifier: '0x195CA63A04a22a552E3dDe8b7058B84D289a4FD6',
       semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
-      gitcoinPassportDecoder: '0xe53C60F8069C2f0c3a84F9B3DB5cf56f3100ba56'
+      gitcoinPassportDecoder: '0xe53C60F8069C2f0c3a84F9B3DB5cf56f3100ba56',
+      zupassVerifier: '0x44ebd109487fbD1465Ca4cb035d0aFbf9f69884c'
     },
     slugs: {
       eas: 'optimism-sepolia',
@@ -83,7 +87,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.ERC20Votes,
       PollPolicyType.GitcoinPassport,
       PollPolicyType.MerkleProof,
-      PollPolicyType.Token
+      PollPolicyType.Token,
+      PollPolicyType.Zupass
     ],
     faucets: [
       {
@@ -102,7 +107,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       eas: '0x4200000000000000000000000000000000000021',
       anonAadhaarVerifier: '0x21046d78637897f667E1e3504A58777C0e9A95cc',
       semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
-      gitcoinPassportDecoder: '0x'
+      gitcoinPassportDecoder: '0x',
+      zupassVerifier: '0x'
     },
     slugs: {
       eas: 'base-sepolia',
@@ -119,7 +125,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.ERC20,
       PollPolicyType.ERC20Votes,
       PollPolicyType.MerkleProof,
-      PollPolicyType.Token
+      PollPolicyType.Token,
+      PollPolicyType.Zupass
     ],
     faucets: [
       {
@@ -132,41 +139,48 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       }
     ]
   },
-  [scrollSepolia.id]: {
-    chain: scrollSepolia,
-    contracts: {
-      eas: '0xaEF4103A04090071165F78D45D83A0C0782c2B2a',
-      anonAadhaarVerifier: '0x3e8baB4BD5c0e3A4f4a40AE6888913B9ea0A17B8',
-      semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
-      gitcoinPassportDecoder: '0x2443D22Db6d25D141A1138D80724e3Eee54FD4C2'
-    },
-    slugs: {
-      eas: 'scroll-sepolia',
-      coordinator: 'scroll-sepolia',
-      infura: 'scroll-sepolia',
-      subgraph: 'scroll-sepolia'
-    },
-    subgraphProjectId: process.env.NEXT_PUBLIC_SUBGRAPH_PROJECT_ID || '',
-    isTestnet: true,
-    supportedPolicies: [
-      PollPolicyType.FreeForAll,
-      PollPolicyType.AnonAadhaar,
-      PollPolicyType.EAS,
-      PollPolicyType.ERC20,
-      PollPolicyType.ERC20Votes,
-      PollPolicyType.GitcoinPassport,
-      PollPolicyType.MerkleProof,
-      PollPolicyType.Token
-    ],
-    faucets: [
-      {
-        name: 'Scroll Sepolia Faucet',
-        url: 'https://sepolia.scroll.io/faucet'
-      },
-      {
-        name: 'Quicknode Faucet',
-        url: 'https://faucet.quicknode.com/scroll/sepolia'
-      }
-    ]
-  }
+  // [scrollSepolia.id]: {
+  //   chain: scrollSepolia,
+  //   contracts: {
+  //     eas: '0xaEF4103A04090071165F78D45D83A0C0782c2B2a',
+  //     anonAadhaarVerifier: '0x3e8baB4BD5c0e3A4f4a40AE6888913B9ea0A17B8',
+  //     semaphore: '0x697c80d1F2654e88d52B16154929EB976568DB04',
+  //     gitcoinPassportDecoder: '0x2443D22Db6d25D141A1138D80724e3Eee54FD4C2',
+  //     zupassVerifier: '0x'
+  //   },
+  //   slugs: {
+  //     eas: 'scroll-sepolia',
+  //     coordinator: 'scroll-sepolia',
+  //     infura: 'scroll-sepolia',
+  //     subgraph: 'scroll-sepolia'
+  //   },
+  //   subgraphProjectId: process.env.NEXT_PUBLIC_SUBGRAPH_PROJECT_ID || '',
+  //   isTestnet: true,
+  //   supportedPolicies: [
+  //     PollPolicyType.FreeForAll,
+  //     PollPolicyType.AnonAadhaar,
+  //     PollPolicyType.EAS,
+  //     PollPolicyType.ERC20,
+  //     PollPolicyType.ERC20Votes,
+  //     PollPolicyType.GitcoinPassport,
+  //     PollPolicyType.MerkleProof,
+  //     PollPolicyType.Token
+  //   ],
+  //   faucets: [
+  //     {
+  //       name: 'Scroll Sepolia Faucet',
+  //       url: 'https://sepolia.scroll.io/faucet'
+  //     },
+  //     {
+  //       name: 'Quicknode Faucet',
+  //       url: 'https://faucet.quicknode.com/scroll/sepolia'
+  //     }
+  //   ]
+  // }
+} as const;
+
+export const ZUPASS_DEVCON_DEFAULTS = {
+  eventId: '1f36ddce-e538-4c7a-9f31-6a4b2221ecac',
+  signer1: '0x044e711fd3a1792a825aa896104da5276bbe710fd9b59dddea1aaf8d84535aaf',
+  signer2: '0x2b259329f0adf98c9b6cf2a11db7225fdcaa4f8796c61864e86154477da10663'
 } as const;

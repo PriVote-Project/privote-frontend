@@ -174,14 +174,14 @@ export function getPollArgs({
     //   return [...baseArgs, semaphoreContract, groupId, voiceCredits];
     // }
 
-    // case PollPolicyType.Zupass: {
-    //   const eventId = config.eventId || '';
-    //   const signer1 = config.signer1 || '';
-    //   const signer2 = config.signer2 || '';
-    //   const zupassVerifier = config.zupassVerifier || '';
+    case PollPolicyType.Zupass: {
+      const eventId = config.eventId || '';
+      const signer1 = config.signer1 || '';
+      const signer2 = config.signer2 || '';
+      const zupassVerifier = config.zupassVerifier || '';
 
-    //   return [...baseArgs, eventId, signer1, signer2, zupassVerifier, voiceCredits];
-    // }
+      return [...baseArgs, eventId, signer1, signer2, zupassVerifier, voiceCredits];
+    }
 
     default:
       return [...baseArgs, voiceCredits];
@@ -350,23 +350,23 @@ export const getCoordinatorPollArgs = ({
     //   break;
     // }
 
-    // case PollPolicyType.Zupass: {
-    //   const eventId = config.eventId || '';
-    //   const signer1 = config.signer1 || '';
-    //   const signer2 = config.signer2 || '';
-    //   const zupassVerifier = config.zupassVerifier || '';
-    //
-    //   policy = {
-    //     type: EPolicies.Zupass,
-    //     args: {
-    //       eventId: eventId,
-    //       signer1: signer1,
-    //       signer2: signer2,
-    //       zupassVerifier: zupassVerifier,
-    //     }
-    //   };
-    //   break;
-    // }
+    case PollPolicyType.Zupass: {
+      const eventId = config.eventId || '';
+      const signer1 = config.signer1 || '';
+      const signer2 = config.signer2 || '';
+      const zupassVerifier = config.zupassVerifier || '';
+    
+      policy = {
+        type: EPolicies.Zupass,
+        args: {
+          eventId: eventId,
+          signer1: signer1,
+          signer2: signer2,
+          zupassVerifier: zupassVerifier,
+        }
+      };
+      break;
+    }
 
     default:
       policy = {
