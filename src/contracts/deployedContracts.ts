@@ -988,7 +988,7 @@ const deployedContracts = {
   },
   11155420: {
     privote: {
-      address: '0x250c7341E5651A3DF276A9f4fC6f9070226FeB32',
+      address: '0xf7C48eb2E936Cc0a52207C31DafA89E3ab603988',
       abi: [
         {
           inputs: [
