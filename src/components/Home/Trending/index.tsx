@@ -40,7 +40,7 @@ const PollItemWrapper: React.FC<{ poll: Poll; isDummy: boolean }> = ({ poll, isD
       e.stopPropagation();
       window.open(DUMMY_POLL_REDIRECT_URL, '_blank');
     };
-    
+
     return (
       <div onClick={handleClick} style={{ cursor: 'pointer', pointerEvents: 'auto' }}>
         <div style={{ pointerEvents: 'none' }}>
@@ -71,7 +71,7 @@ const Trending: React.FC = () => {
 
   // Combine updated dummy polls with actual polls
   const actualPolls = data?.pages.flat().slice(0, 3) || [];
-  const polls = [...updatedDummyPolls, ...actualPolls];
+  const polls = [...actualPolls, ...updatedDummyPolls];
 
   if (!isLoading && !isError && polls.length === 0) return null;
 
