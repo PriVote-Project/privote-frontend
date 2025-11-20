@@ -3,12 +3,27 @@ import useEthersSigner from '@/hooks/useEthersSigner';
 import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
 import { PollStatus } from '@/types';
-import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE, PORTO_CONNECTOR_ID } from '@/utils/constants';
+import {
+  DEFAULT_IVCP_DATA,
+  DEFAULT_SG_DATA,
+  SIGNATURE_MESSAGE,
+  PORTO_CONNECTOR_ID,
+  RETRY_ATTEMPTS,
+  SUBGRAPH_INDEXING_BLOCKS,
+  SIGNUP_SUBGRAPH_WAIT_BLOCKS
+} from '@/utils/constants';
+import { isEthGetLogsError, isBalanceTooLowError } from '@/utils/errorHandlers';
 import { handleNotice, notification } from '@/utils/notification';
 import { computePollStatus, notifyStatusChange, shouldNotifyStatusChange } from '@/utils/pollStatus';
 import { getJoinedUserData, getKeys, getSignedupUserData } from '@/utils/subgraph';
 import { Keypair } from '@maci-protocol/domainobjs';
-import { generateSignUpTreeFromKeys, isTallied, joinPoll, signup } from '@maci-protocol/sdk/browser';
+import {
+  generateSignUpTreeFromKeys,
+  isTallied,
+  joinPoll,
+  signup,
+  getSignedupUserData as getSignedupUserDataOnChain
+} from '@maci-protocol/sdk/browser';
 import { type LeanIMTMerkleProof } from '@zk-kit/lean-imt';
 import { createContext, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { Hex, parseAbi, keccak256 } from 'viem';
@@ -17,6 +32,7 @@ import { type IPollContextType } from './types';
 import useFaucetContext from '@/hooks/useFaucetContext';
 import { useSigContext } from './SigContext';
 import { generateKeypairFromSeed } from '@/utils/keypair';
+import { retryWithBackoff } from '@/utils/retry';
 
 export const PollContext = createContext<IPollContextType | undefined>(undefined);
 
@@ -63,7 +79,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
   const { address, isConnected, connector } = useAccount();
 
   const privoteContractAddress = poll?.privoteContractAddress;
-  const { shadowChain, subgraphUrl } = useAppConstants();
+  const { shadowChain, subgraphUrl, blockTime } = useAppConstants();
   const signer = useEthersSigner({ chainId: shadowChain });
   const { maciKeypair, isRegistered, stateIndex, loadKeypairFromLocalStorage, generateKeypair, updateStatus } =
     useSigContext();
@@ -273,53 +289,108 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
       const inclusionProofDirect = inclusionProof ?? (await getInclusionProof());
 
-      let errorMessage: string = '';
-      const joinedPoll = await joinPoll({
-        maciAddress: privoteContractAddress,
-        privateKey: tempMaciKeypair.privateKey.serialize(),
-        signer,
-        pollId: BigInt(poll.pollId),
-        inclusionProof: inclusionProofDirect ?? undefined,
-        pollJoiningZkey: artifactsInternal.zKey as unknown as string,
-        pollWasm: artifactsInternal.wasm as unknown as string,
-        sgDataArg: signupData,
-        ivcpDataArg: DEFAULT_IVCP_DATA,
-        blocksPerBatch: 1000000,
-        useLatestStateIndex: true
-      }).catch(error => {
-        if (error.message.includes('0xa3281672')) {
-          // 0xa3281672 -> signature of BalanceTooLow()
-          errorMessage = 'Address balance is too low to join the poll';
-          setError(`Address balance is too low to join the poll`);
-          setIsLoading(false);
-          return;
-        }
-        console.log('Error joining poll', error);
-        errorMessage = 'Error joining poll';
-        setError(errorMessage);
-        return;
-      });
+      let joinedPoll;
 
-      if (!joinedPoll) {
+      try {
+        joinedPoll = await joinPoll({
+          maciAddress: privoteContractAddress,
+          privateKey: tempMaciKeypair.privateKey.serialize(),
+          signer,
+          pollId: BigInt(poll.pollId),
+          inclusionProof: inclusionProofDirect ?? undefined,
+          pollJoiningZkey: artifactsInternal.zKey as unknown as string,
+          pollWasm: artifactsInternal.wasm as unknown as string,
+          sgDataArg: signupData,
+          ivcpDataArg: DEFAULT_IVCP_DATA,
+          blocksPerBatch: 1000000,
+          useLatestStateIndex: true
+        });
+
+        setHasJoinedPoll(true);
+        setInitialVoiceCredits(Number(joinedPoll.voiceCredits));
+        setPollStateIndex(joinedPoll.pollStateIndex);
+
         setIsLoading(false);
         handleNotice({
-          message: errorMessage || 'Failed to join the poll',
-          type: 'error',
+          message: 'Joined the poll',
+          type: 'success',
           id: notificationId
         });
-        return;
+      } catch (error) {
+        console.error('Join poll error:', error);
+
+        // Check for balance too low error
+        if (isBalanceTooLowError(error)) {
+          setError('Address balance is too low to join the poll');
+          setIsLoading(false);
+          handleNotice({
+            message: 'Address balance is too low to join the poll',
+            type: 'error',
+            id: notificationId
+          });
+          return;
+        }
+
+        // Check if error is related to eth_getLogs
+        if (isEthGetLogsError(error)) {
+          console.log('Detected eth_getLogs error in joinPoll, attempting fallback to subgraph...');
+
+          // Wait for subgraph to index the transaction (3 blocks for safety)
+          const subgraphWaitTime = blockTime * SUBGRAPH_INDEXING_BLOCKS;
+          console.log(`Waiting ${subgraphWaitTime}ms (${SUBGRAPH_INDEXING_BLOCKS} blocks) for subgraph indexing...`);
+          await new Promise(resolve => setTimeout(resolve, subgraphWaitTime));
+
+          // Attempt to fetch poll user data from subgraph with retries
+          const subgraphResult = await retryWithBackoff(
+            async () => {
+              const result = await getJoinedUserData(subgraphUrl, pollAddress, tempMaciKeypair);
+
+              // Only return if user has actually joined
+              if (!result.isJoined) {
+                throw new Error('User not found in poll via subgraph');
+              }
+
+              return result;
+            },
+            RETRY_ATTEMPTS,
+            blockTime
+          );
+
+          if (subgraphResult?.isJoined) {
+            console.log('Successfully retrieved poll join data from subgraph');
+
+            setHasJoinedPoll(true);
+            setInitialVoiceCredits(Number(subgraphResult.voiceCredits ?? 0));
+            setPollStateIndex(subgraphResult.pollStateIndex);
+
+            setIsLoading(false);
+            handleNotice({
+              message: 'Joined the poll',
+              type: 'success',
+              id: notificationId
+            });
+            return;
+          }
+
+          // If subgraph fallback also failed
+          console.warn('Join poll transaction may have succeeded but data could not be verified');
+          setIsLoading(false);
+          handleNotice({
+            message: 'Join poll may have succeeded. Please refresh the page to verify.',
+            type: 'warning',
+            id: notificationId
+          });
+        } else {
+          // Handle other types of errors
+          setError('Error joining poll');
+          setIsLoading(false);
+          handleNotice({
+            message: 'Error joining poll',
+            type: 'error',
+            id: notificationId
+          });
+        }
       }
-
-      setHasJoinedPoll(true);
-      setInitialVoiceCredits(Number(joinedPoll.voiceCredits));
-      setPollStateIndex(joinedPoll.pollStateIndex);
-
-      setIsLoading(false);
-      handleNotice({
-        message: 'Joined the poll',
-        type: 'success',
-        id: notificationId
-      });
     },
     [
       artifacts,
@@ -336,9 +407,17 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       artifactsError,
       checkBalance,
       handleChainSwitch,
-      chainId
+      chainId,
+      blockTime,
+      subgraphUrl,
+      pollAddress
     ]
   );
+
+  const updatePortoStatus = useCallback((isRegistered: boolean, stateIndex: string | undefined) => {
+    setPortoIsRegistered(isRegistered);
+    setPortoMaciStateIndex(stateIndex);
+  }, []);
 
   const onSignup = useCallback(async () => {
     setError(undefined);
@@ -472,14 +551,114 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         id: notificationId
       });
     } catch (error) {
-      console.log('Signup error', error);
-      setError('Error signing up');
-      setIsSignupLoading(false);
-      handleNotice({
-        message: 'Error signing up',
-        type: 'error',
-        id: notificationId
-      });
+      console.error('Signup error:', error);
+
+      // Check if error is related to eth_getLogs
+      if (isEthGetLogsError(error)) {
+        console.log('Detected eth_getLogs error, attempting fallback mechanisms...');
+
+        // Wait for at least one block to be mined before attempting fallback
+        console.log(`Waiting ${blockTime}ms (1 block) before fetching...`);
+        await new Promise(resolve => setTimeout(resolve, blockTime));
+
+        // Attempt 1: Try fetching state index from on-chain with retries
+        const onChainResult = await retryWithBackoff(
+          async () => {
+            const result = await getSignedupUserDataOnChain({
+              maciAddress: privoteContractAddress,
+              maciPublicKey: keypair.publicKey.serialize() as string,
+              signer
+            });
+
+            // Only return if we got a valid state index
+            if (!result.stateIndex) {
+              throw new Error('State index not found in on-chain data');
+            }
+
+            return result;
+          },
+          RETRY_ATTEMPTS,
+          blockTime
+        );
+
+        if (onChainResult?.stateIndex) {
+          console.log('Successfully retrieved state index from on-chain');
+
+          if (isPorto) {
+            updatePortoStatus(true, onChainResult.stateIndex);
+          } else {
+            updateStatus(true, onChainResult.stateIndex);
+          }
+
+          setIsSignupLoading(false);
+          handleNotice({
+            message: 'Signed up to PRIVOTE contract',
+            type: 'success',
+            id: notificationId
+          });
+          return;
+        }
+
+        // Attempt 2: Fallback to subgraph after on-chain retries fail
+        console.log('On-chain fetch failed, falling back to subgraph...');
+
+        try {
+          // Wait for subgraph to index the transaction (2 blocks for safety)
+          const subgraphWaitTime = blockTime * SIGNUP_SUBGRAPH_WAIT_BLOCKS;
+          console.log(`Waiting ${subgraphWaitTime}ms (${SIGNUP_SUBGRAPH_WAIT_BLOCKS} blocks) for subgraph indexing...`);
+          await new Promise(resolve => setTimeout(resolve, subgraphWaitTime));
+
+          const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
+            subgraphUrl,
+            keypair
+          );
+
+          if (_isRegistered && _stateIndex) {
+            console.log('Successfully retrieved state index from subgraph');
+
+            if (isPorto) {
+              updatePortoStatus(true, _stateIndex);
+            } else {
+              updateStatus(true, _stateIndex);
+            }
+
+            setIsSignupLoading(false);
+            handleNotice({
+              message: 'Signed up to PRIVOTE contract',
+              type: 'success',
+              id: notificationId
+            });
+            return;
+          }
+
+          // If still not registered in subgraph, show warning
+          console.warn('Signup transaction may have succeeded but state index could not be verified');
+          setIsSignupLoading(false);
+          handleNotice({
+            message: 'Signup may have succeeded. Please refresh the page to verify.',
+            type: 'warning',
+            id: notificationId
+          });
+        } catch (subgraphError) {
+          console.error('Subgraph fallback failed:', subgraphError);
+          setError('Error verifying signup status');
+          setIsSignupLoading(false);
+          handleNotice({
+            message: 'Signup status unclear. Please refresh the page to verify.',
+            type: 'warning',
+            id: notificationId
+          });
+        }
+      } else {
+        // Handle other types of errors
+        setError('Error signing up');
+        setIsSignupLoading(false);
+        handleNotice({
+          message: 'Error signing up',
+          type: 'error',
+          id: notificationId
+        });
+      }
     }
   }, [
     isConnected,
@@ -495,7 +674,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     checkBalance,
     isPorto,
     pollAddress,
-    updateStatus
+    updateStatus,
+    updatePortoStatus,
+    blockTime
   ]);
 
   const checkIsTallied = useCallback(async () => {
@@ -603,11 +784,6 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       setPortoMaciKeypair
     ]
   );
-
-  const updatePortoStatus = useCallback((isRegistered: boolean, stateIndex: string | undefined) => {
-    setPortoIsRegistered(isRegistered);
-    setPortoMaciStateIndex(stateIndex);
-  }, []);
 
   useEffect(() => {
     if (!address || !isPorto || !poll) {

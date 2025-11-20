@@ -16,7 +16,7 @@ import { useAccount } from 'wagmi';
 import Common from '../Common';
 import styles from '../styles.module.css';
 import { PolicyProps } from '../types';
-import { ZUPASS_DEVCON_DEFAULTS } from '@/config/constants';
+import { ZUPASS_DEVCON_DEFAULTS } from '@/utils/constants';
 
 const DEVCON_POLICY = {
   eventId: uuidToBigInt(ZUPASS_DEVCON_DEFAULTS.eventId).toString(),
@@ -41,13 +41,12 @@ const ZupassPolicy = ({ policyData, signupState, setSignupState, onNext, onBack 
   const zupassVerifier = decodedPolicyData?.zupassVerifier || '0x';
 
   const isDevconPolicy =
-    eventId.toString() === DEVCON_POLICY.eventId && signer1 === DEVCON_POLICY.signer1 && signer2 === DEVCON_POLICY.signer2;
+    eventId.toString() === DEVCON_POLICY.eventId &&
+    signer1 === DEVCON_POLICY.signer1 &&
+    signer2 === DEVCON_POLICY.signer2;
 
   // Convert signer BigInts to hex strings for EdDSA public key
-  const publicKey: EdDSAPublicKey = [
-    signer1.toString(16).padStart(64, '0'),
-    signer2.toString(16).padStart(64, '0')
-  ];
+  const publicKey: EdDSAPublicKey = [signer1.toString(16).padStart(64, '0'), signer2.toString(16).padStart(64, '0')];
 
   const requirementsDescription = `This poll requires you to have a valid Zupass ticket for the specified event`;
 
@@ -63,8 +62,8 @@ const ZupassPolicy = ({ policyData, signupState, setSignupState, onNext, onBack 
     try {
       // Convert eventId from BigInt to UUID format
       let eventIdUuid = decStringToBigIntToUuid(eventId.toString());
-    // eventIdUuid="3f664442-cdc8-41ab-af0c-3a79b8fa94bd";
-    //     console.log('eventIdUuid', eventIdUuid);
+      // eventIdUuid="3f664442-cdc8-41ab-af0c-3a79b8fa94bd";
+      //     console.log('eventIdUuid', eventIdUuid);
 
       // Open Zupass popup for authentication
       const result = await zuAuthPopup({
@@ -130,7 +129,46 @@ const ZupassPolicy = ({ policyData, signupState, setSignupState, onNext, onBack 
           witness._pA as [bigint, bigint],
           witness._pB as [[bigint, bigint], [bigint, bigint]],
           witness._pC as [bigint, bigint],
-          witness._pubSignals as [bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint, bigint]
+          witness._pubSignals as [
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint,
+            bigint
+          ]
         ]
       );
 
@@ -213,7 +251,6 @@ const ZupassPolicy = ({ policyData, signupState, setSignupState, onNext, onBack 
           </div>
         )}
       </div>
-
     </Common>
   );
 };
