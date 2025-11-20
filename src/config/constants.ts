@@ -27,6 +27,7 @@ export type ChainConstants = {
   isTestnet: boolean;
   supportedPolicies: PollPolicyType[];
   faucets?: FaucetProvider[];
+  blockTime: number;
 };
 
 export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainConstants> = {
@@ -58,7 +59,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
       PollPolicyType.MerkleProof,
       PollPolicyType.Token,
       PollPolicyType.Zupass
-    ]
+    ],
+    blockTime: 2000
   },
 
   // Testnets
@@ -99,7 +101,8 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
         name: 'Quicknode Faucet',
         url: 'https://faucet.quicknode.com/optimism/sepolia'
       }
-    ]
+    ],
+    blockTime: 2000
   },
   [baseSepolia.id]: {
     chain: baseSepolia,
@@ -137,8 +140,9 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
         name: 'Quicknode Faucet',
         url: 'https://faucet.quicknode.com/base/sepolia'
       }
-    ]
-  },
+    ],
+    blockTime: 2000
+  }
   // [scrollSepolia.id]: {
   //   chain: scrollSepolia,
   //   contracts: {
