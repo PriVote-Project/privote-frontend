@@ -3,7 +3,16 @@ import useEthersSigner from '@/hooks/useEthersSigner';
 import usePoll from '@/hooks/usePoll';
 import usePollArtifacts from '@/hooks/usePollArtifacts';
 import { PollStatus } from '@/types';
-import { DEFAULT_IVCP_DATA, DEFAULT_SG_DATA, SIGNATURE_MESSAGE, PORTO_CONNECTOR_ID } from '@/utils/constants';
+import {
+  DEFAULT_IVCP_DATA,
+  DEFAULT_SG_DATA,
+  SIGNATURE_MESSAGE,
+  PORTO_CONNECTOR_ID,
+  RETRY_ATTEMPTS,
+  SUBGRAPH_INDEXING_BLOCKS,
+  SIGNUP_SUBGRAPH_WAIT_BLOCKS
+} from '@/utils/constants';
+import { isEthGetLogsError, isBalanceTooLowError } from '@/utils/errorHandlers';
 import { handleNotice, notification } from '@/utils/notification';
 import { computePollStatus, notifyStatusChange, shouldNotifyStatusChange } from '@/utils/pollStatus';
 import { getJoinedUserData, getKeys, getSignedupUserData } from '@/utils/subgraph';
@@ -311,9 +320,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         console.error('Join poll error:', error);
 
         // Check for balance too low error
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        if (errorMessage.includes('0xa3281672')) {
-          // 0xa3281672 -> signature of BalanceTooLow()
+        if (isBalanceTooLowError(error)) {
           setError('Address balance is too low to join the poll');
           setIsLoading(false);
           handleNotice({
@@ -325,15 +332,12 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         }
 
         // Check if error is related to eth_getLogs
-        const isGetLogsError =
-          errorMessage.includes('eth_getLogs') || errorMessage.includes('could not coalesce error');
-
-        if (isGetLogsError) {
+        if (isEthGetLogsError(error)) {
           console.log('Detected eth_getLogs error in joinPoll, attempting fallback to subgraph...');
-          console.log(`Waiting for ${blockTime}ms (chain block time) + subgraph indexing time...`);
 
-          // Wait for block time + additional time for subgraph indexing (3x block time total)
-          const subgraphWaitTime = blockTime * 3;
+          // Wait for subgraph to index the transaction (3 blocks for safety)
+          const subgraphWaitTime = blockTime * SUBGRAPH_INDEXING_BLOCKS;
+          console.log(`Waiting ${subgraphWaitTime}ms (${SUBGRAPH_INDEXING_BLOCKS} blocks) for subgraph indexing...`);
           await new Promise(resolve => setTimeout(resolve, subgraphWaitTime));
 
           // Attempt to fetch poll user data from subgraph with retries
@@ -348,7 +352,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
               return result;
             },
-            3,
+            RETRY_ATTEMPTS,
             blockTime
           );
 
@@ -356,7 +360,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
             console.log('Successfully retrieved poll join data from subgraph');
 
             setHasJoinedPoll(true);
-            setInitialVoiceCredits(Number(subgraphResult.voiceCredits));
+            setInitialVoiceCredits(Number(subgraphResult.voiceCredits ?? 0));
             setPollStateIndex(subgraphResult.pollStateIndex);
 
             setIsLoading(false);
@@ -550,17 +554,14 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
       console.error('Signup error:', error);
 
       // Check if error is related to eth_getLogs
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const isGetLogsError = errorMessage.includes('eth_getLogs') || errorMessage.includes('could not coalesce error');
-
-      if (isGetLogsError) {
+      if (isEthGetLogsError(error)) {
         console.log('Detected eth_getLogs error, attempting fallback mechanisms...');
-        console.log(`Waiting for ${blockTime}ms (chain block time) before fetching...`);
 
         // Wait for at least one block to be mined before attempting fallback
+        console.log(`Waiting ${blockTime}ms (1 block) before fetching...`);
         await new Promise(resolve => setTimeout(resolve, blockTime));
 
-        // Attempt 1: Try fetching state index from on-chain with retries (3 attempts, using blockTime as base delay)
+        // Attempt 1: Try fetching state index from on-chain with retries
         const onChainResult = await retryWithBackoff(
           async () => {
             const result = await getSignedupUserDataOnChain({
@@ -576,7 +577,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
 
             return result;
           },
-          3,
+          RETRY_ATTEMPTS,
           blockTime
         );
 
@@ -602,9 +603,9 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
         console.log('On-chain fetch failed, falling back to subgraph...');
 
         try {
-          // Wait for subgraph to index the transaction (multiple blocks for safety)
-          const subgraphWaitTime = blockTime * 2;
-          console.log(`Waiting ${subgraphWaitTime}ms for subgraph indexing...`);
+          // Wait for subgraph to index the transaction (2 blocks for safety)
+          const subgraphWaitTime = blockTime * SIGNUP_SUBGRAPH_WAIT_BLOCKS;
+          console.log(`Waiting ${subgraphWaitTime}ms (${SIGNUP_SUBGRAPH_WAIT_BLOCKS} blocks) for subgraph indexing...`);
           await new Promise(resolve => setTimeout(resolve, subgraphWaitTime));
 
           const { isRegistered: _isRegistered, stateIndex: _stateIndex } = await getSignedupUserData(
@@ -675,8 +676,7 @@ export const PollProvider = ({ pollAddress, children }: { pollAddress: string; c
     pollAddress,
     updateStatus,
     updatePortoStatus,
-    blockTime,
-    client
+    blockTime
   ]);
 
   const checkIsTallied = useCallback(async () => {

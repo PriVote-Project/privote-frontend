@@ -182,9 +182,3 @@ export const appConstants: Record<(typeof supportedChains)[number]['id'], ChainC
   //   ]
   // }
 } as const;
-
-export const ZUPASS_DEVCON_DEFAULTS = {
-  eventId: '1f36ddce-e538-4c7a-9f31-6a4b2221ecac',
-  signer1: '0x044e711fd3a1792a825aa896104da5276bbe710fd9b59dddea1aaf8d84535aaf',
-  signer2: '0x2b259329f0adf98c9b6cf2a11db7225fdcaa4f8796c61864e86154477da10663'
-} as const;
