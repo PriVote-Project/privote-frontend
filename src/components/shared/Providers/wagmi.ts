@@ -16,9 +16,7 @@ const portoWallet = (): Wallet => ({
   iconBackground: '#000000',
   createConnector: (walletDetails: WalletDetailsParams) => {
     return createConnector(config => ({
-      ...porto({
-        feeToken: 'EXP'
-      })({ ...config }),
+      ...porto()({ ...config }),
       ...walletDetails
     }));
   }
