@@ -32,7 +32,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={customTheme} avatar={BlockieAvatar} coolMode>
-          <AnonAadhaarProvider _useTestAadhaar>
+          <AnonAadhaarProvider>
             <AppConstantsProvider>
               <FaucetContextProvider>
                 <SigContextProvider>
