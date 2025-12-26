@@ -171,9 +171,8 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
           <div>
             <div
               ref={descriptionRef}
-              className={`description ${
-                !isExpanded && isContentOverflowing && isMobile ? styles.descriptionTruncated : ''
-              }`}
+              className={`description ${!isExpanded && isContentOverflowing && isMobile ? styles.descriptionTruncated : ''
+                }`}
             >
               <MarkdownRenderer
                 content={
@@ -217,17 +216,17 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
           {options &&
             (isTallied && pollResults
               ? [...options]
-                  .map((option, index: number) => ({
-                    option,
-                    votes: pollResults ? Number(pollResults[index].value) || 0 : 0,
-                    prevIndex: index
-                  }))
-                  .sort((a, b) => b.votes - a.votes)
-              : options.map((option, index) => ({
+                .map((option, index: number) => ({
                   option,
-                  votes: Number(votes.find(v => v.index === index)?.votes) || 0,
+                  votes: pollResults ? Number(pollResults[index].value) || 0 : 0,
                   prevIndex: index
                 }))
+                .sort((a, b) => b.votes - a.votes)
+              : options.map((option, index) => ({
+                option,
+                votes: Number(votes.find(v => v.index === index)?.votes) || 0,
+                prevIndex: index
+              }))
             ).map(({ option, votes, prevIndex }, index) => (
               <VoteCard
                 key={prevIndex}
@@ -277,22 +276,21 @@ export const VotingSection = ({ pollAddress }: VotingSectionProps) => {
           )}
         </div>
       )}
-      {canPublish && (
+      {(loadingPollResults || canPublish) && (
         <div className={styles.publishSection}>
-          <Link
-            href={`/polls/${pollAddress}/publish`}
-            className={`${styles.elegantPublishBtn} ${loadingPollResults ? styles.checking : ''}`}
-          >
-            {loadingPollResults ? (
+          {loadingPollResults ? (
+            <div className={`${styles.elegantPublishBtn} ${styles.checking}`}>
               <LoadingPulse size='medium' variant='check' text='Checking results...' />
-            ) : (
+            </div>
+          ) : (
+            <Link href={`/polls/${pollAddress}/publish`} className={styles.elegantPublishBtn}>
               <div className={styles.publishContent}>
                 <span className={styles.publishIcon}>🚀</span>
                 <span className={styles.publishText}>Publish Results</span>
                 <span className={styles.sparkle}>✨</span>
               </div>
-            )}
-          </Link>
+            </Link>
+          )}
         </div>
       )}
     </div>
