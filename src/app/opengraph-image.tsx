@@ -32,7 +32,7 @@ export default async function Image() {
             display: 'flex'
           }}
         />
-        
+
         {/* Grid pattern overlay */}
         <div
           style={{
@@ -57,36 +57,50 @@ export default async function Image() {
           }}
         >
           {/* Top section */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Logo */}
-            <div
-              style={{
-                fontSize: 80,
-                fontWeight: 900,
-                background: 'linear-gradient(135deg, #c65ec6 0%, #7f58b7 100%)',
-                backgroundClip: 'text',
-                color: 'transparent',
-                letterSpacing: '0.03em',
-                display: 'flex'
-              }}
-            >
-              PRIVOTE
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Header Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+              <div
+                style={{
+                  fontSize: 80,
+                  fontWeight: 400,
+                  color: '#fff',
+                  letterSpacing: '9.473px',
+                  display: 'flex',
+                  textTransform: 'uppercase'
+                }}
+              >
+                PRI<span style={{ color: '#c45ec6' }}>VOTE</span>
+              </div>
+              <div style={{ width: '2px', height: '50px', backgroundColor: 'rgba(255,255,255,0.2)' }} />
+              <div
+                style={{
+                  fontSize: 24,
+                  fontWeight: 500,
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  letterSpacing: '0.15em',
+                  display: 'flex'
+                }}
+              >
+                Privote.live
+              </div>
             </div>
-            
+
             {/* Tagline */}
             <div
               style={{
-                fontSize: 32,
+                fontSize: 48,
                 color: '#ffffff',
                 fontWeight: 600,
-                lineHeight: 1.3,
-                maxWidth: '700px',
-                display: 'flex'
+                lineHeight: 1.2,
+                maxWidth: '900px',
+                display: 'flex',
+                marginTop: '16px'
               }}
             >
               Private, Secure, and Verifiable Voting
             </div>
-            
+
             <div
               style={{
                 fontSize: 24,
@@ -105,97 +119,65 @@ export default async function Image() {
             <div
               style={{
                 display: 'flex',
-                gap: '48px',
+                gap: '60px',
                 flexWrap: 'wrap'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '8px',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '10px',
                     background: 'linear-gradient(135deg, rgba(127, 88, 183, 0.2) 0%, rgba(127, 88, 183, 0.1) 100%)',
                     border: '1px solid rgba(127, 88, 183, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 18
+                    fontSize: 22
                   }}
                 >
                   🔒
                 </div>
-                <span style={{ fontSize: 20, color: '#fff', fontWeight: 500 }}>Private</span>
+                <span style={{ fontSize: 28, color: '#fff', fontWeight: 500 }}>Private</span>
               </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '8px',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '10px',
                     background: 'linear-gradient(135deg, rgba(198, 94, 198, 0.2) 0%, rgba(198, 94, 198, 0.1) 100%)',
                     border: '1px solid rgba(198, 94, 198, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 18
+                    fontSize: 22
                   }}
                 >
                   🛡️
                 </div>
-                <span style={{ fontSize: 20, color: '#fff', fontWeight: 500 }}>Secure</span>
+                <span style={{ fontSize: 28, color: '#fff', fontWeight: 500 }}>Secure</span>
               </div>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '8px',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '10px',
                     background: 'linear-gradient(135deg, rgba(127, 88, 183, 0.2) 0%, rgba(127, 88, 183, 0.1) 100%)',
                     border: '1px solid rgba(127, 88, 183, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 18
+                    fontSize: 22
                   }}
                 >
                   ✔
                 </div>
-                <span style={{ fontSize: 20, color: '#fff', fontWeight: 500 }}>Verifiable</span>
-              </div>
-            </div>
-
-            {/* URL */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 24,
-                  color: '#888',
-                  fontWeight: 500,
-                  display: 'flex'
-                }}
-              >
-                🌐
-              </div>
-              <div
-                style={{
-                  fontSize: 28,
-                  background: 'linear-gradient(135deg, #c65ec6 0%, #7f58b7 100%)',
-                  backgroundClip: 'text',
-                  color: 'transparent',
-                  fontWeight: 600,
-                  display: 'flex'
-                }}
-              >
-                privote.live
+                <span style={{ fontSize: 28, color: '#fff', fontWeight: 500 }}>Verifiable</span>
               </div>
             </div>
           </div>

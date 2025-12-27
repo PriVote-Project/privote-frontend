@@ -18,8 +18,7 @@ const baseUrl =
 
 const title = 'Privote';
 const titleTemplate = '%s | Privote';
-const description = 'Privote: The all new way of voting through MACI. Private, secure, and verifiable voting for web3.';
-
+const description = 'Experience truly private, secure, and verifiable voting. Eliminate risks of bribery and coercion with results that are cryptographically accurate.';
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
